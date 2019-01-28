@@ -1,0 +1,16 @@
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+# BasedOnStyle: LLVM
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+AlwaysBreakTemplateDeclarations: true
+# CPP
+Language: Cpp
+AlignAfterOpenBracket: true
+# Force pointers to the type for C++.
+DerivePointerAlignment: false
+PointerAlignment: Left
+# BreakBeforeBraces: Linux
+BreakBeforeBraces: Allman
+SortIncludes: true
+

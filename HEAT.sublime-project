@@ -1,0 +1,19 @@
+{
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"build"
+			],
+			"path": "."
+		}
+	],
+    "settings":
+    {
+        "ClangFormat":
+        {
+            "format_on_save": true
+        }
+    }
+}
