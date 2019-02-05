@@ -4,16 +4,19 @@
 		{
 			"folder_exclude_patterns":
 			[
-				"build"
+				"build",
+				"cmake-build-debug",
+				".idea"
 			],
 			"path": "."
 		}
 	],
-    "settings":
-    {
-        "ClangFormat":
-        {
-            "format_on_save": true
-        }
-    }
+	"settings":
+	{
+		"ClangFormat":
+		{
+			"format_on_save": true
+		},
+		"ecc_hide_default_completions": true
+	}
 }
