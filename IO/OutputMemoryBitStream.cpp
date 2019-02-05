@@ -2,36 +2,15 @@
 #include "shared.h"
 #include <bitset>
 
-void OutputMemoryBitStream::ReallocBuffer(uint32_t inNewBitLength)
-{
-    if (mBuffer == nullptr)
-    {
-        // just need to memset on first allocation
-        mBuffer = static_cast<char*>(std::malloc(inNewBitLength >> 3));
-        memset(mBuffer, 0, inNewBitLength >> 3);
-    }
-    else
-    {
-        // need to memset, then copy the buffer
-        char* tempBuffer = static_cast<char*>(std::malloc(inNewBitLength >> 3));
-        memset(tempBuffer, 0, inNewBitLength >> 3);
-        memcpy(tempBuffer, mBuffer, mBitCapacity >> 3);
-        std::free(mBuffer);
-        mBuffer = tempBuffer;
-    }
-
-    // handle realloc failure
-    //...
-    mBitCapacity = inNewBitLength;
-}
-
 void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
 {
     uint32_t nextBitHead = mBitHead + static_cast<uint32_t>(inBitCount);
 
     if (nextBitHead > mBitCapacity)
     {
-        ReallocBuffer(std::max(mBitCapacity * 2, nextBitHead));
+        // ReallocBuffer(std::max(mBitCapacity * 2, nextBitHead));
+        mBitCapacity = std::max(mBitCapacity * 2, nextBitHead);
+        mBuffer->resize(mBitCapacity << 3);
     }
 
     // calculate the byteOffset into our buffer
@@ -41,7 +20,8 @@ void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
     uint32_t bitOffset = mBitHead & 0x7;
 
     uint8_t currentMask = ~(0xff << bitOffset);
-    mBuffer[byteOffset] = (mBuffer[byteOffset] & currentMask) | (inData << bitOffset);
+    mBuffer->data()[byteOffset] =
+        (mBuffer->data()[byteOffset] & currentMask) | (inData << bitOffset);
 
     // calculate how many bits were not yet used in
     // our target byte in the buffer
@@ -51,7 +31,7 @@ void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
     if (bitsFreeThisByte < inBitCount)
     {
         // we need another byte
-        mBuffer[byteOffset + 1] = inData >> bitsFreeThisByte;
+        mBuffer->data()[byteOffset + 1] = inData >> bitsFreeThisByte;
     }
 
     mBitHead = nextBitHead;
@@ -77,7 +57,7 @@ void OutputMemoryBitStream::WriteBits(const void* inData, uint32_t inBitCount)
 void OutputMemoryBitStream::PrintByteArray()
 {
     uint32_t bytesToWrite = GetByteLength();
-    const char* buffer = GetBufferPtr();
+    auto buffer = GetBufferPtr();
     printf("printing %d bytes\n", bytesToWrite);
 
     for (int i = 0; i < bytesToWrite; i++)
@@ -90,7 +70,7 @@ void OutputMemoryBitStream::PrintByteArray()
 
 void OutputMemoryBitStream::printStream() const
 {
-    const char* streamBuffer = GetBufferPtr();
+    auto streamBuffer = GetBufferPtr();
     uint32_t bufferSize = GetByteLength();
     ::printStream(bufferSize, streamBuffer);
 }

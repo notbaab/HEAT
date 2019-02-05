@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -14,18 +13,19 @@
 class OutputMemoryBitStream
 {
   public:
-    OutputMemoryBitStream() : mBuffer(nullptr), mBitHead(0)
+    OutputMemoryBitStream() : mBitHead(0)
     {
-        ReallocBuffer(1500 * 8); // init 1500 Byte size buffer
+        mBuffer = std::make_shared<std::vector<uint8_t>>(1500);
+        mBitCapacity = 1500 * 8;
     }
 
-    ~OutputMemoryBitStream() { std::free(mBuffer); }
+    ~OutputMemoryBitStream() {}
 
     void WriteBits(uint8_t inData, uint32_t inBitCount);
     void WriteBits(const void* inData, uint32_t inBitCount);
 
     // Get read only pointer into buffer
-    const char* GetBufferPtr() const { return mBuffer; }
+    const uint8_t* GetBufferPtr() const { return mBuffer->data(); }
 
     // Get number of bits written to the buffer
     uint32_t GetBitLength() const { return mBitHead; }
@@ -79,9 +79,7 @@ class OutputMemoryBitStream
     void printStream() const;
 
   private:
-    void ReallocBuffer(uint32_t inNewBitCapacity);
-
-    char* mBuffer;         // buffer pointer
+    std::shared_ptr<std::vector<uint8_t>> mBuffer;
     uint32_t mBitHead;     // how many bits have data
     uint32_t mBitCapacity; // how many bits the current buffer can hold
 };

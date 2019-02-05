@@ -11,18 +11,14 @@
 class InputMemoryBitStream
 {
   public:
-    InputMemoryBitStream(std::shared_ptr<std::vector<char>> inBuffer, uint32_t inBitCount)
+    InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer, uint32_t inBitCount)
         : mBuffer(inBuffer), mBitHead(0), mBitCapacity(inBitCount)
     {
     }
 
-    InputMemoryBitStream(const InputMemoryBitStream& inOther)
-        : mBitHead(inOther.mBitHead), mBitCapacity(inOther.mBitCapacity)
-    {
-        mBuffer = inOther.mBuffer;
-    }
+    InputMemoryBitStream(const InputMemoryBitStream& inOther) { mBuffer = inOther.mBuffer; }
 
-    const char* GetBufferPtr() const { return mBuffer->data(); }
+    const uint8_t* GetBufferPtr() const { return mBuffer->data(); }
     uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
     uint32_t GetByteCapacity() const { return mBitCapacity >> 3; }
 
@@ -84,7 +80,7 @@ class InputMemoryBitStream
     void printStream() const;
 
   private:
-    std::shared_ptr<std::vector<char>> mBuffer;
+    std::shared_ptr<std::vector<uint8_t>> mBuffer;
     uint32_t mBitHead;
     uint32_t mBitCapacity;
 };
