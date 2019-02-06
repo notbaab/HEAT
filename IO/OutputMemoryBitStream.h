@@ -39,6 +39,16 @@ class OutputMemoryBitStream
         WriteBits(inData, inByteCount << 3);
     }
 
+    template <typename T>
+    void Write(std::vector<T> inData)
+    {
+        uint32_t inBitCount = sizeof(T) * 8;
+        for (auto t : inData)
+        {
+            WriteBits(&t, inBitCount);
+        }
+    }
+
     // Generic templatized write for primative values
     template <typename T>
     void Write(T inData, uint32_t inBitCount = sizeof(T) * 8)
