@@ -5,8 +5,6 @@
 #include <cstdint>
 #include <functional>
 
-// class Packet;
-
 #define SERIALIZER                                                                                 \
     bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
     bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
