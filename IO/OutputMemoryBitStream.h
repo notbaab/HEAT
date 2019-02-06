@@ -25,7 +25,7 @@ class OutputMemoryBitStream
     void WriteBits(const void* inData, uint32_t inBitCount);
 
     // Get read only pointer into buffer
-    const uint8_t* GetBufferPtr() const { return mBuffer->data(); }
+    const std::shared_ptr<std::vector<uint8_t>> GetBufferPtr() const { return mBuffer; }
 
     // Get number of bits written to the buffer
     uint32_t GetBitLength() const { return mBitHead; }

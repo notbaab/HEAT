@@ -18,7 +18,7 @@ class InputMemoryBitStream
 
     InputMemoryBitStream(const InputMemoryBitStream& inOther) { mBuffer = inOther.mBuffer; }
 
-    const uint8_t* GetBufferPtr() const { return mBuffer->data(); }
+    const std::shared_ptr<std::vector<uint8_t>> GetBufferPtr() const { return mBuffer; }
     uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
     uint32_t GetByteCapacity() const { return mBitCapacity >> 3; }
 
