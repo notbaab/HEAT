@@ -2,14 +2,17 @@
 #include "IO/OutputMemoryBitStream.h"
 #include "catch.hpp"
 #include "packets/PacketSerializer.h"
+#include "packets/PlayerPacket.h"
 #include "packets/ReliabilityPacket.h"
 #include <iostream>
 #include <vector>
+using namespace Catch::literals;
 
 TEST_CASE("Packet Serialize Test", "[packet]")
 {
     auto serializer = PacketSerializer();
     AddPacketCtor(serializer, ReliabilityPacket);
+    AddPacketCtor(serializer, PlayerPacket);
 
     std::vector<uint8_t> firstRealPacket{'K', 'P', 'L', 'R', 0x01, 0x00, 0x00, 0x00};
     std::vector<uint8_t> secondRealPacket{'K', 'P', 'L', 'R', 0x11, 0x30, 0x23, 0x1e};
@@ -43,7 +46,51 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         auto ptr = out.GetBufferPtr();
         for (int i = 0; i < out.GetByteLength(); ++i)
         {
-            REQUIRE(ptr[i] == fullPackets[i]);
+            REQUIRE((*ptr)[i] == fullPackets[i]);
         }
+    }
+
+    SECTION("PlayerPacket")
+    {
+        uint32_t id = 12;
+        float xVel = 2.4f;
+        float yVel = 2.9f;
+        float xLoc = 2.2f;
+        float yLoc = 2.0f;
+
+        auto fullPacketIn = std::make_shared<PlayerPacket>(
+            PlayerPacket::ReplicationState::ALL_STATE, id, xVel, yVel, xLoc, yLoc);
+        // Make one with only the id
+        auto onlyIdIn = std::make_shared<PlayerPacket>(PlayerPacket::ReplicationState::PRS_PID, id,
+                                                       xVel, yVel, xLoc, yLoc);
+        // one with only the position
+        auto onlyPositionIn = std::make_shared<PlayerPacket>(
+            PlayerPacket::ReplicationState::PRS_POSI, id, xVel, yVel, xLoc, yLoc);
+
+        auto out = OutputMemoryBitStream();
+        std::vector<std::shared_ptr<Packet>> packet_vectors{fullPacketIn, onlyIdIn, onlyPositionIn};
+        serializer.WritePackets(packet_vectors, out);
+
+        // go from the raw byte array back to a packet
+        auto rawChar = out.GetBufferPtr();
+        auto in = InputMemoryBitStream(rawChar, out.GetBitLength());
+        auto packets = serializer.ReadPackets(in);
+        auto fullPacketOut = std::static_pointer_cast<PlayerPacket>(packets[0]);
+        auto onlyIdOut = std::static_pointer_cast<PlayerPacket>(packets[1]);
+        auto onlyPositionOut = std::static_pointer_cast<PlayerPacket>(packets[2]);
+
+        REQUIRE(fullPacketOut->id == 12);
+        REQUIRE(fullPacketOut->xVel == 2.4f);
+        REQUIRE(fullPacketOut->yVel == 2.9f);
+        REQUIRE(fullPacketOut->xLoc == 2.2f);
+        REQUIRE(fullPacketOut->yLoc == 2.0f);
+
+        REQUIRE(onlyIdOut->id == 12);
+
+        REQUIRE(onlyPositionOut->id == 0);
+        REQUIRE(onlyPositionOut->xVel == 2.4f);
+        REQUIRE(onlyPositionOut->yVel == 2.9f);
+        REQUIRE(onlyPositionOut->xLoc == 2.2f);
+        REQUIRE(onlyPositionOut->yLoc == 2.0f);
     }
 }
