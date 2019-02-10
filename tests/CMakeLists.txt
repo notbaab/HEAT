@@ -6,4 +6,4 @@ set(TEST_SOURCES
 add_executable(test ${TEST_SOURCES})
 
 target_include_directories(test PUBLIC ${CMAKE_SOURCE_DIR})
-target_link_libraries(test PRIVATE catch io packets)
+target_link_libraries(test PRIVATE catch io packets messages)

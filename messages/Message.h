@@ -13,11 +13,13 @@
     uint32_t GetUniqueId() const override { return cls::ID; }                                      \
     static const uint32_t ID = id;
 
-class Packet
+// The same as a packet pretty much but holds game data. A distinction I'm
+// not quite sure I want to make yet
+class Message
 {
   public:
-    Packet(){};
-    virtual ~Packet(){};
+    Message(){};
+    virtual ~Message(){};
 
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;

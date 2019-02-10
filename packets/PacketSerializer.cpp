@@ -14,11 +14,22 @@ bool PacketSerializer::AddConstructor(uint32_t id, PacketConstructor constructor
     return true;
 }
 
-std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBitStream& in)
+std::unique_ptr<Packet> PacketSerializer::CreatePacket(uint32_t id)
+{
+
+    if (packetConstructors.find(id) != packetConstructors.end())
+    {
+        return NULL;
+    }
+
+    return packetConstructors[id]();
+}
+
+std::vector<std::unique_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBitStream& in)
 {
     uint32_t id;
 
-    std::vector<std::shared_ptr<Packet>> packets;
+    std::vector<std::unique_ptr<Packet>> packets;
 
     while (in.GetRemainingBitCount() > 0)
     {
@@ -28,15 +39,15 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBi
             throw std::runtime_error("Bad Packet data!!!!");
         }
 
-        std::shared_ptr<Packet> packet = packetConstructors[id]();
+        std::unique_ptr<Packet> packet = packetConstructors[id]();
         packet->Read(in);
-        packets.push_back(packet);
+        packets.push_back(std::move(packet));
     }
 
     return packets;
 }
 
-bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>> packets,
+bool PacketSerializer::WritePackets(std::vector<std::unique_ptr<Packet>>& packets,
                                     OutputMemoryBitStream& out)
 {
     for (auto const& packet : packets)

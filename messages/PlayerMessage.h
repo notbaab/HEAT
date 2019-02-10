@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Packet.h"
+#include "Message.h"
 
-class PlayerPacket : public Packet
+class PlayerMessage : public Message
 {
   public:
-    IDENTIFIER(PlayerPacket, 'PLAY');
+    IDENTIFIER(PlayerMessage, 'PLAY');
     SERIALIZER;
 
     enum ReplicationState
@@ -15,9 +15,9 @@ class PlayerPacket : public Packet
         ALL_STATE = PRS_POSI | PRS_PID,
     };
 
-    PlayerPacket(){};
-    PlayerPacket(ReplicationState state, uint32_t id, float xVel, float yVel, float xLoc,
-                 float yLoc)
+    PlayerMessage(){};
+    PlayerMessage(ReplicationState state, uint32_t id, float xVel, float yVel, float xLoc,
+                  float yLoc)
         : state(state), id(id), xVel(xVel), yVel(yVel), xLoc(xLoc), yLoc(yLoc){};
 
     ReplicationState state;
