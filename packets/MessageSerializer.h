@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <memory>
 #include <unordered_map>
 
 class InputMemoryBitStream;
@@ -12,7 +14,7 @@ using MessageConstructor = std::function<std::unique_ptr<Message>()>;
 
 // Cleaner wrapper around adding the constructor by using the expected static ID
 #define AddMessageCtor(serializer, messageType)                                                    \
-    serializer.AddConstructor(messageType::ID, MessageCtor(messageType))
+    serializer->AddConstructor(messageType::ID, MessageCtor(messageType))
 
 class MessageSerializer
 {
@@ -23,6 +25,8 @@ class MessageSerializer
 
     bool AddConstructor(uint32_t id, MessageConstructor constructor);
     std::unique_ptr<Message> CreateMessage(uint32_t id);
-    std::vector<std::unique_ptr<Message>> ReadMessages(InputMemoryBitStream& in);
-    bool WriteMessages(std::vector<std::unique_ptr<Message>>& packets, OutputMemoryBitStream& out);
+    std::unique_ptr<std::vector<std::unique_ptr<Message>>> ReadMessages(InputMemoryBitStream& in,
+                                                                        uint8_t numMessages);
+    bool WriteMessages(std::shared_ptr<std::vector<std::unique_ptr<Message>>> packets,
+                       OutputMemoryBitStream& out);
 };

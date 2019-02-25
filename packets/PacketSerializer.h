@@ -1,4 +1,5 @@
 #pragma once
+
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -6,11 +7,17 @@
 class InputMemoryBitStream;
 class OutputMemoryBitStream;
 class Packet;
-using PacketConstructor = std::function<std::unique_ptr<Packet>()>;
+class MessageSerializer;
+
+using PacketConstructor =
+    std::function<std::unique_ptr<Packet>(std::shared_ptr<MessageSerializer>)>;
+// using PacketConstructor = std::function<std::unique_ptr<Packet>()>;
 
 // A lambda for instantiating the default packet constructor and returning ptr to it
 #define PacketCtor(packetType)                                                                     \
-    []() -> std::unique_ptr<Packet> { return std::move(std::make_unique<packetType>()); }
+    [](auto messageFactory) -> std::unique_ptr<Packet> {                                           \
+        return std::move(std::make_unique<packetType>(messageFactory));                            \
+    }
 
 // Cleaner wrapper around adding the constructor by using the expected static ID
 #define AddPacketCtor(serializer, packetType)                                                      \
@@ -19,7 +26,9 @@ using PacketConstructor = std::function<std::unique_ptr<Packet>()>;
 class PacketSerializer
 {
   public:
-    PacketSerializer(){};
+    PacketSerializer(std::shared_ptr<MessageSerializer> messageFactory)
+        : messageFactory(messageFactory){};
+    // PacketSerializer(){};
     ~PacketSerializer(){};
     std::unordered_map<uint32_t, PacketConstructor> packetConstructors;
 
@@ -27,4 +36,8 @@ class PacketSerializer
     std::unique_ptr<Packet> CreatePacket(uint32_t id);
     std::vector<std::unique_ptr<Packet>> ReadPackets(InputMemoryBitStream& in);
     bool WritePackets(std::vector<std::unique_ptr<Packet>>& packets, OutputMemoryBitStream& out);
+    bool WritePacket(std::unique_ptr<Packet> packet, OutputMemoryBitStream& out);
+
+  private:
+    std::shared_ptr<MessageSerializer> messageFactory;
 };

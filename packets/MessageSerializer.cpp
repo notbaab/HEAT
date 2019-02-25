@@ -18,7 +18,7 @@ bool MessageSerializer::AddConstructor(uint32_t id, MessageConstructor construct
 
 std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
 {
-    if (messageConstructors.find(id) != messageConstructors.end())
+    if (messageConstructors.find(id) == messageConstructors.end())
     {
         return NULL;
     }
@@ -26,13 +26,15 @@ std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
     return messageConstructors[id]();
 }
 
-std::vector<std::unique_ptr<Message>> MessageSerializer::ReadMessages(InputMemoryBitStream& in)
+std::unique_ptr<std::vector<std::unique_ptr<Message>>>
+MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
 {
     uint32_t id;
 
-    std::vector<std::unique_ptr<Message>> messages;
+    auto messages = std::make_unique<std::vector<std::unique_ptr<Message>>>();
+    uint8_t remainingMessages = numMessages;
 
-    while (in.GetRemainingBitCount() > 0)
+    while (remainingMessages > 0)
     {
         in.serialize(id);
         if (messageConstructors.find(id) == messageConstructors.end())
@@ -42,16 +44,17 @@ std::vector<std::unique_ptr<Message>> MessageSerializer::ReadMessages(InputMemor
 
         std::unique_ptr<Message> message = messageConstructors[id]();
         message->Read(in);
-        messages.push_back(std::move(message));
+        messages->push_back(std::move(message));
+        remainingMessages--;
     }
 
-    return messages;
+    return std::move(messages);
 }
 
-bool MessageSerializer::WriteMessages(std::vector<std::unique_ptr<Message>>& messages,
-                                      OutputMemoryBitStream& out)
+bool MessageSerializer::WriteMessages(
+    std::shared_ptr<std::vector<std::unique_ptr<Message>>> messages, OutputMemoryBitStream& out)
 {
-    for (auto const& message : messages)
+    for (auto const& message : *messages)
     {
         uint32_t id = message->GetUniqueId();
         out.Write(id);

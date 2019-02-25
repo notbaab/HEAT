@@ -1,7 +1,4 @@
-list(APPEND message_src
-    MessageSerializer.cpp
-)
+add_library(messages INTERFACE)
+target_include_directories(messages INTERFACE ${CMAKE_SOURCE_DIR}/IO ${CMAKE_SOURCE_DIR}/packets)
+# target_link_libraries(messages io packets)
 
-add_library(messages SHARED ${message_src})
-target_include_directories(messages PUBLIC ${CMAKE_SOURCE_DIR}/IO)
-target_link_libraries(messages io)

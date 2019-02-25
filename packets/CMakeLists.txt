@@ -1,5 +1,6 @@
 list(APPEND packet_src
     PacketSerializer.cpp
+    MessageSerializer.cpp
 )
 
 add_library(packets SHARED ${packet_src})

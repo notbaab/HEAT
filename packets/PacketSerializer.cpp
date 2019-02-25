@@ -16,13 +16,12 @@ bool PacketSerializer::AddConstructor(uint32_t id, PacketConstructor constructor
 
 std::unique_ptr<Packet> PacketSerializer::CreatePacket(uint32_t id)
 {
-
-    if (packetConstructors.find(id) != packetConstructors.end())
+    if (packetConstructors.find(id) == packetConstructors.end())
     {
         return NULL;
     }
 
-    return packetConstructors[id]();
+    return packetConstructors[id](messageFactory);
 }
 
 std::vector<std::unique_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBitStream& in)
@@ -39,7 +38,7 @@ std::vector<std::unique_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBi
             throw std::runtime_error("Bad Packet data!!!!");
         }
 
-        std::unique_ptr<Packet> packet = packetConstructors[id]();
+        std::unique_ptr<Packet> packet = packetConstructors[id](messageFactory);
         packet->Read(in);
         packets.push_back(std::move(packet));
     }
@@ -56,6 +55,15 @@ bool PacketSerializer::WritePackets(std::vector<std::unique_ptr<Packet>>& packet
         out.Write(id);
         packet->Write(out);
     }
+
+    return true;
+}
+
+bool PacketSerializer::WritePacket(std::unique_ptr<Packet> packet, OutputMemoryBitStream& out)
+{
+    uint32_t id = packet->GetUniqueId();
+    out.Write(id);
+    packet->Write(out);
 
     return true;
 }

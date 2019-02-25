@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Message.h"
+#include "packets/Message.h"
 
 class PlayerMessage : public Message
 {
