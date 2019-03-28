@@ -71,7 +71,6 @@ TEST_CASE("Packet Manager", "[manger]")
         REQUIRE(castRelPacket->messages->size() == 5);
         for (auto msg : *castRelPacket->messages)
         {
-            std::cout << msg->GetId() << std::endl;
             REQUIRE(msg->GetId() == messageId);
             messageId++;
         }
