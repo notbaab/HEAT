@@ -35,6 +35,8 @@ TEST_CASE("Packet Serialize Test", "[packet]")
 
         REQUIRE(firstPacket->sequenceNumber == 1);
         REQUIRE(secondPacket->sequenceNumber == 0x1e233011);
+        REQUIRE(firstPacket->messages->size() == 0);
+        REQUIRE(secondPacket->messages->size() == 0);
     }
 
     SECTION("Write some reliable packet out")
