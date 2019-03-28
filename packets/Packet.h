@@ -7,14 +7,6 @@
 #include <cstdint>
 #include <functional>
 
-#define SERIALIZER                                                                                 \
-    bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
-    bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
-
-#define IDENTIFIER(cls, id)                                                                        \
-    uint32_t GetUniqueId() const override { return cls::ID; }                                      \
-    static const uint32_t ID = id;
-
 class Packet
 {
   public:
