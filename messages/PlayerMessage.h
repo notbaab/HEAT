@@ -16,19 +16,18 @@ class PlayerMessage : public Message
     };
 
     PlayerMessage(){};
-    PlayerMessage(ReplicationState state, uint32_t id, float xVel, float yVel, float xLoc,
-                  float yLoc)
-        : state(state), id(id), xVel(xVel), yVel(yVel), xLoc(xLoc), yLoc(yLoc){};
+    PlayerMessage(ReplicationState state, float xVel, float yVel, float xLoc, float yLoc)
+        : state(state), xVel(xVel), yVel(yVel), xLoc(xLoc), yLoc(yLoc){};
 
     ReplicationState state;
 
-    uint32_t id;
     bool hasPosition, hasId;
     float xVel, yVel, xLoc, yLoc;
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
+        stream.serialize(id);
         stream.serialize(state);
         hasId = state & ReplicationState::PRS_PID;
         hasPosition = state & ReplicationState::PRS_POSI;

@@ -62,23 +62,24 @@ TEST_CASE("Packet Serialize Test", "[packet]")
 
     SECTION("PlayerPacket")
     {
-        uint32_t id = 12;
         float xVel = 2.4f;
         float yVel = 2.9f;
         float xLoc = 2.2f;
         float yLoc = 2.0f;
 
         auto fullPacketIn = std::make_unique<PlayerMessage>(
-            PlayerMessage::ReplicationState::ALL_STATE, id, xVel, yVel, xLoc, yLoc);
+            PlayerMessage::ReplicationState::ALL_STATE, xVel, yVel, xLoc, yLoc);
+        fullPacketIn->AssignId(14);
         // Make one with only the id
         auto onlyIdIn = std::make_unique<PlayerMessage>(PlayerMessage::ReplicationState::PRS_PID,
-                                                        id, xVel, yVel, xLoc, yLoc);
+                                                        xVel, yVel, xLoc, yLoc);
+        onlyIdIn->AssignId(12);
         // one with only the position
         auto onlyPositionIn = std::make_unique<PlayerMessage>(
-            PlayerMessage::ReplicationState::PRS_POSI, id, xVel, yVel, xLoc, yLoc);
+            PlayerMessage::ReplicationState::PRS_POSI, xVel, yVel, xLoc, yLoc);
 
         auto out = OutputMemoryBitStream();
-        auto message_vector = std::make_unique<std::vector<std::unique_ptr<Message>>>();
+        auto message_vector = std::make_unique<std::vector<std::shared_ptr<Message>>>();
         message_vector->push_back(std::move(fullPacketIn));
         message_vector->push_back(std::move(onlyIdIn));
         message_vector->push_back(std::move(onlyPositionIn));
@@ -100,13 +101,13 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         auto onlyIdOut = static_cast<PlayerMessage*>((*messages)[1].get());
         auto onlyPositionOut = static_cast<PlayerMessage*>((*messages)[2].get());
 
-        REQUIRE(fullPacketOut->id == 12);
+        REQUIRE(fullPacketOut->GetId() == 14);
         REQUIRE(fullPacketOut->xVel == 2.4f);
         REQUIRE(fullPacketOut->yVel == 2.9f);
         REQUIRE(fullPacketOut->xLoc == 2.2f);
         REQUIRE(fullPacketOut->yLoc == 2.0f);
 
-        REQUIRE(onlyIdOut->id == 12);
+        REQUIRE(onlyIdOut->GetId() == 12);
 
         REQUIRE(onlyPositionOut->xVel == 2.4f);
         REQUIRE(onlyPositionOut->yVel == 2.9f);
