@@ -33,7 +33,7 @@ class OutputMemoryBitStream
     // Get number of bytes written to the buffer
     uint32_t GetByteLength() const { return (mBitHead + 7) >> 3; }
 
-    // Convient wrapper around write bits for byte aligned data
+    // Convenient wrapper around write bits for byte aligned data
     void WriteBytes(const void* inData, uint32_t inByteCount)
     {
         WriteBits(inData, inByteCount << 3);
