@@ -51,7 +51,7 @@ bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packet
 {
     for (auto const& packet : packets)
     {
-        uint32_t id = packet->GetUniqueId();
+        uint32_t id = packet->GetIdentifier();
         out.Write(id);
         packet->Write(out);
     }
@@ -61,7 +61,7 @@ bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packet
 
 bool PacketSerializer::WritePacket(std::shared_ptr<Packet> packet, OutputMemoryBitStream& out)
 {
-    uint32_t id = packet->GetUniqueId();
+    uint32_t id = packet->GetIdentifier();
     out.Write(id);
     packet->Write(out);
 

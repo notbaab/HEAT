@@ -27,5 +27,5 @@ class Packet
 
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;
-    virtual uint32_t GetUniqueId() const = 0;
+    virtual uint32_t GetIdentifier() const = 0;
 };
