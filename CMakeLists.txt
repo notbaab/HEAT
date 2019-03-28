@@ -7,6 +7,7 @@ add_subdirectory(networking)
 add_subdirectory(IO)
 add_subdirectory(packets)
 add_subdirectory(messages)
+add_subdirectory(managers)
 add_subdirectory(tests)
 add_subdirectory(lib/catch)
 
