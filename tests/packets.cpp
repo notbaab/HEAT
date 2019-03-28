@@ -48,7 +48,7 @@ TEST_CASE("Packet Serialize Test", "[packet]")
 
         auto out = OutputMemoryBitStream();
 
-        std::vector<std::unique_ptr<Packet>> packet_vectors;
+        std::vector<std::shared_ptr<Packet>> packet_vectors;
         packet_vectors.push_back(std::move(firstPacket));
         packet_vectors.push_back(std::move(secondPacket));
         packetSerializer.WritePackets(packet_vectors, out);

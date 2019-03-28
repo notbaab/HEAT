@@ -16,7 +16,7 @@ bool MessageSerializer::AddConstructor(uint32_t id, MessageConstructor construct
     return true;
 }
 
-std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
+std::shared_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
 {
     if (messageConstructors.find(id) == messageConstructors.end())
     {
@@ -26,12 +26,12 @@ std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
     return messageConstructors[id]();
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<Message>>>
+std::shared_ptr<std::vector<std::shared_ptr<Message>>>
 MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
 {
     uint32_t id;
 
-    auto messages = std::make_unique<std::vector<std::unique_ptr<Message>>>();
+    auto messages = std::make_unique<std::vector<std::shared_ptr<Message>>>();
     uint8_t remainingMessages = numMessages;
 
     while (remainingMessages > 0)
@@ -42,7 +42,7 @@ MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
             throw std::runtime_error("Bad message data!!!!");
         }
 
-        std::unique_ptr<Message> message = messageConstructors[id]();
+        std::shared_ptr<Message> message = messageConstructors[id]();
         message->Read(in);
         messages->push_back(std::move(message));
         remainingMessages--;
@@ -52,11 +52,11 @@ MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
 }
 
 bool MessageSerializer::WriteMessages(
-    std::shared_ptr<std::vector<std::unique_ptr<Message>>> messages, OutputMemoryBitStream& out)
+    std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages, OutputMemoryBitStream& out)
 {
     for (auto const& message : *messages)
     {
-        uint32_t id = message->GetUniqueId();
+        uint32_t id = message->GetIdentifier();
         out.Write(id);
         message->Write(out);
     }

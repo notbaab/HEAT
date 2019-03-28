@@ -16,11 +16,11 @@ class ReliableOrderedPacket : public Packet
     // ReliableOrderedPacket(int seq) : sequenceNumber(seq), ackStart(seq), ackEnd(seq){};
     ReliableOrderedPacket(std::shared_ptr<MessageSerializer> factory) : Packet(factory)
     {
-        messages = std::make_shared<std::vector<std::unique_ptr<Message>>>();
+        messages = std::make_shared<std::vector<std::shared_ptr<Message>>>();
     };
 
     // TODO: Should this be a pointer to a vector? And just unique ptrs?
-    std::shared_ptr<std::vector<std::unique_ptr<Message>>> messages;
+    std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages;
     // Sequence number of this packet
     int sequenceNumber;
     //
