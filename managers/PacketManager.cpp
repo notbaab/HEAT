@@ -193,7 +193,7 @@ std::shared_ptr<Packet> PacketManager::WritePacket()
     return reliablePacket;
 }
 
-bool PacketManager::ReadPacket(std::unique_ptr<ReliableOrderedPacket> packet)
+bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
 {
     // if (m_error != CONNECTION_ERROR_NONE)
     //     return false;
