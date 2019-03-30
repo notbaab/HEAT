@@ -26,7 +26,7 @@ class PacketManager
     Message* ReceiveMessage();
     std::shared_ptr<Packet> WritePacket();
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
-    void AdvanceTime(double time);
+    void SetTime(double time);
     // ConnectionError GetError() const;
 
   protected:

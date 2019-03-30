@@ -207,18 +207,6 @@ bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
     return true;
 }
 
-// void PacketManager::AdvanceTime(double time)
-// {
-//     m_time = time;
-
-//     m_sentPackets->RemoveOldEntries();
-
-//     m_receivedPackets->RemoveOldEntries();
-
-//     m_messageSentPackets->RemoveOldEntries();
-// }
-
-// ConnectionError PacketManager::GetError() const { return m_error; }
 
 // Keep track of in flight packets
 void PacketManager::InsertAckPacketEntry(uint16_t sequenceNumber)
@@ -396,7 +384,7 @@ void PacketManager::UpdateOldestUnackedMessageId()
     assert(!sequence_greater_than(m_oldestUnackedMessageId, stopMessageId));
 }
 
-void PacketManager::AdvanceTime(double time)
+void PacketManager::SetTime(double time)
 {
     m_time = time;
 
