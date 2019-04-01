@@ -18,13 +18,13 @@ const float MessageResendRate = 0.1f;
 class PacketManager
 {
   public:
-    PacketManager(PacketSerializer packetFactory);
+    PacketManager(std::shared_ptr<PacketSerializer> packetFactory);
     ~PacketManager();
     void Reset();
     bool CanSendMessage() const;
     void SendMessage(std::shared_ptr<Message> message);
     Message* ReceiveMessage();
-    std::shared_ptr<Packet> WritePacket();
+    std::shared_ptr<ReliableOrderedPacket> WritePacket();
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
     void SetTime(double time);
     // ConnectionError GetError() const;
@@ -70,7 +70,7 @@ class PacketManager
     // int CalculateMessageOverheadBits();
 
   private:
-    PacketSerializer
+    std::shared_ptr<PacketSerializer>
         m_packetFactory; // packet factory for creating and destroying connection packets
     MessageSerializer m_messageFactory; // message factory creates and destroys messages
     double m_time;                      // current connection time

@@ -14,16 +14,17 @@ using namespace Catch::literals;
 
 // Round about way to see if the packet written contains all the expected
 // messages
-void checkMessageId(std::shared_ptr<Packet> packet, PacketSerializer packetSerializer,
-                    int messageIdStart, int numMessages)
+void checkMessageId(std::shared_ptr<Packet> packet,
+                    std::shared_ptr<PacketSerializer> packetSerializer, int messageIdStart,
+                    int numMessages)
 {
     auto out = OutputMemoryBitStream();
-    packetSerializer.WritePacket(packet, out);
+    packetSerializer->WritePacket(packet, out);
     int messageId = messageIdStart;
 
     auto rawChar = out.GetBufferPtr();
     auto in = InputMemoryBitStream(rawChar, out.GetBitLength());
-    auto packets = packetSerializer.ReadPackets(in);
+    auto packets = packetSerializer->ReadPackets(in);
 
     for (int i = 0; i < packets.size(); ++i)
     {
@@ -40,10 +41,10 @@ void checkMessageId(std::shared_ptr<Packet> packet, PacketSerializer packetSeria
 }
 
 // helper that has the manager read a packet that contains only ack data
-void ackPacket(PacketManager& manager, PacketSerializer packetSerializer, int ackNum, int ackBits,
-               int sequenceNumber)
+void ackPacket(PacketManager& manager, std::shared_ptr<PacketSerializer> packetSerializer,
+               int ackNum, int ackBits, int sequenceNumber)
 {
-    auto ackedPacket = packetSerializer.CreatePacket(ReliableOrderedPacket::ID);
+    auto ackedPacket = packetSerializer->CreatePacket(ReliableOrderedPacket::ID);
     auto castPacket = std::static_pointer_cast<ReliableOrderedPacket>(ackedPacket);
     // say we have seen packet 0 by setting the ack and bit field appropriately
     castPacket->ack = ackNum;
@@ -56,13 +57,14 @@ void ackPacket(PacketManager& manager, PacketSerializer packetSerializer, int ac
     manager.ReadPacket(castPacket);
 }
 
-void sendMessages(PacketManager& manager, MessageSerializer messageSerializer, uint8_t numMessages)
+void sendMessages(PacketManager& manager, std::shared_ptr<MessageSerializer> messageSerializer,
+                  uint8_t numMessages)
 {
     // write out a packet with 5 messages
     for (int i = 0; i < numMessages; ++i)
     {
         auto msg = std::static_pointer_cast<PlayerMessage>(
-            std::move(messageSerializer.CreateMessage(PlayerMessage::ID)));
+            std::move(messageSerializer->CreateMessage(PlayerMessage::ID)));
         manager.SendMessage(msg);
     }
 }
@@ -72,7 +74,7 @@ TEST_CASE("Packet Manager", "[manger]")
     // setup our serializers
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
-    auto packetSerializer = PacketSerializer(messageSerializer);
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
 
     // Managers

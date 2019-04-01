@@ -12,7 +12,7 @@ using namespace Catch::literals;
 TEST_CASE("Packet Serialize Test", "[packet]")
 {
     auto messageSerializer = std::make_shared<MessageSerializer>();
-    auto packetSerializer = PacketSerializer(messageSerializer);
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddMessageCtor(messageSerializer, PlayerMessage);
 
@@ -26,7 +26,7 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         auto packetPtr = std::make_shared<std::vector<uint8_t>>(fullPackets);
         // auto packetPtr = std::make_shared<std::vector<uint8_t>>(firstRealPacket);
         auto in = InputMemoryBitStream(packetPtr, packetPtr->size() * 8);
-        auto packets = packetSerializer.ReadPackets(in);
+        auto packets = packetSerializer->ReadPackets(in);
         uint32_t id = ReliableOrderedPacket::ID;
 
         // This will fail if it can't read the id form the above packet
@@ -41,10 +41,10 @@ TEST_CASE("Packet Serialize Test", "[packet]")
 
     SECTION("Write some reliable packet out")
     {
-        auto firstPacket = packetSerializer.CreatePacket(ReliableOrderedPacket::ID);
+        auto firstPacket = packetSerializer->CreatePacket(ReliableOrderedPacket::ID);
         auto castFirstPacket = static_cast<ReliableOrderedPacket*>(firstPacket.get());
         castFirstPacket->sequenceNumber = 1;
-        auto secondPacket = packetSerializer.CreatePacket(ReliableOrderedPacket::ID);
+        auto secondPacket = packetSerializer->CreatePacket(ReliableOrderedPacket::ID);
         auto castSecondPacket = static_cast<ReliableOrderedPacket*>(secondPacket.get());
         castSecondPacket->sequenceNumber = 0x1e233011;
 
@@ -53,7 +53,7 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         std::vector<std::shared_ptr<Packet>> packet_vectors;
         packet_vectors.push_back(std::move(firstPacket));
         packet_vectors.push_back(std::move(secondPacket));
-        packetSerializer.WritePackets(packet_vectors, out);
+        packetSerializer->WritePackets(packet_vectors, out);
 
         auto ptr = out.GetBufferPtr();
         for (int i = 0; i < out.GetByteLength(); ++i)
@@ -86,16 +86,16 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         message_vector->push_back(std::move(onlyIdIn));
         message_vector->push_back(std::move(onlyPositionIn));
 
-        auto packet = packetSerializer.CreatePacket(ReliableOrderedPacket::ID);
+        auto packet = packetSerializer->CreatePacket(ReliableOrderedPacket::ID);
         auto castPacket = static_cast<ReliableOrderedPacket*>(packet.get());
         castPacket->messages = std::move(message_vector);
 
-        packetSerializer.WritePacket(std::move(packet), out);
+        packetSerializer->WritePacket(std::move(packet), out);
 
         // go from the raw byte array back to a packet
         auto rawChar = out.GetBufferPtr();
         auto in = InputMemoryBitStream(rawChar, out.GetBitLength());
-        auto packets = packetSerializer.ReadPackets(in);
+        auto packets = packetSerializer->ReadPackets(in);
         castPacket = static_cast<ReliableOrderedPacket*>(packets[0].get());
         auto messages = castPacket->messages;
 

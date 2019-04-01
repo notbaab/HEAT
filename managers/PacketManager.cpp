@@ -1,6 +1,7 @@
 #include "PacketManager.h"
 
-PacketManager::PacketManager(PacketSerializer packetFactory) : m_packetFactory(packetFactory)
+PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
+    : m_packetFactory(packetFactory)
 {
     assert((65536 % SlidingWindowSize) == 0);
     assert((65536 % MessageSendQueueSize) == 0);
@@ -149,7 +150,7 @@ Message* PacketManager::ReceiveMessage()
     return message;
 }
 
-std::shared_ptr<Packet> PacketManager::WritePacket()
+std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket()
 {
     // if (m_error != CONNECTION_ERROR_NONE)
     //     return NULL;
@@ -158,8 +159,8 @@ std::shared_ptr<Packet> PacketManager::WritePacket()
     // (ConnectionPacket*)m_packetFactory->CreatePacket(CONNECTION_PACKET);
 
     std::shared_ptr<Packet> reliablePacket =
-        m_packetFactory.CreatePacket(ReliableOrderedPacket::ID);
-    auto packet = static_cast<ReliableOrderedPacket*>(reliablePacket.get());
+        m_packetFactory->CreatePacket(ReliableOrderedPacket::ID);
+    auto packet = std::static_pointer_cast<ReliableOrderedPacket>(reliablePacket);
 
     // if (!packet)
     //     return NULL;
@@ -190,7 +191,7 @@ std::shared_ptr<Packet> PacketManager::WritePacket()
         packet->messages->push_back(entry->message);
     }
 
-    return reliablePacket;
+    return packet;
 }
 
 bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
@@ -206,7 +207,6 @@ bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
     m_receivedPackets->Insert(packet->sequenceNumber);
     return true;
 }
-
 
 // Keep track of in flight packets
 void PacketManager::InsertAckPacketEntry(uint16_t sequenceNumber)
