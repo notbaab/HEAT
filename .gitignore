@@ -1,5 +1,5 @@
 build/
-build_linux/
+build-linux/
 *.sublime-workspace
 *.DS_Store
 cmake-build-debug/
