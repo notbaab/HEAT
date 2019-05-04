@@ -10,6 +10,7 @@ add_subdirectory(messages)
 add_subdirectory(managers)
 add_subdirectory(tests)
 add_subdirectory(math)
+add_subdirectory(graphics)
 add_subdirectory(lib/catch)
 
 add_executable(main main.cpp)
