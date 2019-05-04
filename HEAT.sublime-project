@@ -5,17 +5,22 @@
 			"folder_exclude_patterns":
 			[
 				"build",
+				"build-linux",
 				"cmake-build-debug",
 				".idea"
 			],
 			"path": "."
+		},
+		{
+			"path": "~/Dropbox/programming/spritesheetanimator"
 		}
 	],
 	"settings":
 	{
 		"ClangFormat":
 		{
-			"format_on_save": true
+			"format_on_save": true,
+			"languages": ["C", "C++", "C++11", "Objective-C", "Objective-C++"]
 		},
 		"ecc_hide_default_completions": true
 	}
