@@ -1,5 +1,4 @@
-#ifndef SocketAddress_h
-#define SocketAddress_h
+#pragma once
 
 #include <netdb.h>
 #include <netinet/in.h>
@@ -14,7 +13,6 @@
 // Added for linux
 #include <cstring>
 #include <memory>
-// #include <unistd.h>
 
 class SocketAddress
 {
@@ -95,5 +93,3 @@ struct hash<SocketAddress>
     size_t operator()(const SocketAddress& inAddress) const { return inAddress.GetHash(); }
 };
 } // namespace std
-
-#endif

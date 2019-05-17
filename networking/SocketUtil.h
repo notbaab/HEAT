@@ -1,5 +1,4 @@
-#ifndef SocketUtil_h
-#define SocketUtil_h
+#pragma once
 
 #include <memory>
 #include <sys/socket.h>
@@ -38,5 +37,3 @@ class SocketUtil
     //                                      const std::vector<TCPSocketPtr>* inSockets,
     //                                      const fd_set& inSet);
 };
-
-#endif /* SocketUtil_h */
