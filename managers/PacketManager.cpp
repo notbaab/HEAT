@@ -331,7 +331,6 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
         if (entry)
         {
             entry->message = message;
-            // entry->message->AddRef();
         }
     }
 }
@@ -355,8 +354,6 @@ void PacketManager::ProcessMessageAck(uint16_t ack)
         {
             assert(sendQueueEntry->message);
             assert(sendQueueEntry->message->GetId() == messageId);
-
-            // sendQueueEntry->message->Release();
 
             m_messageSendQueue->Remove(messageId);
         }
