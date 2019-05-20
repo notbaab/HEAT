@@ -7,7 +7,7 @@
 #include "controls/InputManager.h"
 #include "graphics/GraphicsDriver.h"
 #include "graphics/RenderManager.h"
-#include "graphics/SpriteComponent.h"
+#include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/WindowManager.h"
 #include "math/Vector3.h"
 
@@ -144,7 +144,7 @@ bool Loop()
 {
     auto spriteData = SpriteSheetData(TESTSHEET, TESTDATA);
     auto simpleGameObject = SimpleGameObject(spriteData);
-    auto spriteComponent = SpriteComponent(&simpleGameObject);
+    auto spriteComponent = AnimatedSpriteComponent(&simpleGameObject);
     RenderManager<SimpleGameObject>::sInstance->AddComponent(&spriteComponent);
 
     InputManager::StaticInit();

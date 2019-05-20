@@ -24,10 +24,10 @@ SingleFrameData createSingleFrame(uint32_t x, uint32_t y, uint32_t width, uint32
 }
 
 template <typename T>
-class SpriteComponent
+class AnimatedSpriteComponent
 {
   public:
-    SpriteComponent(T* inGameObject)
+    AnimatedSpriteComponent(T* inGameObject)
     {
         mGameObject = inGameObject;
         mFrames = inGameObject->getSpriteSheetFrameLoc();
@@ -38,7 +38,7 @@ class SpriteComponent
         mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheet.c_str());
     }
 
-    ~SpriteComponent() { SDL_DestroyTexture(mTexture); }
+    ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
 
     SDL_Rect getCurrentAnimationFrame()
     {
