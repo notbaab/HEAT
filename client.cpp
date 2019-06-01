@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "controls/InputManager.h"
+#include "gameobjects/SimpleGameObject.h"
 #include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/GraphicsDriver.h"
 #include "graphics/RenderManager.h"
@@ -24,27 +25,6 @@ int __argc;
 #define TESTSTATICSHEETDATA "../images/ship-sheet.json"
 
 #define TESTSHIP "ship (24).png"
-
-// Simple drawable game object class
-class SimpleGameObject
-{
-  public:
-    SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
-
-    Vector3 GetLocation() { return centerLocation; }
-    // std::string getSpriteSheet() { return spriteSheetData.sheetLoc; }
-    void SetRotation(uint16_t degress) { rotation = degress; }
-    uint16_t GetRotation() { return rotation; }
-
-    // Simple update function called every tick
-    void update() {}
-
-    // Animated sprite sheet data and regular sprite sheet data
-    uint16_t rotation;
-    Vector3 centerLocation;
-};
-
-void loadSpriteSheets() {}
 
 // Init all the static things
 bool startSDL()

@@ -11,6 +11,7 @@ add_subdirectory(managers)
 add_subdirectory(math)
 add_subdirectory(graphics)
 add_subdirectory(controls)
+add_subdirectory(gameobjects)
 
 add_subdirectory(lib/catch)
 add_subdirectory(tests)
@@ -25,6 +26,6 @@ target_include_directories(client
         lib
 )
 
-target_link_libraries(client math graphics controls)
+target_link_libraries(client math graphics controls gameobjects)
 
 target_link_libraries(main networking io packets)
