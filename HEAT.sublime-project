@@ -7,12 +7,17 @@
 				"build",
 				"build-linux",
 				"cmake-build-debug",
-				".idea"
+				".idea",
+				"node_modules"
 			],
 			"path": "."
 		},
 		{
-			"path": "~/Dropbox/programming/spritesheetanimator"
+			"path": "~/Dropbox/programming/spritesheetanimator",
+			"folder_exclude_patterns":
+			[
+				"node_modules"
+			],
 		}
 	],
 	"settings":
