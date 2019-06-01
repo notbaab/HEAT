@@ -1,41 +1,29 @@
 #pragma once
-
-#include "GraphicsDriver.h"
-#include "math/Vector3.h"
 #include <SDL_image.h>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-// Should be a four element vector in the order of x, y, width, height
-typedef std::vector<uint32_t> SingleFrameData;
-
-// A vector single frame data designed to be played as an animation
-typedef std::vector<SingleFrameData> AnimationFrameData;
-
-// Holds all animations read from a sprite sheet with the animation data
-// indexed
-typedef std::vector<AnimationFrameData> SpriteSheetAnimationFrameData;
-
-SingleFrameData createSingleFrame(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-{
-    SingleFrameData frameInfo = {x, y, width, height};
-    return frameInfo;
-}
+#include "DrawableComponent.h"
+#include "GraphicsDriver.h"
+#include "SpriteSheetData.h"
+#include "math/Vector3.h"
 
 template <typename T>
-class AnimatedSpriteComponent
+class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
-    AnimatedSpriteComponent(T* inGameObject)
+    AnimatedSpriteComponent(T* inGameObject, std::string spriteSheetLoc,
+                            SpriteSheetAnimationFrameData frameData)
     {
         mGameObject = inGameObject;
-        mFrames = inGameObject->getSpriteSheetFrameLoc();
-        std::string spriteSheet = inGameObject->getSpriteSheet();
+        mFrames = frameData;
 
         // It is worth it to explore some sort of texture manager to cache textures.
         // Doing it this way means we load the texture for every sprite component.
-        mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheet.c_str());
+        mTexture =
+            IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheetLoc.c_str());
     }
 
     ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
@@ -43,16 +31,26 @@ class AnimatedSpriteComponent
     SDL_Rect getCurrentAnimationFrame()
     {
         // Group these together in a single call?
-        uint32_t animationIdx = mGameObject->GetCurrentAnimationIdx();
-        uint32_t frameIdx = mGameObject->GetCurrentAnimationFrameIdx(SDL_GetTicks());
-        auto frame = mFrames[animationIdx][frameIdx];
+        int delayPerFrame = 80;
+        uint32_t adjustedTick = SDL_GetTicks() - animationStartTime;
+        uint32_t frameIdx = (adjustedTick / delayPerFrame) % framesInAnimation;
 
         SDL_Rect textureRect;
-        textureRect.x = frame[0];
-        textureRect.y = frame[1];
-        textureRect.w = frame[2];
-        textureRect.h = frame[3];
+        textureRect.x = currentAnimation[frameIdx][0];
+        textureRect.y = currentAnimation[frameIdx][1];
+        textureRect.w = currentAnimation[frameIdx][2];
+        textureRect.h = currentAnimation[frameIdx][3];
+
         return textureRect;
+    }
+
+    // TODO: Should it be a string still?
+    void ChangeAnimation(std::string animation)
+    {
+        currentAnimation = mFrames[animation];
+        framesInAnimation = mFrames[animation].size();
+        animationStartTime = SDL_GetTicks();
+        animationIdx = 0;
     }
 
     void Draw(const SDL_Rect& inViewTransform)
@@ -104,6 +102,11 @@ class AnimatedSpriteComponent
     SDL_Texture* mTexture;
     // Animation Frame Data
     SpriteSheetAnimationFrameData mFrames;
+    // Book keeping for the current animation that is playing
+    AnimationFrameData currentAnimation;
+    uint32_t animationIdx;
+    uint32_t animationStartTime;
+    uint32_t framesInAnimation;
 
     SDL_Rect currentFrameRect;
 

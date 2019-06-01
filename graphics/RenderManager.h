@@ -4,13 +4,9 @@
 #include <memory>
 #include <vector>
 
+#include "DrawableComponent.h"
 #include "GraphicsDriver.h"
-#include "AnimatedSpriteComponent.h"
 
-template <typename T>
-class AnimatedSpriteComponent;
-
-template <typename T>
 class RenderManager
 {
   public:
@@ -54,8 +50,8 @@ class RenderManager
     };
 
     // vert inefficient method of tracking scene graph...
-    void AddComponent(AnimatedSpriteComponent<T>* inComponent) { mComponents.push_back(inComponent); };
-    void RemoveComponent(AnimatedSpriteComponent<T>* inComponent)
+    void AddComponent(DrawableComponent* inComponent) { mComponents.push_back(inComponent); };
+    void RemoveComponent(DrawableComponent* inComponent)
     {
         int index = GetComponentIndex(inComponent);
 
@@ -70,7 +66,7 @@ class RenderManager
         }
     };
 
-    int GetComponentIndex(AnimatedSpriteComponent<T>* inComponent) const
+    int GetComponentIndex(DrawableComponent* inComponent) const
     {
         for (int i = 0, c = (int)mComponents.size(); i < c; ++i)
         {
@@ -86,7 +82,7 @@ class RenderManager
   private:
     // this can't be only place that holds on to component- it has to live
     // inside a GameObject in the world
-    std::vector<AnimatedSpriteComponent<T>*> mComponents;
+    std::vector<DrawableComponent*> mComponents;
 
     SDL_Rect mViewTransform;
 };

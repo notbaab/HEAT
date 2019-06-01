@@ -3,10 +3,6 @@
 
 std::unique_ptr<GraphicsDriver> GraphicsDriver::sInstance;
 
-namespace
-{
-}
-
 bool GraphicsDriver::StaticInit(SDL_Window* inWnd)
 {
     GraphicsDriver* newGraphicsDriver = new GraphicsDriver();

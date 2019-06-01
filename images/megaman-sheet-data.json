@@ -1,227 +1,231 @@
-[
-  {
-    "frames": [
-      {
-        "height": 41,
-        "name": "sprite1",
-        "width": 38,
-        "x": 127,
-        "y": 2
-      },
-      {
-        "height": 43,
-        "name": "sprite2",
-        "width": 39,
-        "x": 175,
-        "y": 2
-      },
-      {
-        "height": 43,
-        "name": "sprite3",
-        "width": 39,
-        "x": 222,
-        "y": 2
-      },
-      {
-        "height": 39,
-        "name": "sprite4",
-        "width": 33,
-        "x": 1,
-        "y": 4
-      },
-      {
-        "height": 39,
-        "name": "sprite5",
-        "width": 33,
-        "x": 37,
-        "y": 4
-      },
-      {
-        "height": 39,
-        "name": "sprite6",
-        "width": 33,
-        "x": 77,
-        "y": 4
-      },
-      {
-        "height": 40,
-        "name": "sprite7",
-        "width": 32,
-        "x": 191,
-        "y": 50
-      },
-      {
-        "height": 40,
-        "name": "sprite8",
-        "width": 32,
-        "x": 229,
-        "y": 50
-      },
-      {
-        "height": 40,
-        "name": "sprite9",
-        "width": 32,
-        "x": 266,
-        "y": 50
-      },
-      {
-        "height": 40,
-        "name": "sprite10",
-        "width": 32,
-        "x": 301,
-        "y": 50
-      },
-      {
-        "height": 38,
-        "name": "sprite11",
-        "width": 44,
-        "x": 341,
-        "y": 51
-      },
-      {
-        "height": 38,
-        "name": "sprite12",
-        "width": 32,
-        "x": 39,
-        "y": 52
-      },
-      {
-        "height": 38,
-        "name": "sprite13",
-        "width": 32,
-        "x": 78,
-        "y": 52
-      },
-      {
-        "height": 38,
-        "name": "sprite14",
-        "width": 32,
-        "x": 116,
-        "y": 52
-      },
-      {
-        "height": 38,
-        "name": "sprite15",
-        "width": 32,
-        "x": 154,
-        "y": 52
-      },
-      {
-        "height": 37,
-        "name": "sprite16",
-        "width": 32,
-        "x": 1,
-        "y": 53
-      }
-    ],
-    "name": "first"
-  },
-  {
-    "frames": [
-      {
-        "height": 40,
-        "name": "sprite27",
-        "width": 30,
-        "x": 6,
-        "y": 135
-      },
-      {
-        "height": 39,
-        "name": "sprite28",
-        "width": 31,
-        "x": 46,
-        "y": 135
-      },
-      {
-        "height": 42,
-        "name": "sprite29",
-        "width": 40,
-        "x": 85,
-        "y": 135
-      },
-      {
-        "height": 38,
-        "name": "sprite30",
-        "width": 36,
-        "x": 133,
-        "y": 135
-      }
-    ],
-    "name": "other2"
-  },
-  {
-    "frames": [
-      {
-        "height": 35,
-        "name": "sprite17",
-        "width": 25,
-        "x": 5,
-        "y": 95
-      },
-      {
-        "height": 35,
-        "name": "sprite18",
-        "width": 31,
-        "x": 35,
-        "y": 95
-      },
-      {
-        "height": 35,
-        "name": "sprite19",
-        "width": 42,
-        "x": 74,
-        "y": 95
-      },
-      {
-        "height": 34,
-        "name": "sprite20",
-        "width": 32,
-        "x": 123,
-        "y": 95
-      },
-      {
-        "height": 35,
-        "name": "sprite21",
-        "width": 27,
-        "x": 163,
-        "y": 95
-      },
-      {
-        "height": 35,
-        "name": "sprite22",
-        "width": 26,
-        "x": 226,
-        "y": 95
-      },
-      {
-        "height": 33,
-        "name": "sprite23",
-        "width": 35,
-        "x": 260,
-        "y": 95
-      },
-      {
-        "height": 35,
-        "name": "sprite24",
-        "width": 27,
-        "x": 303,
-        "y": 95
-      },
-      {
-        "height": 33,
-        "name": "sprite25",
-        "width": 24,
-        "x": 196,
-        "y": 97
-      },
-      {
-        "height": 33,
-        "name": "sprite26",
-        "width": 25,
-        "x": 337,
-        "y": 97
-      }
-    ],
-    "name": "running"
-  }
-]
+{
+  "sheet_path": "megaman-sheet-data.json",
+  "animations": [
+    {
+      "frames": [
+        {
+          "height": 41,
+          "name": "sprite1",
+          "width": 38,
+          "x": 127,
+          "y": 2
+        },
+        {
+          "height": 43,
+          "name": "sprite2",
+          "width": 39,
+          "x": 175,
+          "y": 2
+        },
+        {
+          "height": 43,
+          "name": "sprite3",
+          "width": 39,
+          "x": 222,
+          "y": 2
+        },
+        {
+          "height": 39,
+          "name": "sprite4",
+          "width": 33,
+          "x": 1,
+          "y": 4
+        },
+        {
+          "height": 39,
+          "name": "sprite5",
+          "width": 33,
+          "x": 37,
+          "y": 4
+        },
+        {
+          "height": 39,
+          "name": "sprite6",
+          "width": 33,
+          "x": 77,
+          "y": 4
+        },
+        {
+          "height": 40,
+          "name": "sprite7",
+          "width": 32,
+          "x": 191,
+          "y": 50
+        },
+        {
+          "height": 40,
+          "name": "sprite8",
+          "width": 32,
+          "x": 229,
+          "y": 50
+        },
+        {
+          "height": 40,
+          "name": "sprite9",
+          "width": 32,
+          "x": 266,
+          "y": 50
+        },
+        {
+          "height": 40,
+          "name": "sprite10",
+          "width": 32,
+          "x": 301,
+          "y": 50
+        },
+        {
+          "height": 38,
+          "name": "sprite11",
+          "width": 44,
+          "x": 341,
+          "y": 51
+        },
+        {
+          "height": 38,
+          "name": "sprite12",
+          "width": 32,
+          "x": 39,
+          "y": 52
+        },
+        {
+          "height": 38,
+          "name": "sprite13",
+          "width": 32,
+          "x": 78,
+          "y": 52
+        },
+        {
+          "height": 38,
+          "name": "sprite14",
+          "width": 32,
+          "x": 116,
+          "y": 52
+        },
+        {
+          "height": 38,
+          "name": "sprite15",
+          "width": 32,
+          "x": 154,
+          "y": 52
+        },
+        {
+          "height": 37,
+          "name": "sprite16",
+          "width": 32,
+          "x": 1,
+          "y": 53
+        }
+      ],
+      "name": "first"
+    },
+    {
+      "frames": [
+        {
+          "height": 40,
+          "name": "sprite27",
+          "width": 30,
+          "x": 6,
+          "y": 135
+        },
+        {
+          "height": 39,
+          "name": "sprite28",
+          "width": 31,
+          "x": 46,
+          "y": 135
+        },
+        {
+          "height": 42,
+          "name": "sprite29",
+          "width": 40,
+          "x": 85,
+          "y": 135
+        },
+        {
+          "height": 38,
+          "name": "sprite30",
+          "width": 36,
+          "x": 133,
+          "y": 135
+        }
+      ],
+      "name": "other2"
+    },
+    {
+      "frames": [
+        {
+          "height": 35,
+          "name": "sprite17",
+          "width": 25,
+          "x": 5,
+          "y": 95
+        },
+        {
+          "height": 35,
+          "name": "sprite18",
+          "width": 31,
+          "x": 35,
+          "y": 95
+        },
+        {
+          "height": 35,
+          "name": "sprite19",
+          "width": 42,
+          "x": 74,
+          "y": 95
+        },
+        {
+          "height": 34,
+          "name": "sprite20",
+          "width": 32,
+          "x": 123,
+          "y": 95
+        },
+        {
+          "height": 35,
+          "name": "sprite21",
+          "width": 27,
+          "x": 163,
+          "y": 95
+        },
+        {
+          "height": 35,
+          "name": "sprite22",
+          "width": 26,
+          "x": 226,
+          "y": 95
+        },
+        {
+          "height": 33,
+          "name": "sprite23",
+          "width": 35,
+          "x": 260,
+          "y": 95
+        },
+        {
+          "height": 35,
+          "name": "sprite24",
+          "width": 27,
+          "x": 303,
+          "y": 95
+        },
+        {
+          "height": 33,
+          "name": "sprite25",
+          "width": 24,
+          "x": 196,
+          "y": 97
+        },
+        {
+          "height": 33,
+          "name": "sprite26",
+          "width": 25,
+          "x": 337,
+          "y": 97
+        }
+      ],
+      "name": "running"
+    }
+  ],
+  "static_textures": []
+}
