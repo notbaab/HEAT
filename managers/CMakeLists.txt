@@ -3,5 +3,5 @@ list(APPEND managers_src
 )
 
 add_library(managers SHARED ${managers_src})
-target_include_directories(packets PUBLIC ${CMAKE_SOURCE_DIR}/IO ${CMAKE_SOURCE_DIR}/packets)
+target_include_directories(packets PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(managers io packets)

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "InputMemoryBitStream.h"
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
 #include "Message.h"
 #include "MessageSerializer.h"
-#include "OutputMemoryBitStream.h"
 #include <cstdint>
 #include <functional>
 

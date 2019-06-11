@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Message.h"
-#include "MessageSerializer.h"
-#include "PacketSerializer.h"
-#include "ReliableOrderedPacket.h"
+#include <unordered_map>
+
 #include "SequenceBuffer.h"
+#include "packets/Message.h"
+#include "packets/MessageSerializer.h"
+#include "packets/PacketSerializer.h"
+#include "packets/ReliableOrderedPacket.h"
 
 const uint32_t ProtocolId = 0x12311616;
 const int MaxPacketSize = 4096;
