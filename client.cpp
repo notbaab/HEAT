@@ -5,6 +5,9 @@
 #include <thread>
 #include <unordered_map>
 
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
+#include "catch.hpp"
 #include "controls/InputManager.h"
 #include "gameobjects/SimpleGameObject.h"
 #include "graphics/AnimatedSpriteComponent.h"
@@ -13,7 +16,15 @@
 #include "graphics/SpriteSheetData.h"
 #include "graphics/StaticSpriteComponent.h"
 #include "graphics/WindowManager.h"
+#include "managers/PacketManager.h"
 #include "math/Vector3.h"
+#include "messages/PlayerMessage.h"
+#include "networking/SocketAddressFactory.h"
+#include "networking/SocketManager.h"
+#include "packets/MessageSerializer.h"
+#include "packets/Packet.h"
+#include "packets/PacketSerializer.h"
+#include "packets/ReliableOrderedPacket.h"
 
 const char** __argv;
 int __argc;
@@ -72,7 +83,6 @@ bool Loop()
 
     while (true)
     {
-
         // Main message loop
         SDL_Event event;
         memset(&event, 0, sizeof(SDL_Event));
@@ -107,5 +117,33 @@ int main(int argc, const char* argv[])
         SDL_Quit();
     };
 
+    std::string destination = "127.0.0.1:4500";
+    // std::string name = Logger::GetCommandLineArg( 2 );
+    SocketAddressPtr serverAddress = SocketAddressFactory::CreateIPv4FromString(destination);
+
+    auto socketManager = SocketManager(4501, networking::printCallback);
+
+    // Make a test packet and see if it makes it to the other side
+    auto messageSerializer = std::make_shared<MessageSerializer>();
+    AddMessageCtor(messageSerializer, PlayerMessage);
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
+
+    auto manager = PacketManager(packetSerializer);
+    auto msg = std::static_pointer_cast<PlayerMessage>(
+        std::move(messageSerializer->CreateMessage(PlayerMessage::ID)));
+    manager.SendMessage(msg);
+
+    auto packet = manager.WritePacket();
+    auto stream = OutputMemoryBitStream();
+
+    packetSerializer->WritePacket(packet, stream);
+
+    int streamByteLength = stream.GetByteLength();
+    const void* packetDataToSend = stream.GetBufferPtr()->data();
+
+    stream.PrintByteArray();
+
+    int sentByteCount = socketManager.SendTo(packetDataToSend, streamByteLength, *serverAddress);
     Loop();
 }

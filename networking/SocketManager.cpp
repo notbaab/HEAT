@@ -26,6 +26,13 @@ void SocketManager::Stop()
     receiveThread.join();
 }
 
+// TODO: Does this need to wrap the socket send to method?
+int SocketManager::SendTo(const void* data, int length, const SocketAddress& toAddress)
+{
+    int sentByteCount = mSocket->SendTo(data, length, toAddress);
+    return sentByteCount;
+}
+
 void SocketManager::receiveLoop()
 {
     SocketAddress fromAddress;
