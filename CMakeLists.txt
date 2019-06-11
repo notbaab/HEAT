@@ -16,7 +16,7 @@ add_subdirectory(gameobjects)
 add_subdirectory(lib/catch)
 add_subdirectory(tests)
 
-add_executable(main main.cpp)
+add_executable(server server.cpp)
 
 add_executable(client client.cpp)
 target_include_directories(client
@@ -28,4 +28,4 @@ target_include_directories(client
 
 target_link_libraries(client math graphics controls gameobjects)
 
-target_link_libraries(main networking io packets)
+target_link_libraries(server networking io packets managers gameobjects messages)
