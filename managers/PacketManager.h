@@ -31,6 +31,9 @@ class PacketManager
     void SetTime(double time);
     // ConnectionError GetError() const;
 
+    // packet factory for creating and destroying connection packets
+    std::shared_ptr<PacketSerializer> m_packetFactory;
+
   protected:
     struct SentPacketData
     {
@@ -69,13 +72,13 @@ class PacketManager
     void ProcessMessageAck(uint16_t ack);
     void UpdateOldestUnackedMessageId();
 
+
     // int CalculateMessageOverheadBits();
 
   private:
-    std::shared_ptr<PacketSerializer>
-        m_packetFactory; // packet factory for creating and destroying connection packets
     MessageSerializer m_messageFactory; // message factory creates and destroys messages
     double m_time;                      // current connection time
+
     // ConnectionError m_error; // connection error level
     SequenceBuffer<SentPacketData>* m_sentPackets; // sequence buffer of recently sent packets
     // sequence buffer of recently received packets
