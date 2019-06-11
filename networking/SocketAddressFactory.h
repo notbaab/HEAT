@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SocketAddress.h"
+
 class SocketAddressFactory
 {
   public:

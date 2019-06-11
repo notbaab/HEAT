@@ -51,9 +51,7 @@ bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packet
 {
     for (auto const& packet : packets)
     {
-        uint32_t id = packet->GetIdentifier();
-        out.Write(id);
-        packet->Write(out);
+        WritePacket(packet, out);
     }
 
     return true;

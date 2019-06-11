@@ -93,7 +93,6 @@ void PacketManager::SendMessage(std::shared_ptr<Message> message)
     assert(message);
     assert(CanSendMessage());
 
-
     message->AssignId(m_sendMessageId);
 
     // Insert into queue

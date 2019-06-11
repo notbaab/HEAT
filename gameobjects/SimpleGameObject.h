@@ -3,7 +3,7 @@
 #include "math/Vector3.h"
 #include <cstdint>
 
-// Simple drawable game object class
+// Simple game object with a physical location
 class SimpleGameObject
 {
   public:

@@ -1,4 +1,3 @@
-
 #include "IO/InputMemoryBitStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "catch.hpp"
