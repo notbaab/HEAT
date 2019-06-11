@@ -93,12 +93,6 @@ void PacketManager::SendMessage(std::shared_ptr<Message> message)
     assert(message);
     assert(CanSendMessage());
 
-    if (!CanSendMessage())
-    {
-        // m_error = CONNECTION_ERROR_MESSAGE_SEND_QUEUE_FULL;
-        // message->Release();
-        return;
-    }
 
     message->AssignId(m_sendMessageId);
 
