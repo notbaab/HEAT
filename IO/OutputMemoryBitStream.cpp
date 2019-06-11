@@ -58,11 +58,10 @@ void OutputMemoryBitStream::PrintByteArray()
 {
     uint32_t bytesToWrite = GetByteLength();
     auto buffer = GetBufferPtr();
-    printf("printing %d bytes\n", bytesToWrite);
 
     for (int i = 0; i < bytesToWrite; i++)
     {
-        printf("%x", (*buffer)[i]);
+        cout << std::hex << unsigned((*buffer)[i]) << '|';
     }
 
     cout << endl;
