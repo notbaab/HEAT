@@ -7,7 +7,6 @@
 
 #include "IO/InputMemoryBitStream.h"
 #include "IO/OutputMemoryBitStream.h"
-#include "catch.hpp"
 #include "controls/InputManager.h"
 #include "gameobjects/SimpleGameObject.h"
 #include "graphics/AnimatedSpriteComponent.h"
@@ -16,6 +15,7 @@
 #include "graphics/SpriteSheetData.h"
 #include "graphics/StaticSpriteComponent.h"
 #include "graphics/WindowManager.h"
+#include "logger/Logger.h"
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
 #include "messages/PlayerMessage.h"
@@ -142,8 +142,7 @@ int main(int argc, const char* argv[])
     int streamByteLength = stream.GetByteLength();
     const void* packetDataToSend = stream.GetBufferPtr()->data();
 
-    stream.PrintByteArray();
-
     int sentByteCount = socketManager.SendTo(packetDataToSend, streamByteLength, *serverAddress);
+    INFO("Starting");
     Loop();
 }
