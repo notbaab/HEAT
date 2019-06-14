@@ -21,6 +21,8 @@ add_subdirectory(tests)
 add_executable(server server.cpp)
 add_executable(client client.cpp)
 
+# Copy the image assets
+file(COPY images DESTINATION ${CMAKE_BINARY_DIR})
 target_include_directories(client
         PUBLIC
         ${SDL2_INCLUDE_DIR}

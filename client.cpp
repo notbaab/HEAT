@@ -29,11 +29,11 @@
 const char** __argv;
 int __argc;
 
-#define TESTANIMATEDSHEET "../images/megaman.png"
-#define TESTANIMATEDDATA "../images/megaman-sheet-data.json"
+#define TESTANIMATEDSHEET "images/megaman.png"
+#define TESTANIMATEDDATA "images/megaman-sheet-data.json"
 
-#define TESTSTATICSHEET "../images/shipsMiscellaneous_sheet.png"
-#define TESTSTATICSHEETDATA "../images/ship-sheet.json"
+#define TESTSTATICSHEET "images/shipsMiscellaneous_sheet.png"
+#define TESTSTATICSHEETDATA "images/ship-sheet.json"
 
 #define TESTSHIP "ship (24).png"
 
