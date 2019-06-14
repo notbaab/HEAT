@@ -24,6 +24,7 @@ class SocketManager
 {
   public:
     SocketManager(uint16_t port, RecieveCallback receiveCallback);
+    ~SocketManager();
     int SendTo(const void* data, int length, const SocketAddress& toAddress);
     void Stop();
 

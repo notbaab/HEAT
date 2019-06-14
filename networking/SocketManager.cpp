@@ -19,6 +19,12 @@ SocketManager::SocketManager(uint16_t port, RecieveCallback receiveCallback)
     receiveThread = std::thread(&SocketManager::receiveLoop, this);
 }
 
+SocketManager::~SocketManager()
+{
+    // stop the thread so we can die gracefully
+    Stop();
+}
+
 void SocketManager::Stop()
 {
     stopFlag = true;
