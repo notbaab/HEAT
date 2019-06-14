@@ -13,6 +13,7 @@ add_subdirectory(math)
 add_subdirectory(graphics)
 add_subdirectory(controls)
 add_subdirectory(gameobjects)
+add_subdirectory(engine)
 
 # Testing
 add_subdirectory(lib/catch)
@@ -23,6 +24,8 @@ add_executable(client client.cpp)
 
 # Copy the image assets
 file(COPY images DESTINATION ${CMAKE_BINARY_DIR})
+
+
 target_include_directories(client
         PUBLIC
         ${SDL2_INCLUDE_DIR}
@@ -30,19 +33,23 @@ target_include_directories(client
         lib
 )
 
-set(client_link_libs
-        networking
-        io
-        packets
-        managers
-        messages
-        math
-        graphics
-        controls
+set(shared_link_libs
+        engine
         gameobjects
+        io
         logger
+        managers
+        math
+        messages
+        networking
+        packets
 )
 
-target_link_libraries(client PUBLIC ${client_link_libs})
+set(client_link_libs
+        controls
+        graphics
+)
 
-target_link_libraries(server networking io packets managers gameobjects messages)
+target_link_libraries(client PUBLIC ${shared_link_libs} ${client_link_libs})
+
+target_link_libraries(server ${shared_link_libs})

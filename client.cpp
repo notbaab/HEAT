@@ -8,6 +8,7 @@
 #include "IO/InputMemoryBitStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
+#include "engine/Engine.h"
 #include "gameobjects/SimpleGameObject.h"
 #include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/GraphicsDriver.h"
@@ -59,58 +60,85 @@ bool startSDL()
 void KeyPressed(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
 void KeyReleased(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
 
-bool Loop()
+bool DoFrame()
 {
-    auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
-    auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
-
-    auto pirateShip = SimpleGameObject();
-    auto megaMan = SimpleGameObject();
-
-    auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
-
-    auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
-    auto megaManComponent =
-        AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
-
-    megaManComponent.ChangeAnimation("first");
-    RenderManager::sInstance->AddComponent(&pirateComponent);
-    RenderManager::sInstance->AddComponent(&megaManComponent);
-
-    InputManager::StaticInit();
-    InputManager::sInstance->RegisterKeyDownListner(KeyPressed);
-    InputManager::sInstance->RegisterKeyUpListner(KeyReleased);
-
-    while (true)
+    SDL_Event event;
+    memset(&event, 0, sizeof(SDL_Event));
+    if (SDL_PollEvent(&event))
     {
-        // Main message loop
-        SDL_Event event;
-        memset(&event, 0, sizeof(SDL_Event));
-        if (SDL_PollEvent(&event))
+        if (event.type == SDL_QUIT)
         {
-            if (event.type == SDL_QUIT)
-            {
-                SDL_Quit();
-                return false;
-            }
-            else
-            {
-                // simpleGameObject.changeAnimation(rand() % 3);
-                pirateShip.SetRotation(rand() % 360);
-
-                InputManager::sInstance->HandleSDLEvent(event);
-            }
+            SDL_Quit();
+            return false;
         }
+        else
+        {
+            // simpleGameObject.changeAnimation(rand() % 3);
+            // pirateShip.SetRotation(rand() % 360);
 
-        RenderManager::sInstance->Render();
+            InputManager::sInstance->HandleSDLEvent(event);
+        }
     }
+
+    RenderManager::sInstance->Render();
+    return true;
 }
 
-int main(int argc, const char* argv[])
-{
-    __argc = argc;
-    __argv = argv;
+// bool Loop()
+// {
+//     std::cout << "here" << std::endl;
+//     DEBUG("1");
+//     std::cout << "here" << std::endl;
+//     auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
+//     DEBUG("1");
+//     auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
+//     DEBUG("1");
 
+//     auto pirateShip = SimpleGameObject();
+//     auto megaMan = SimpleGameObject();
+
+//     auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
+
+//     auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
+//     auto megaManComponent =
+//         AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
+
+//     megaManComponent.ChangeAnimation("first");
+//     RenderManager::sInstance->AddComponent(&pirateComponent);
+//     RenderManager::sInstance->AddComponent(&megaManComponent);
+
+//     InputManager::StaticInit();
+//     InputManager::sInstance->RegisterKeyDownListner(KeyPressed);
+//     InputManager::sInstance->RegisterKeyUpListner(KeyReleased);
+
+//     // while (true)
+//     // {
+//     //     // Main message loop
+//     //     SDL_Event event;
+//     //     memset(&event, 0, sizeof(SDL_Event));
+//     //     if (SDL_PollEvent(&event))
+//     //     {
+//     //         if (event.type == SDL_QUIT)
+//     //         {
+//     //             SDL_Quit();
+//     //             return false;
+//     //         }
+//     //         else
+//     //         {
+//     //             // simpleGameObject.changeAnimation(rand() % 3);
+//     //             pirateShip.SetRotation(rand() % 360);
+
+//     //             InputManager::sInstance->HandleSDLEvent(event);
+//     //         }
+//     //     }
+
+//     //     RenderManager::sInstance->Render();
+//     // }
+// }
+
+void initStuffs()
+{
+    logger::InitLog(logger::level::TRACE, "a thing");
     if (!startSDL())
     {
         std::cout << "NOPE" << std::endl;
@@ -143,6 +171,52 @@ int main(int argc, const char* argv[])
     const void* packetDataToSend = stream.GetBufferPtr()->data();
 
     int sentByteCount = socketManager.SendTo(packetDataToSend, streamByteLength, *serverAddress);
-    INFO("Starting");
-    Loop();
+
+    auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
+    auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
+
+    auto pirateShip = SimpleGameObject();
+    auto megaMan = SimpleGameObject();
+
+    auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
+
+    auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
+    auto megaManComponent =
+        AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
+
+    megaManComponent.ChangeAnimation("first");
+    // RenderManager::sInstance->AddComponent(&pirateComponent);
+    // RenderManager::sInstance->AddComponent(&megaManComponent);
+
+    InputManager::StaticInit();
+    InputManager::sInstance->RegisterKeyDownListner(KeyPressed);
+    InputManager::sInstance->RegisterKeyUpListner(KeyReleased);
+}
+
+int main(int argc, const char* argv[])
+{
+    __argc = argc;
+    __argv = argv;
+    Engine engine = Engine(initStuffs, DoFrame);
+    engine.Run();
+
+    // Handle cli arguments
+    // std::string log_file;
+    // std::thread t;
+    // while (argc > 1)
+    // {
+    //     argc--;
+    //     argv++;
+    //     if (!strcmp(*argv, "--console"))
+    //     {
+    //         std::cout << "Starting a shell" << std::endl;
+    //         t = std::thread(&interactive_console);
+    //     }
+    //     else if (!strcmp(*argv, "--log-file"))
+    //     {
+    //         argv++;
+    //         argc--;
+    //         log_file = *argv;
+    //     }
+    // }
 }
