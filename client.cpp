@@ -9,6 +9,8 @@
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
+#include "gameobjects/Player.h"
+#include "gameobjects/Registry.h"
 #include "gameobjects/SimpleGameObject.h"
 #include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/GraphicsDriver.h"
@@ -136,6 +138,8 @@ bool DoFrame()
 //     // }
 // }
 
+void AddGameObjectToWorld(GameObjectPtr ptr) {}
+
 void initStuffs()
 {
     logger::InitLog(logger::level::TRACE, "a thing");
@@ -144,6 +148,10 @@ void initStuffs()
         std::cout << "NOPE" << std::endl;
         SDL_Quit();
     };
+
+    gameobjects::Registry::StaticInit(AddGameObjectToWorld);
+
+    gameobjects::Registry::sInstance->RegisterCreationFunction(124, Player::StaticCreate);
 
     std::string destination = "127.0.0.1:4500";
     // std::string name = Logger::GetCommandLineArg( 2 );
