@@ -1,3 +1,3 @@
 #include "SimpleGameObject.h"
 
-void SimpleGameObject::update() {}
+void SimpleGameObject::Update() {}
