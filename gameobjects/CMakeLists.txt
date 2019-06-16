@@ -2,6 +2,7 @@
 list(APPEND gameobject_src
     SimpleGameObject.cpp
     Registry.cpp
+    World.cpp
 )
 
 add_library(gameobjects SHARED ${gameobject_src})
