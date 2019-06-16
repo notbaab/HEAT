@@ -14,6 +14,7 @@ add_subdirectory(graphics)
 add_subdirectory(controls)
 add_subdirectory(gameobjects)
 add_subdirectory(engine)
+add_subdirectory(holistic)
 
 # Testing
 add_subdirectory(lib/catch)
@@ -36,6 +37,7 @@ target_include_directories(client
 set(shared_link_libs
         engine
         gameobjects
+        holistic
         io
         logger
         managers

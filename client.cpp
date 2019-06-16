@@ -18,6 +18,7 @@
 #include "graphics/SpriteSheetData.h"
 #include "graphics/StaticSpriteComponent.h"
 #include "graphics/WindowManager.h"
+#include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
@@ -149,9 +150,7 @@ void initStuffs()
         SDL_Quit();
     };
 
-    gameobjects::Registry::StaticInit(AddGameObjectToWorld);
-
-    gameobjects::Registry::sInstance->RegisterCreationFunction(124, Player::StaticCreate);
+    holistic::SetupWorld();
 
     std::string destination = "127.0.0.1:4500";
     // std::string name = Logger::GetCommandLineArg( 2 );

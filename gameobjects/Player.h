@@ -2,7 +2,10 @@
 
 #include "SimpleGameObject.h"
 
-#define PLAYER_ID 0x13129328
+namespace gameobjects
+{
+
+const uint32_t PLAYER_ID = 0x13129328;
 
 class Player : public SimpleGameObject
 {
@@ -15,3 +18,5 @@ class Player : public SimpleGameObject
 
     Player(){};
 };
+
+} // namespace gameobjects
