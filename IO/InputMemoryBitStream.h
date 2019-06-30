@@ -11,6 +11,11 @@
 class InputMemoryBitStream
 {
   public:
+    InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer)
+        : InputMemoryBitStream(inBuffer, inBuffer->size() * 8)
+    {
+    }
+
     InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer, uint32_t inBitCount)
         : mBuffer(inBuffer), mBitHead(0), mBitCapacity(inBitCount)
     {

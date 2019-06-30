@@ -25,7 +25,7 @@ TEST_CASE("Packet Serialize Test", "[packet]")
     {
         auto packetPtr = std::make_shared<std::vector<uint8_t>>(fullPackets);
         // auto packetPtr = std::make_shared<std::vector<uint8_t>>(firstRealPacket);
-        auto in = InputMemoryBitStream(packetPtr, packetPtr->size() * 8);
+        auto in = InputMemoryBitStream(packetPtr);
         auto packets = packetSerializer->ReadPackets(in);
         uint32_t id = ReliableOrderedPacket::ID;
 
