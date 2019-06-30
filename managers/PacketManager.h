@@ -28,6 +28,10 @@ class PacketManager
     Message* ReceiveMessage();
     std::shared_ptr<ReliableOrderedPacket> WritePacket();
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
+
+    std::vector<std::shared_ptr<Packet>>
+    ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data);
+
     void SetTime(double time);
     // ConnectionError GetError() const;
 
@@ -71,7 +75,6 @@ class PacketManager
     void ProcessPacketMessages(const ReliableOrderedPacket* packet);
     void ProcessMessageAck(uint16_t ack);
     void UpdateOldestUnackedMessageId();
-
 
     // int CalculateMessageOverheadBits();
 

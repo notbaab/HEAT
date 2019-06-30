@@ -187,6 +187,12 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket()
     return packet;
 }
 
+std::vector<std::shared_ptr<Packet>>
+PacketManager::ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data)
+{
+    return m_packetFactory->ReadPackets(std::move(data));
+}
+
 bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
 {
     // if (m_error != CONNECTION_ERROR_NONE)
