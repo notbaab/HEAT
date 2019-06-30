@@ -2,6 +2,7 @@
 #include <string>
 #include <thread>
 
+#include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
 #include "messages/PlayerMessage.h"
 #include "networking/SocketManager.h"
@@ -47,29 +48,7 @@ int main(int argc, const char* argv[])
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     packetManager = std::make_shared<PacketManager>(packetSerializer);
 
-    auto socketManager = SocketManager(4500, callback);
+    auto nm = NetworkManagerServer(4500, packetManager);
+    // auto socketManager = SocketManager(4500, callback);
     usleep(10 * 1000 * 1000);
-    socketManager.Stop();
-
-    // std::string log_file;
-    // std::thread t;
-    // while (argc > 1)
-    // {
-    //     argc--;
-    //     argv++;
-    //     if (!strcmp(*argv, "--console"))
-    //     {
-    //         std::cout << "Starting a shell" << std::endl;
-    //         t = std::thread(&interactive_console);
-    //     }
-    //     else if (!strcmp(*argv, "--log-file"))
-    //     {
-    //         argv++;
-    //         argc--;
-    //         log_file = *argv;
-    //     }
-    // }
-
-    // Logger::InitLog(spdlog::level::info, "server");
-    // auto socketManager = SocketManager(4500, networking::printCallback);
 }

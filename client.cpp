@@ -152,26 +152,7 @@ int main(int argc, const char* argv[])
 {
     __argc = argc;
     __argv = argv;
+
     Engine engine = Engine(initStuffs, DoFrame);
     engine.Run();
-
-    // Handle cli arguments
-    // std::string log_file;
-    // std::thread t;
-    // while (argc > 1)
-    // {
-    //     argc--;
-    //     argv++;
-    //     if (!strcmp(*argv, "--console"))
-    //     {
-    //         std::cout << "Starting a shell" << std::endl;
-    //         t = std::thread(&interactive_console);
-    //     }
-    //     else if (!strcmp(*argv, "--log-file"))
-    //     {
-    //         argv++;
-    //         argc--;
-    //         log_file = *argv;
-    //     }
-    // }
 }
