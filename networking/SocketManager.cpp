@@ -1,6 +1,30 @@
 #include "SocketManager.h"
 #include "SocketUtil.h"
 
+namespace networking
+{
+
+void printData(std::shared_ptr<std::vector<uint8_t>> data)
+{
+    for (auto i = (*data).begin(); i != (*data).end(); ++i)
+    {
+        std::cout << std::hex << unsigned(*i) << '|';
+    }
+
+    std::cout << std::endl;
+}
+
+void printCallback(std::unique_ptr<std::vector<uint8_t>> data)
+{
+    for (auto i = (*data).begin(); i != (*data).end(); ++i)
+    {
+        std::cout << std::hex << unsigned(*i) << '|';
+    }
+
+    std::cout << std::endl;
+}
+} // namespace networking
+
 SocketManager::SocketManager(uint16_t port, RecieveCallback receiveCallback)
     : receiveCallback(receiveCallback), stopFlag(false)
 {
@@ -45,8 +69,9 @@ void SocketManager::receiveLoop()
     while (true)
     {
         // TODO: Pool memory?
-        auto packetMem = std::make_shared<std::vector<uint8_t>>(kMaxPacketSize);
-        int readByteCount = mSocket->ReceiveFrom(packetMem->data(), kMaxPacketSize, fromAddress);
+        auto packetMem = std::make_unique<std::vector<uint8_t>>(SocketManager::kMaxPacketSize);
+        int readByteCount =
+            mSocket->ReceiveFrom(packetMem->data(), SocketManager::kMaxPacketSize, fromAddress);
 
         // if we were stopped, don't call the callback
         if (stopFlag)
@@ -55,6 +80,6 @@ void SocketManager::receiveLoop()
         }
 
         packetMem->resize(readByteCount);
-        receiveCallback(packetMem);
+        receiveCallback(std::move(packetMem));
     }
 }

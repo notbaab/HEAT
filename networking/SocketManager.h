@@ -1,23 +1,18 @@
 #pragma once
+
 #include <functional>
 #include <thread>
 #include <vector>
 
 #include "UDPSocket.h"
 
-using RecieveCallback = std::function<void(std::shared_ptr<std::vector<uint8_t>>)>;
+using RecieveCallback = std::function<void(std::unique_ptr<std::vector<uint8_t>>)>;
 
 namespace networking
 {
-void printCallback(std::shared_ptr<std::vector<uint8_t>> data)
-{
-    for (auto i = (*data).begin(); i != (*data).end(); ++i)
-    {
-        std::cout << std::hex << unsigned(*i) << '|';
-    }
+void printData(std::shared_ptr<std::vector<uint8_t>> data);
+void printCallback(std::unique_ptr<std::vector<uint8_t>> data);
 
-    std::cout << std::endl;
-}
 } // namespace networking
 
 class SocketManager
@@ -29,7 +24,7 @@ class SocketManager
     void Stop();
 
   private:
-    const int kMaxPacketSize = 1500;
+    static inline const int kMaxPacketSize = 1500;
 
     void receiveLoop();
     bool stopFlag;
