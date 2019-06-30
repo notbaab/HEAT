@@ -12,10 +12,13 @@
 // Maybe like a engine or something
 std::shared_ptr<PacketManager> packetManager;
 
-void callback(std::shared_ptr<std::vector<uint8_t>> data)
+void callback(std::unique_ptr<std::vector<uint8_t>> data)
 {
-    networking::printCallback(data);
-    auto stream = InputMemoryBitStream(data, data->size() * 8);
+
+    std::shared_ptr<std::vector<uint8_t>> d = std::move(data);
+    networking::printData(d);
+
+    auto stream = InputMemoryBitStream(d);
 
     // TODO: this is a little odd. The serialize is in the manager,
     // probably should just be able to pass the stream to the manager
