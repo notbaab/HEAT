@@ -34,7 +34,10 @@ class PacketSerializer
 
     bool AddConstructor(uint32_t id, PacketConstructor constructor);
     std::shared_ptr<Packet> CreatePacket(uint32_t id);
+
     std::vector<std::shared_ptr<Packet>> ReadPackets(InputMemoryBitStream& in);
+    std::vector<std::shared_ptr<Packet>> ReadPackets(std::unique_ptr<std::vector<uint8_t>> data);
+
     bool WritePackets(std::vector<std::shared_ptr<Packet>>& packets, OutputMemoryBitStream& out);
     bool WritePacket(std::shared_ptr<Packet> packet, OutputMemoryBitStream& out);
 
