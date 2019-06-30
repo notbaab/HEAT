@@ -87,58 +87,6 @@ bool DoFrame()
     return true;
 }
 
-// bool Loop()
-// {
-//     std::cout << "here" << std::endl;
-//     DEBUG("1");
-//     std::cout << "here" << std::endl;
-//     auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
-//     DEBUG("1");
-//     auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
-//     DEBUG("1");
-
-//     auto pirateShip = SimpleGameObject();
-//     auto megaMan = SimpleGameObject();
-
-//     auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
-
-//     auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
-//     auto megaManComponent =
-//         AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
-
-//     megaManComponent.ChangeAnimation("first");
-//     RenderManager::sInstance->AddComponent(&pirateComponent);
-//     RenderManager::sInstance->AddComponent(&megaManComponent);
-
-//     InputManager::StaticInit();
-//     InputManager::sInstance->RegisterKeyDownListner(KeyPressed);
-//     InputManager::sInstance->RegisterKeyUpListner(KeyReleased);
-
-//     // while (true)
-//     // {
-//     //     // Main message loop
-//     //     SDL_Event event;
-//     //     memset(&event, 0, sizeof(SDL_Event));
-//     //     if (SDL_PollEvent(&event))
-//     //     {
-//     //         if (event.type == SDL_QUIT)
-//     //         {
-//     //             SDL_Quit();
-//     //             return false;
-//     //         }
-//     //         else
-//     //         {
-//     //             // simpleGameObject.changeAnimation(rand() % 3);
-//     //             pirateShip.SetRotation(rand() % 360);
-
-//     //             InputManager::sInstance->HandleSDLEvent(event);
-//     //         }
-//     //     }
-
-//     //     RenderManager::sInstance->Render();
-//     // }
-// }
-
 void AddGameObjectToWorld(GameObjectPtr ptr) {}
 
 void initStuffs()
