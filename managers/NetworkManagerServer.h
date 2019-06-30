@@ -11,7 +11,7 @@ class NetworkManagerServer : public NetworkManager
     static inline std::unique_ptr<NetworkManagerServer> sInstance;
     NetworkManagerServer(uint16_t port, std::shared_ptr<PacketManager> packetManager);
 
-    void StaticInit(uint16_t port, std::shared_ptr<PacketManager> packetManager);
+    static void StaticInit(uint16_t port, std::shared_ptr<PacketManager> packetManager);
 
   protected:
 };
