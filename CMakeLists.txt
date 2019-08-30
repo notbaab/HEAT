@@ -7,7 +7,7 @@ add_subdirectory(logger)
 add_subdirectory(networking)
 add_subdirectory(IO)
 add_subdirectory(packets)
-add_subdirectory(messages)
+# add_subdirectory(messages)
 add_subdirectory(managers)
 add_subdirectory(math)
 add_subdirectory(graphics)
@@ -42,7 +42,7 @@ set(shared_link_libs
         logger
         managers
         math
-        messages
+        # messages
         networking
         packets
 )
