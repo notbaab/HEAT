@@ -2,6 +2,7 @@
 #include <string>
 #include <thread>
 
+#include "engine/Engine.h"
 #include "holistic/SetupFuncs.h"
 
 #include "managers/NetworkManagerServer.h"
@@ -15,11 +16,16 @@
 // Maybe like a engine or something
 std::shared_ptr<PacketManager> packetManager;
 
+bool tick() { return true; }
+void initStuffs() { holistic::SetupNetworking(); }
+
 const char** __argv;
 int __argc;
 int main(int argc, const char* argv[])
 {
     holistic::SetupNetworking();
 
-    usleep(10 * 1000 * 1000);
+    // Use a promise to not spool
+    Engine engine = Engine(initStuffs, tick);
+    engine.Run();
 }
