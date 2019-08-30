@@ -25,7 +25,10 @@ class PacketManager
     void Reset();
     bool CanSendMessage() const;
     void SendMessage(std::shared_ptr<Message> message);
-    Message* ReceiveMessage();
+
+    void ReceiveMessages(std::vector<std::shared_ptr<Message>>& messages, uint16_t max = 30);
+    std::shared_ptr<Message> ReceiveMessage();
+
     std::shared_ptr<ReliableOrderedPacket> WritePacket();
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
 
@@ -65,7 +68,7 @@ class PacketManager
 
     struct MessageReceiveQueueEntry
     {
-        Message* message;
+        std::shared_ptr<Message> message;
     };
 
     void InsertAckPacketEntry(uint16_t sequence);

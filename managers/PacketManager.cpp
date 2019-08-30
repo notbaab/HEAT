@@ -7,10 +7,6 @@ PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
     assert((65536 % MessageSendQueueSize) == 0);
     assert((65536 % MessageReceiveQueueSize) == 0);
 
-    // m_packetFactory = packetFactory;
-
-    // m_messageFactory = messageFactory;
-
     // m_error = CONNECTION_ERROR_NONE;
 
     // m_messageOverheadBits = CalculateMessageOv   erheadBits();
@@ -120,9 +116,9 @@ void PacketManager::SendMessage(std::shared_ptr<Message> message)
     m_sendMessageId++;
 }
 
-// read the message that was serialized into the queue at one point
-// This is where we will start to do something else
-Message* PacketManager::ReceiveMessage()
+// read the message that was serialized into the queue at one point and removes
+// it from any references
+std::shared_ptr<Message> PacketManager::ReceiveMessage()
 {
     // if (GetError() != CONNECTION_ERROR_NONE)
     //     return NULL;
@@ -131,7 +127,7 @@ Message* PacketManager::ReceiveMessage()
     if (!entry)
         return NULL;
 
-    Message* message = entry->message;
+    auto message = entry->message;
 
     assert(message);
     assert(message->GetId() == m_receiveMessageId);
@@ -143,20 +139,25 @@ Message* PacketManager::ReceiveMessage()
     return message;
 }
 
+// Writes up to max packets into the passed in vector.
+void PacketManager::ReceiveMessages(std::vector<std::shared_ptr<Message>>& messages, uint16_t max)
+{
+    auto message = ReceiveMessage();
+    uint16_t processed = 0;
+
+    while (message != NULL && processed <= max)
+    {
+        messages.emplace_back(message);
+        message = ReceiveMessage();
+        processed++;
+    }
+}
+
 std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket()
 {
-    // if (m_error != CONNECTION_ERROR_NONE)
-    //     return NULL;
-
-    // ConnectionPacket* packet =
-    // (ConnectionPacket*)m_packetFactory->CreatePacket(CONNECTION_PACKET);
-
     std::shared_ptr<Packet> reliablePacket =
         m_packetFactory->CreatePacket(ReliableOrderedPacket::ID);
     auto packet = std::static_pointer_cast<ReliableOrderedPacket>(reliablePacket);
-
-    // if (!packet)
-    //     return NULL;
 
     // The only thing that ties the sequenceNumber buffer to the packet
     packet->sequenceNumber = m_sentPackets->GetSequence();
@@ -307,7 +308,7 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
 
     for (int i = 0; i < packet->numMessages; ++i)
     {
-        auto message = (*messageRef)[i].get();
+        std::shared_ptr<Message> message = (*messageRef)[i];
         assert(message);
         const uint16_t messageId = message->GetId();
 
