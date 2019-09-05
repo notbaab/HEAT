@@ -39,8 +39,15 @@ class OutputMemoryBitStream
         WriteBits(inData, inByteCount << 3);
     }
 
+    // TODO: Pass a reference?
     template <typename T>
     void Write(std::vector<T> inData)
+    {
+        Write(&inData[0], sizeof(T) * 8);
+    }
+
+    template <typename T>
+    void Write(std::vector<T> inData, uint32_t byteCount)
     {
         uint32_t inBitCount = sizeof(T) * 8;
         for (auto t : inData)
@@ -54,7 +61,7 @@ class OutputMemoryBitStream
     void Write(T inData, uint32_t inBitCount = sizeof(T) * 8)
     {
         static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value,
-                      "Generic Write only supports primitive data types");
+                      "Generic Write only supports primitive  data types");
         WriteBits(&inData, inBitCount);
     }
 

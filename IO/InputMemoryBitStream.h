@@ -49,6 +49,12 @@ class InputMemoryBitStream
     }
 
     template <typename T>
+    void serialize(std::vector<T>& inData, uint32_t byteCount)
+    {
+        Read(inData, byteCount);
+    }
+
+    template <typename T>
     void serialize(T& inData, int bitCount)
     {
         Read(inData, bitCount);
@@ -63,6 +69,14 @@ class InputMemoryBitStream
 
     void Read(uint8_t& outData, uint32_t inBitCount = 8) { ReadBits(&outData, inBitCount); }
     void Read(bool& outData) { ReadBits(&outData, 1); }
+
+    template <typename T>
+    void Read(std::vector<T>& inData, uint32_t byteCount)
+    {
+        // reserver to the correct amount
+        inData.reserve(byteCount);
+        ReadBytes(static_cast<void*>(inData.data()), byteCount);
+    }
 
     void ResetToCapacity(uint32_t inByteCapacity)
     {
