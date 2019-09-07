@@ -14,4 +14,4 @@ target_include_directories(holistic
 )
 
 # not linking with anything since
-target_link_libraries(holistic gameobjects)
+target_link_libraries(holistic gameobjects packets)
