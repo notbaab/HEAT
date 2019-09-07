@@ -2,14 +2,16 @@
 #include "IO/InputMemoryBitStream.h"
 #include "PacketManager.h"
 
+// Bind our data received callback function
 NetworkManager::NetworkManager(uint16_t port, std::shared_ptr<PacketManager> packetManager)
-    : socketManager(SocketManager(
-          port, std::bind(&NetworkManager::dataRecievedCallback, this, std::placeholders::_1)))
+    : socketManager(SocketManager(port, std::bind(&NetworkManager::dataRecievedCallback, this,
+                                                  std::placeholders::_1, std::placeholders::_2)))
 {
     this->packetManager = packetManager;
 }
 
-void NetworkManager::dataRecievedCallback(std::unique_ptr<std::vector<uint8_t>> data)
+void NetworkManager::dataRecievedCallback(uint64_t fromAddressKey,
+                                          std::unique_ptr<std::vector<uint8_t>> data)
 {
     auto packets = packetManager->ConvertBytesToPackets(std::move(data));
 

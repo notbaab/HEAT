@@ -6,12 +6,13 @@
 
 #include "UDPSocket.h"
 
-using RecieveCallback = std::function<void(std::unique_ptr<std::vector<uint8_t>>)>;
+using RecieveCallback =
+    std::function<void(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>>)>;
 
 namespace networking
 {
-void printData(std::shared_ptr<std::vector<uint8_t>> data);
-void printCallback(std::unique_ptr<std::vector<uint8_t>> data);
+void printData(uint64_t fromAddressKey, std::shared_ptr<std::vector<uint8_t>> data);
+void printCallback(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>> data);
 
 } // namespace networking
 

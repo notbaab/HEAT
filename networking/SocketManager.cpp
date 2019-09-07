@@ -4,7 +4,7 @@
 namespace networking
 {
 
-void printData(std::shared_ptr<std::vector<uint8_t>> data)
+void printData(uint64_t fromAddressKey, std::shared_ptr<std::vector<uint8_t>> data)
 {
     for (auto i = (*data).begin(); i != (*data).end(); ++i)
     {
@@ -14,7 +14,7 @@ void printData(std::shared_ptr<std::vector<uint8_t>> data)
     std::cout << std::endl;
 }
 
-void printCallback(std::unique_ptr<std::vector<uint8_t>> data)
+void printCallback(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>> data)
 {
     for (auto i = (*data).begin(); i != (*data).end(); ++i)
     {
@@ -39,6 +39,8 @@ SocketManager::SocketManager(uint16_t port, RecieveCallback receiveCallback)
     {
         throw std::runtime_error("Failed binding socket");
     }
+
+    std::cout << "Starting " << ownAddress.ToString() << std::endl;
 
     receiveThread = std::thread(&SocketManager::receiveLoop, this);
 }
@@ -73,6 +75,8 @@ void SocketManager::receiveLoop()
         int readByteCount =
             mSocket->ReceiveFrom(packetMem->data(), SocketManager::kMaxPacketSize, fromAddress);
 
+        std::cout << "got packet from " << fromAddress.ToString() << std::endl;
+
         // if we were stopped, don't call the callback
         if (stopFlag)
         {
@@ -80,6 +84,6 @@ void SocketManager::receiveLoop()
         }
 
         packetMem->resize(readByteCount);
-        receiveCallback(std::move(packetMem));
+        receiveCallback(fromAddress.GetIPPortKey(), std::move(packetMem));
     }
 }

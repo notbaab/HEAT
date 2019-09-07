@@ -15,7 +15,8 @@ class NetworkManager
     virtual void ProcessMessages() = 0;
 
   protected:
-    virtual void dataRecievedCallback(std::unique_ptr<std::vector<uint8_t>> data);
+    virtual void dataRecievedCallback(uint64_t fromAddressKey,
+                                      std::unique_ptr<std::vector<uint8_t>> data);
     // where the client and server start processing messages
 
     SocketManager socketManager;
