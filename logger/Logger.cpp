@@ -48,7 +48,7 @@ spdlog::level::level_enum convertToSpdlog(level level)
     default:
         return spdlog::level::debug;
     }
-} // namespace logger
+}
 
 std::shared_ptr<spdlog::logger> GetSpdLogger() { return the_log; }
 

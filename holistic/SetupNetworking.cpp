@@ -15,7 +15,6 @@ namespace holistic
 void SetupNetworking()
 {
     std::string destination = "127.0.0.1:4500";
-    SocketAddressPtr serverAddress = SocketAddressFactory::CreateIPv4FromString(destination);
 
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
