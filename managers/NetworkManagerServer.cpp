@@ -24,7 +24,6 @@ void NetworkManagerServer::ProcessMessages()
 
     for (auto message : messageBuf)
     {
-
         // Dispatch the message based on type to various components
         switch (message->GetIdentifier())
         {

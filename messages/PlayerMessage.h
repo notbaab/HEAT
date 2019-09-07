@@ -6,6 +6,7 @@ class PlayerMessage : public Message
 {
   public:
     IDENTIFIER(PlayerMessage, 'PLAY');
+
     SERIALIZER;
 
     enum ReplicationState
