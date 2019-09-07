@@ -4,6 +4,7 @@
 
 #include "engine/Engine.h"
 #include "holistic/SetupFuncs.h"
+#include "logger/Logger.h"
 
 #include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
@@ -15,15 +16,25 @@
 // Global thing until I figure out how I want to do management stuffs.
 // Maybe like a engine or something
 std::shared_ptr<PacketManager> packetManager;
+std::vector<std::shared_ptr<Message>> messagesToProcess;
 
-bool tick() { return true; }
+bool tick()
+{
+    // Read messages in a loop
+    NetworkManagerServer::sInstance->ProcessMessages();
+    return true;
+}
+
 void initStuffs() { holistic::SetupNetworking(); }
 
 const char** __argv;
 int __argc;
 int main(int argc, const char* argv[])
 {
-    holistic::SetupNetworking();
+    logger::InitLog(logger::TRACE, "Main");
+    // holistic::SetupNetworking();
+    messagesToProcess.reserve(30);
+    DEBUG("Starting")
 
     // Use a promise to not spool
     Engine engine = Engine(initStuffs, tick);
