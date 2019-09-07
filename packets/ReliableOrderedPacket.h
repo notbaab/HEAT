@@ -54,7 +54,7 @@ class ReliableOrderedPacket : public Packet
         numMessages = messages->size();
         stream.serialize(numMessages);
         messageFactory->WriteMessages(messages, stream);
-        // if writing, use factory to write the rest
+
         return true;
     }
 
