@@ -14,6 +14,7 @@
 #include <cstring>
 #include <memory>
 
+// TODO: Rewrite to include ipv6
 class SocketAddress
 {
   public:
@@ -53,6 +54,7 @@ class SocketAddress
 
     uint32_t GetSize() const { return sizeof(sockaddr); }
 
+    const uint64_t GetIPPortKey() const;
     std::string ToString() const;
 
     uint16_t port;
@@ -74,6 +76,10 @@ class SocketAddress
 #else
     uint32_t& GetIP4Ref() { return GetAsSockAddrIn()->sin_addr.s_addr; }
     const uint32_t& GetIP4Ref() const { return GetAsSockAddrIn()->sin_addr.s_addr; }
+
+    const uint16_t GetPort() const { return ntohs(GetAsSockAddrIn()->sin_port); }
+    const uint32_t GetIP4() const { return ntohl(GetAsSockAddrIn()->sin_addr.s_addr); }
+
 #endif
 
     sockaddr_in* GetAsSockAddrIn() { return reinterpret_cast<sockaddr_in*>(&mSockAddr); }
