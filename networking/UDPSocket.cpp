@@ -18,7 +18,7 @@ int UDPSocket::Bind(const SocketAddress& inBindAddress)
 
     if (pipe(close_pipe))
     {
-        std::cout << "sldkfjsdlkjflsdkjf" << std::endl;
+        std::cout << "Failed to bind pipe" << std::endl;
     }
 
     // add the read pipe to the fd set
