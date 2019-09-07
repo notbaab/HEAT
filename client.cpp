@@ -91,7 +91,7 @@ void AddGameObjectToWorld(GameObjectPtr ptr) {}
 
 void initStuffs()
 {
-    logger::InitLog(logger::level::TRACE, "a thing");
+    logger::InitLog(logger::level::TRACE, "Main Logger");
     if (!startSDL())
     {
         std::cout << "NOPE" << std::endl;
@@ -104,7 +104,11 @@ void initStuffs()
     // std::string name = Logger::GetCommandLineArg( 2 );
     SocketAddressPtr serverAddress = SocketAddressFactory::CreateIPv4FromString(destination);
 
-    auto socketManager = SocketManager(4501, networking::printCallback);
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::uniform_int_distribution<> distr(4501, 10000);
+
+    auto socketManager = SocketManager(distr(eng), networking::printCallback);
 
     // Make a test packet and see if it makes it to the other side
     auto messageSerializer = std::make_shared<MessageSerializer>();
