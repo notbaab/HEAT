@@ -2,6 +2,8 @@
 #include "iostream"
 #include <thread>
 
+uint64_t Engine::currentFrame = 0;
+
 Engine::Engine(IntializerFunc initFunc, TickFunc tickFunc)
     : running(false), initFunc(initFunc), tickFunc(tickFunc)
 {
@@ -18,6 +20,7 @@ void Engine::Run()
         auto end = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         std::this_thread::sleep_for(std::chrono::milliseconds(10) - duration);
+        Engine::currentFrame++;
     }
 }
 

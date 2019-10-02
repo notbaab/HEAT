@@ -12,6 +12,7 @@ class Engine
 {
   public:
     Engine(IntializerFunc initFunc, TickFunc tickFunc);
+    static uint64_t GetCurrentFrame() { return currentFrame; };
 
     void Run();
     void Stop();
@@ -20,4 +21,5 @@ class Engine
     bool running;
     IntializerFunc initFunc;
     TickFunc tickFunc;
+    static uint64_t currentFrame;
 };
