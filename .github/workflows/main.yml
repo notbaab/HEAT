@@ -11,7 +11,7 @@ jobs:
         uses: textbook/git-checkout-submodule-action@1.0.0
       - name: install sdl2
         run: |
-          sudo apt-get install libsdl2-dev
+          sudo apt-get install libsdl2-dev libsdl2-image-dev
       - name: create build directory
         run: mkdir build 
       - name: cmake directory
