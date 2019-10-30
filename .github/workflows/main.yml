@@ -4,11 +4,16 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - name: Try to build it
-      run: |
-        mkdir build && cd build && cmake .. && make 
+      - uses: actions/checkout@v1
+      - name: Checkout submodules
+        uses: textbook/git-checkout-submodule-action@1.0.0
+      - name: create build directory
+        run: mkdir build 
+      - name: cmake directory
+        working-directory: ./build
+        run: cmake ..
+      - name: build it
+        working-directory: ./build
+        run: make 
