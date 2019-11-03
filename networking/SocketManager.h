@@ -4,22 +4,24 @@
 #include <thread>
 #include <vector>
 
+#include "SocketAddress.h"
 #include "UDPSocket.h"
 
-using RecieveCallback =
-    std::function<void(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>>)>;
+using ReceiveCallback =
+    std::function<void(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>>)>;
 
 namespace networking
 {
-void printData(uint64_t fromAddressKey, std::shared_ptr<std::vector<uint8_t>> data);
-void printCallback(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>> data);
+void printData(SocketAddress fromAddress, std::shared_ptr<std::vector<uint8_t>> data);
+void printCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data);
 
 } // namespace networking
 
 class SocketManager
 {
   public:
-    SocketManager(uint16_t port, RecieveCallback receiveCallback);
+    SocketManager(ReceiveCallback receiveCallback);
+    SocketManager(uint16_t port, ReceiveCallback receiveCallback);
     ~SocketManager();
     int SendTo(const void* data, int length, const SocketAddress& toAddress);
     void Stop();
@@ -28,8 +30,11 @@ class SocketManager
     static inline const int kMaxPacketSize = 1500;
 
     void receiveLoop();
+    void bindSocket(uint16_t port);
+    void startReceiveThread();
     bool stopFlag;
-    RecieveCallback receiveCallback;
+    ReceiveCallback receiveCallback;
+    // Receiving socket
     UDPSocketPtr mSocket;
     std::thread receiveThread;
 };

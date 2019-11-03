@@ -1,10 +1,12 @@
+#include <random>
+
 #include "SocketManager.h"
 #include "SocketUtil.h"
 
 namespace networking
 {
 
-void printData(uint64_t fromAddressKey, std::shared_ptr<std::vector<uint8_t>> data)
+void printData(SocketAddress fromAddress, std::shared_ptr<std::vector<uint8_t>> data)
 {
     for (auto i = (*data).begin(); i != (*data).end(); ++i)
     {
@@ -14,7 +16,7 @@ void printData(uint64_t fromAddressKey, std::shared_ptr<std::vector<uint8_t>> da
     std::cout << std::endl;
 }
 
-void printCallback(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>> data)
+void printCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     for (auto i = (*data).begin(); i != (*data).end(); ++i)
     {
@@ -25,8 +27,7 @@ void printCallback(uint64_t fromAddressKey, std::unique_ptr<std::vector<uint8_t>
 }
 } // namespace networking
 
-SocketManager::SocketManager(uint16_t port, RecieveCallback receiveCallback)
-    : receiveCallback(receiveCallback), stopFlag(false)
+void SocketManager::bindSocket(uint16_t port)
 {
     // Create the underlaying socket for this port
     mSocket = SocketUtil::CreateUDPSocket(INET);
@@ -39,10 +40,32 @@ SocketManager::SocketManager(uint16_t port, RecieveCallback receiveCallback)
     {
         throw std::runtime_error("Failed binding socket");
     }
+    std::cout << "Bound Address " << ownAddress.ToString() << std::endl;
+}
 
-    std::cout << "Starting " << ownAddress.ToString() << std::endl;
+void SocketManager::startReceiveThread()
+{
 
     receiveThread = std::thread(&SocketManager::receiveLoop, this);
+}
+
+SocketManager::SocketManager(uint16_t port, ReceiveCallback receiveCallback)
+    : receiveCallback(receiveCallback), stopFlag(false)
+{
+    bindSocket(port);
+    startReceiveThread();
+}
+
+// non specific port constructor, bind to a random one
+SocketManager::SocketManager(ReceiveCallback receiveCallback)
+    : receiveCallback(receiveCallback), stopFlag(false)
+{
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::uniform_int_distribution<> distr(4501, 10000);
+
+    bindSocket(distr(eng));
+    startReceiveThread();
 }
 
 SocketManager::~SocketManager()
@@ -84,6 +107,6 @@ void SocketManager::receiveLoop()
         }
 
         packetMem->resize(readByteCount);
-        receiveCallback(fromAddress.GetIPPortKey(), std::move(packetMem));
+        receiveCallback(fromAddress, std::move(packetMem));
     }
 }
