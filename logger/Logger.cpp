@@ -50,6 +50,13 @@ spdlog::level::level_enum convertToSpdlog(level level)
     }
 }
 
-std::shared_ptr<spdlog::logger> GetSpdLogger() { return the_log; }
+std::shared_ptr<spdlog::logger> GetSpdLogger()
+{
+    if (the_log == nullptr)
+    {
+        InitLog(level::DEBUG, "default");
+    }
 
+    return the_log;
+}
 } // namespace logger
