@@ -24,7 +24,7 @@ class PacketManager
     ~PacketManager();
     void Reset();
     bool CanSendMessage() const;
-    void SendMessage(std::shared_ptr<Message> message);
+    void SendMessage(std::unique_ptr<Message> message);
 
     void ReceiveMessages(std::vector<std::shared_ptr<Message>>& messages, uint16_t max = 30);
     std::shared_ptr<Message> ReceiveMessage();

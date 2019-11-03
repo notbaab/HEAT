@@ -16,7 +16,7 @@ bool MessageSerializer::AddConstructor(uint32_t id, MessageConstructor construct
     return true;
 }
 
-std::shared_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
+std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
 {
     if (messageConstructors.find(id) == messageConstructors.end())
     {

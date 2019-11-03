@@ -83,8 +83,9 @@ bool PacketManager::CanSendMessage() const
     return m_messageSendQueue->IsAvailable(m_sendMessageId);
 }
 
-// Make this queue message
-void PacketManager::SendMessage(std::shared_ptr<Message> message)
+// Refactor to QueueMessage since it doesn't send a message, just adds it to the
+// queue to be written on the next write packet call
+void PacketManager::SendMessage(std::unique_ptr<Message> message)
 {
     assert(message);
     assert(CanSendMessage());
@@ -96,7 +97,10 @@ void PacketManager::SendMessage(std::shared_ptr<Message> message)
 
     assert(entry);
 
-    entry->message = message;
+    // Move the unique ptr to a shared one. Rational behind it is once it's in
+    // packet manager land, we can do stuff but we want a unique pointer as a
+    // parameter so no one messes with it once it's on our system
+    entry->message = std::move(message);
     entry->measuredBits = 0;
     entry->timeLastSent = -1.0;
 
@@ -181,7 +185,7 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket()
     {
         MessageSendQueueEntry* entry = m_messageSendQueue->Find(messageIds[i]);
         assert(entry && entry->message);
-        // pushe back each message to the packet message vector
+        // push back each message to the packet message vector
         packet->messages->push_back(entry->message);
     }
 

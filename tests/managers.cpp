@@ -62,9 +62,10 @@ void sendMessages(PacketManager& manager, std::shared_ptr<MessageSerializer> mes
     // write out a packet with 5 messages
     for (int i = 0; i < numMessages; ++i)
     {
-        auto msg = std::static_pointer_cast<PlayerMessage>(
-            std::move(messageSerializer->CreateMessage(PlayerMessage::ID)));
-        manager.SendMessage(msg);
+        auto msg = messageSerializer->CreateMessage(PlayerMessage::ID);
+        // auto msg = std::static_pointer_cast<PlayerMessage>(
+        //     std::move());
+        manager.SendMessage(std::move(msg));
     }
 }
 
