@@ -8,16 +8,17 @@
 				"build-linux",
 				"cmake-build-debug",
 				".idea",
-				"node_modules"
+				"node_modules",
+				"lib"
 			],
 			"path": "."
 		},
 		{
-			"path": "~/Dropbox/programming/spritesheetanimator",
 			"folder_exclude_patterns":
 			[
 				"node_modules"
 			],
+			"path": "~/Dropbox/programming/spritesheetanimator"
 		}
 	],
 	"settings":
@@ -25,17 +26,22 @@
 		"ClangFormat":
 		{
 			"format_on_save": true,
-			"languages": ["C", "C++", "C++11", "Objective-C", "Objective-C++"]
+			"languages":
+			[
+				"C",
+				"C++",
+				"C++11",
+				"Objective-C",
+				"Objective-C++"
+			]
 		},
-		"ecc_hide_default_completions": true,
-		"ecc_common_flags": [
-		    "-I/usr/include",
-		    "-I$project_path/",
-		    // this is needed to include the correct headers for clang
-		    "-I/usr/lib/clang/$clang_version/include",
-		    // For simple projects, you can add a folder where your current file is
-		    "-I$file_path",
-		]
+		"ecc_common_flags":
+		[
+			"-I/usr/include",
+			"-I$project_path/",
+			"-I/usr/lib/clang/$clang_version/include",
+			"-I$file_path"
+		],
+		"ecc_hide_default_completions": true
 	}
 }
-
