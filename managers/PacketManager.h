@@ -21,6 +21,11 @@ class PacketManager
 {
   public:
     PacketManager(std::shared_ptr<PacketSerializer> packetFactory);
+
+    // Holds a ton of state, just don't allow copying
+    PacketManager(const PacketManager&) = delete;
+    void operator=(const PacketManager&) = delete;
+
     ~PacketManager();
     void Reset();
     bool CanSendMessage() const;
