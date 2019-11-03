@@ -20,6 +20,7 @@
 #include "graphics/WindowManager.h"
 #include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
+#include "managers/NetworkManagerClient.h"
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
 #include "messages/PlayerMessage.h"
@@ -80,6 +81,7 @@ bool DoFrame()
             // pirateShip.SetRotation(rand() % 360);
 
             InputManager::sInstance->HandleSDLEvent(event);
+            // Read some packets and do stuffs
         }
     }
 
@@ -98,17 +100,14 @@ void initStuffs()
         SDL_Quit();
     };
 
+    DEBUG("Starting Client")
     holistic::SetupWorld();
 
     std::string destination = "127.0.0.1:4500";
-    // std::string name = Logger::GetCommandLineArg( 2 );
-    SocketAddressPtr serverAddress = SocketAddressFactory::CreateIPv4FromString(destination);
 
     std::random_device rd;
     std::mt19937 eng(rd());
     std::uniform_int_distribution<> distr(4501, 10000);
-
-    auto socketManager = SocketManager(distr(eng), networking::printCallback);
 
     // Make a test packet and see if it makes it to the other side
     auto messageSerializer = std::make_shared<MessageSerializer>();
@@ -116,20 +115,9 @@ void initStuffs()
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
 
-    auto manager = PacketManager(packetSerializer);
-    auto msg = std::static_pointer_cast<PlayerMessage>(
-        std::move(messageSerializer->CreateMessage(PlayerMessage::ID)));
-    manager.SendMessage(msg);
-
-    auto packet = manager.WritePacket();
-    auto stream = OutputMemoryBitStream();
-
-    packetSerializer->WritePacket(packet, stream);
-
-    int streamByteLength = stream.GetByteLength();
-    const void* packetDataToSend = stream.GetBufferPtr()->data();
-
-    int sentByteCount = socketManager.SendTo(packetDataToSend, streamByteLength, *serverAddress);
+    NetworkManagerClient::StaticInit(destination, packetSerializer);
+    NetworkManagerClient::sInstance->StartServerHandshake();
+    NetworkManagerClient::sInstance->SendOutgoingPackets();
 
     auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
     auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);

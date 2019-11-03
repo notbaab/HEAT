@@ -6,20 +6,27 @@
 #include <memory>
 #include <vector>
 
-class PacketManager;
+class PacketSerializer;
+
+uint64_t GenerateSalt();
 
 class NetworkManager
 {
   public:
-    NetworkManager(uint16_t port, std::shared_ptr<PacketManager> packetManger);
+    NetworkManager(std::shared_ptr<PacketSerializer> packetSerializer);
+    NetworkManager(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer);
+    // Read any messages that have come through
     virtual void ProcessMessages() = 0;
 
+    // Send any new packets it needs to send.
+    virtual void SendOutgoingPackets() = 0;
+
   protected:
-    virtual void dataRecievedCallback(uint64_t fromAddressKey,
+    virtual void dataRecievedCallback(SocketAddress fromAddress,
                                       std::unique_ptr<std::vector<uint8_t>> data);
     // where the client and server start processing messages
 
     SocketManager socketManager;
-    std::shared_ptr<PacketManager> packetManager;
+    std::shared_ptr<PacketSerializer> packetSerializer;
     std::vector<std::shared_ptr<Message>> messageBuf;
 };

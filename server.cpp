@@ -17,11 +17,15 @@
 // Maybe like a engine or something
 std::shared_ptr<PacketManager> packetManager;
 std::vector<std::shared_ptr<Message>> messagesToProcess;
+std::shared_ptr<spdlog::logger> the_log;
 
 bool tick()
 {
     // Read messages in a loop
     NetworkManagerServer::sInstance->ProcessMessages();
+    // Send out any new messages we need to send.
+    // This will actually be after game logic. I think? Idk
+    NetworkManagerServer::sInstance->SendOutgoingPackets();
     return true;
 }
 
