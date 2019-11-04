@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 project(HEAT)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -Wno-multichar")
+if(NOT APPLE)
+        # apple includes -fPIC flag by default, need to add it if we aren't on
+        # a mac
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 add_subdirectory(logger)
 add_subdirectory(networking)
