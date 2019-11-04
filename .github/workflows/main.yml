@@ -8,7 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Checkout submodules
-        uses: textbook/git-checkout-submodule-action@1.0.0
+        run: |
+          git submodule update --init --recursive
       - name: install sdl2
         run: |
           sudo apt-get install libsdl2-dev libsdl2-image-dev
