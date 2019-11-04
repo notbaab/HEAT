@@ -13,10 +13,13 @@ jobs:
         run: |
           sudo apt-get install libsdl2-dev libsdl2-image-dev
       - name: create build directory
-        run: mkdir build 
+        run: mkdir build
       - name: cmake directory
         working-directory: ./build
         run: cmake ..
       - name: build it
         working-directory: ./build
-        run: make 
+        run: make
+      - name: run tests
+        working-directory: ./build/tests
+        run: tests
