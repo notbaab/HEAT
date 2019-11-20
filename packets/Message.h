@@ -24,8 +24,31 @@ class Message
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;
     virtual uint32_t GetIdentifier() const = 0;
+
     void AssignId(uint16_t id) { this->id = id; }
     uint16_t GetId() { return id; }
+
+    //
+    static std::string StringFromId(uint32_t identifier)
+    {
+        // Need to check endianness of the platform we are on.
+        // Probably
+        char buf[5] = "";
+        buf[3] = identifier;
+        buf[2] = identifier >> 8;
+        buf[1] = identifier >> 16;
+        buf[0] = identifier >> 24;
+        return std::string(buf);
+    }
+
+    std::string IdentifierToString()
+    {
+        // May need to check endianness of the platform we are on.
+        // Probably
+        uint32_t identifier = GetIdentifier();
+        auto s = StringFromId(identifier);
+        return s;
+    }
 
   protected:
     // essentially the sequence number

@@ -42,6 +42,7 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBi
         in.serialize(id);
         if (packetConstructors.find(id) == packetConstructors.end())
         {
+            std::cout << "bad data for id " << id << std::endl;
             throw std::runtime_error("Bad Packet data!!!!");
         }
 
