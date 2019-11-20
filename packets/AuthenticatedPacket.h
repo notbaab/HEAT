@@ -16,10 +16,6 @@ class AuthenticatedPacket : public ReliableOrderedPacket
     {
         stream.serialize(expectedSalt);
         ReliableOrderedPacket::Serialize(stream);
-        stream.serialize(ddosMinPadding, 1000);
         return true;
     }
-
-  private:
-    std::vector<uint8_t> ddosMinPadding;
 };
