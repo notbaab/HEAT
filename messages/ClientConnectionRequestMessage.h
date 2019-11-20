@@ -14,8 +14,11 @@ class ClientConnectionRequestMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
+        stream.serialize(salt);
         return true;
     }
 
     ClientConnectionRequestMessage(){};
+    ClientConnectionRequestMessage(uint64_t salt) : salt(salt){};
+    uint64_t salt;
 };
