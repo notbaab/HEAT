@@ -42,7 +42,19 @@ void NetworkManagerClient::ProcessMessages() {}
 // Create an output stream and write out our outgoing packet
 void NetworkManagerClient::SendOutgoingPackets()
 {
-    auto packet = packetManager.WritePacket();
+    std::shared_ptr<ReliableOrderedPacket> packet;
+    if (connectionState == CurrentConnectionState::AUTHENTICATED)
+    {
+        // TODO: We should just have the packet manager know if it's writing
+        // an unreliable or reliable packet
+        packet = packetManager.WritePacket(AuthenticatedPacket::CLASS_ID);
+        auto cast = std::static_pointer_cast<AuthenticatedPacket>(packet);
+        cast->expectedSalt = this->xOrSalt;
+    }
+    else
+    {
+        packet = packetManager.WritePacket(UnauthenticatedPacket::CLASS_ID);
+    }
     auto stream = OutputMemoryBitStream();
     auto good = packetSerializer->WritePacket(packet, stream);
     if (!good)

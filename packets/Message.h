@@ -9,9 +9,9 @@
     bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
     bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
 
-#define IDENTIFIER(cls, id)                                                                        \
-    uint32_t GetIdentifier() const override { return cls::ID; }                                    \
-    static const uint32_t ID = id;
+#define IDENTIFIER(cls, class_id)                                                                  \
+    uint32_t GetIdentifier() const override { return cls::CLASS_ID; }                              \
+    static const uint32_t CLASS_ID = class_id;
 
 // The same as a packet pretty much but holds game data. A distinction I'm
 // not quite sure I want to make yet

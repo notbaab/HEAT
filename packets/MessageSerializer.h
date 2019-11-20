@@ -14,7 +14,7 @@ using MessageConstructor = std::function<std::unique_ptr<Message>()>;
 
 // Cleaner wrapper around adding the constructor by using the expected static ID
 #define AddMessageCtor(serializer, messageType)                                                    \
-    serializer->AddConstructor(messageType::ID, MessageCtor(messageType))
+    serializer->AddConstructor(messageType::CLASS_ID, MessageCtor(messageType))
 
 class MessageSerializer
 {

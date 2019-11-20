@@ -157,10 +157,10 @@ void PacketManager::ReceiveMessages(std::vector<std::shared_ptr<Message>>& messa
     }
 }
 
-std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket()
+// Accepts an id of a packet that HAS to be a subclass of ReliableOrderedPacket
+std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packetId)
 {
-    std::shared_ptr<Packet> reliablePacket =
-        m_packetFactory->CreatePacket(ReliableOrderedPacket::ID);
+    std::shared_ptr<Packet> reliablePacket = m_packetFactory->CreatePacket(packetId);
     auto packet = std::static_pointer_cast<ReliableOrderedPacket>(reliablePacket);
 
     // The only thing that ties the sequenceNumber buffer to the packet

@@ -34,7 +34,7 @@ class PacketManager
     void ReceiveMessages(std::vector<std::shared_ptr<Message>>& messages, uint16_t max = 30);
     std::shared_ptr<Message> ReceiveMessage();
 
-    std::shared_ptr<ReliableOrderedPacket> WritePacket();
+    std::shared_ptr<ReliableOrderedPacket> WritePacket(uint32_t packetType);
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
 
     std::vector<std::shared_ptr<Packet>>

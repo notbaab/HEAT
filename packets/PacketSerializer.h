@@ -21,7 +21,7 @@ using PacketConstructor =
 
 // Cleaner wrapper around adding the constructor by using the expected static ID
 #define AddPacketCtor(serializer, packetType)                                                      \
-    serializer->AddConstructor(packetType::ID, PacketCtor(packetType))
+    serializer->AddConstructor(packetType::CLASS_ID, PacketCtor(packetType))
 
 class PacketSerializer
 {
