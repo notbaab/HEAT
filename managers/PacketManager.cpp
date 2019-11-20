@@ -7,9 +7,6 @@ PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
     assert((65536 % MessageSendQueueSize) == 0);
     assert((65536 % MessageReceiveQueueSize) == 0);
 
-    // m_error = CONNECTION_ERROR_NONE;
-
-    // m_messageOverheadBits = CalculateMessageOv   erheadBits();
     m_sentPackets = new SequenceBuffer<SentPacketData>(SlidingWindowSize);
     m_receivedPackets = new SequenceBuffer<ReceivedPacketData>(SlidingWindowSize);
     m_messageSendQueue = new SequenceBuffer<MessageSendQueueEntry>(MessageSendQueueSize);
@@ -22,6 +19,7 @@ PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
 
 PacketManager::~PacketManager()
 {
+    std::cout << "Deleting Manager" << std::endl;
     Reset();
 
     assert(m_sentPackets);
@@ -48,7 +46,6 @@ PacketManager::~PacketManager()
 
 void PacketManager::Reset()
 {
-    // m_error = CONNECTION_ERROR_NONE;
 
     m_time = 0.0;
 
@@ -58,20 +55,6 @@ void PacketManager::Reset()
     m_sendMessageId = 0;
     m_receiveMessageId = 0;
     m_oldestUnackedMessageId = 0;
-
-    // for (int i = 0; i < m_messageSendQueue->GetSize(); ++i)
-    // {
-    //     MessageSendQueueEntry* entry = m_messageSendQueue->GetAtIndex(i);
-    //     if (entry && entry->message)
-    //         entry->message->Release();
-    // }
-
-    // for (int i = 0; i < m_messageReceiveQueue->GetSize(); ++i)
-    // {
-    //     MessageReceiveQueueEntry* entry = m_messageReceiveQueue->GetAtIndex(i);
-    //     if (entry && entry->message)
-    //         entry->message->Release();
-    // }
 
     m_messageSendQueue->Reset();
     m_messageSentPackets->Reset();
@@ -124,12 +107,11 @@ void PacketManager::SendMessage(std::unique_ptr<Message> message)
 // it from any references
 std::shared_ptr<Message> PacketManager::ReceiveMessage()
 {
-    // if (GetError() != CONNECTION_ERROR_NONE)
-    //     return NULL;
-
     MessageReceiveQueueEntry* entry = m_messageReceiveQueue->Find(m_receiveMessageId);
     if (!entry)
+    {
         return NULL;
+    }
 
     auto message = entry->message;
 
@@ -172,11 +154,12 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packe
     int numMessageIds;
     uint16_t messageIds[MaxMessagesPerPacket];
 
-    // This will get the ids of messages that aren't un acked and put them
-    // in the array
+    // This will get the ids of messages that haven't been sent or were sent long
+    // ago but we never got an ack for them and put them in the array
     GetMessagesToSend(messageIds, numMessageIds);
 
-    // Might be still needed,
+    // ties the packet with the sequence number to the ids of those messages so
+    // we know if this packet is ack'd the messages were received as well.
     AddMessagePacketEntry(messageIds, numMessageIds, packet->sequenceNumber);
 
     packet->numMessages = numMessageIds;
@@ -198,14 +181,10 @@ PacketManager::ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data)
     return m_packetFactory->ReadPackets(std::move(data));
 }
 
+// Process the Reliable packet by processing the ack and ackBits of the packet
+// and read all the messages
 bool PacketManager::ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet)
 {
-    // if (m_error != CONNECTION_ERROR_NONE)
-    //     return false;
-
-    // assert(packet);
-    // assert(packet->GetType() == CONNECTION_PACKET);
-
     ProcessAcks(packet->ack, packet->ackBits);
     ProcessPacketMessages(packet.get());
     m_receivedPackets->Insert(packet->sequenceNumber);
@@ -225,6 +204,7 @@ void PacketManager::InsertAckPacketEntry(uint16_t sequenceNumber)
     }
 }
 
+// process ack bits of the packet
 void PacketManager::ProcessAcks(uint16_t ack, uint32_t ack_bits)
 {
     for (int i = 0; i < 32; ++i)
@@ -244,6 +224,10 @@ void PacketManager::ProcessAcks(uint16_t ack, uint32_t ack_bits)
     }
 }
 
+// get any messages that need to be sent by check the last time they were sent
+// and comparing it to the resend rate. The last time they were sent is always
+// -1 on newly created messages so no special case for messages that we just
+// create
 void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds)
 {
     numMessageIds = 0;
@@ -265,6 +249,7 @@ void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds)
         const uint16_t messageId = m_oldestUnackedMessageId + i;
         MessageSendQueueEntry* entry = m_messageSendQueue->Find(messageId);
 
+        // TODO: I don't measure the bits so the check there is worthless
         if (entry && (entry->timeLastSent + MessageResendRate <= m_time) &&
             (availableBits - entry->measuredBits >= 0))
         {
@@ -298,7 +283,9 @@ void PacketManager::AddMessagePacketEntry(const uint16_t* messageIds, int& numMe
         sentPacket->messageIds = &m_sentPacketMessageIds[sentPacketIndex * MaxMessagesPerPacket];
         sentPacket->numMessageIds = numMessageIds;
         for (int i = 0; i < numMessageIds; ++i)
+        {
             sentPacket->messageIds[i] = messageIds[i];
+        }
     }
 }
 
@@ -317,14 +304,17 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
         const uint16_t messageId = message->GetId();
 
         if (m_messageReceiveQueue->Find(messageId))
+        {
             continue;
+        }
 
         if (sequence_less_than(messageId, minMessageId))
+        {
             continue;
+        }
 
         if (sequence_greater_than(messageId, maxMessageId))
         {
-            // m_error = CONNECTION_ERROR_MESSAGE_DESYNC;
             return;
         }
 
@@ -339,12 +329,17 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
     }
 }
 
+// Given the ack, look at the sent packet that corresponds to that ack and
+// remove any messages from the send queue that were included in that packet
+// since they got through
 void PacketManager::ProcessMessageAck(uint16_t ack)
 {
     MessageSentPacketEntry* sentPacketEntry = m_messageSentPackets->Find(ack);
 
     if (!sentPacketEntry)
+    {
         return;
+    }
 
     assert(!sentPacketEntry->acked);
 
@@ -360,6 +355,10 @@ void PacketManager::ProcessMessageAck(uint16_t ack)
             assert(sendQueueEntry->message->GetId() == messageId);
 
             m_messageSendQueue->Remove(messageId);
+        }
+        else
+        {
+            std::cout << "not acked" << std::endl;
         }
     }
 

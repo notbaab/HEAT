@@ -98,8 +98,6 @@ void SocketManager::receiveLoop()
         int readByteCount =
             mSocket->ReceiveFrom(packetMem->data(), SocketManager::kMaxPacketSize, fromAddress);
 
-        std::cout << "got packet from " << fromAddress.ToString() << std::endl;
-
         // if we were stopped, don't call the callback
         if (stopFlag)
         {
