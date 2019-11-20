@@ -23,6 +23,10 @@ class NetworkManagerServer : public NetworkManager
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
 
     bool HandleNewClient(ClientData& client, const std::shared_ptr<Packet> packet);
+    bool HandleChallenedClient(ClientData& client, const std::shared_ptr<Packet> packet);
+    bool ReadConnectionRequestMessage(ClientData& client, const std::shared_ptr<Message> message);
+    bool ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message);
+    void Tick(double timeStep);
 
   protected:
     // Each client gets a packet manager as the manager is the thing that

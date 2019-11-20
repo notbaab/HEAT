@@ -23,6 +23,7 @@ bool tick()
 {
     // Read messages in a loop
     NetworkManagerServer::sInstance->ProcessMessages();
+    NetworkManagerServer::sInstance->Tick(0.03);
     // Send out any new messages we need to send.
     // This will actually be after game logic. I think? Idk
     NetworkManagerServer::sInstance->SendOutgoingPackets();
@@ -35,12 +36,12 @@ const char** __argv;
 int __argc;
 int main(int argc, const char* argv[])
 {
-    logger::InitLog(logger::TRACE, "Main");
+    logger::InitLog(logger::DEBUG, "Main");
     // holistic::SetupNetworking();
     messagesToProcess.reserve(30);
     DEBUG("Starting")
 
-    // Use a promise to not spool
+    // Use a promise to not spool.
     Engine engine = Engine(initStuffs, tick);
     engine.Run();
 }

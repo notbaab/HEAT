@@ -4,6 +4,7 @@
 #include "IO/InputMemoryBitStream.h"
 #include "NetworkManager.h"
 #include "PacketManager.h"
+#include "logger/Logger.h"
 #include "packets/PacketSerializer.h"
 
 uint64_t GenerateSalt()

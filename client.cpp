@@ -23,13 +23,17 @@
 #include "managers/NetworkManagerClient.h"
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
+#include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/PlayerMessage.h"
 #include "networking/SocketAddressFactory.h"
 #include "networking/SocketManager.h"
+#include "packets/AuthenticatedPacket.h"
+#include "packets/Message.h"
 #include "packets/MessageSerializer.h"
 #include "packets/Packet.h"
 #include "packets/PacketSerializer.h"
 #include "packets/ReliableOrderedPacket.h"
+#include "packets/UnauthenticatedPacket.h"
 
 const char** __argv;
 int __argc;
@@ -64,8 +68,10 @@ bool startSDL()
 void KeyPressed(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
 void KeyReleased(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
 
+//
 bool DoFrame()
 {
+    NetworkManagerClient::sInstance->ProcessMessages();
     SDL_Event event;
     memset(&event, 0, sizeof(SDL_Event));
     if (SDL_PollEvent(&event))
@@ -86,6 +92,9 @@ bool DoFrame()
     }
 
     RenderManager::sInstance->Render();
+
+    NetworkManagerClient::sInstance->SendOutgoingPackets();
+    NetworkManagerClient::sInstance->packetManager.StepTime(0.03);
     return true;
 }
 
@@ -107,13 +116,17 @@ void initStuffs()
 
     std::random_device rd;
     std::mt19937 eng(rd());
+    // Mainly for testing. The server is 4500 so pick a random port to be the client
     std::uniform_int_distribution<> distr(4501, 10000);
 
     // Make a test packet and see if it makes it to the other side
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionChallengeMessage);
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
+    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
+    AddPacketCtor(packetSerializer, AuthenticatedPacket);
 
     NetworkManagerClient::StaticInit(destination, packetSerializer);
     NetworkManagerClient::sInstance->StartServerHandshake();
