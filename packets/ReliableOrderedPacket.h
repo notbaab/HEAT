@@ -1,8 +1,9 @@
 #pragma once
-#include "Packet.h"
 #include <cstdint>
 #include <type_traits>
 #include <typeinfo>
+
+#include "Packet.h"
 
 // class that holds the reliability layer of the protocol. The sequence number
 // ack'd packet range.
@@ -25,13 +26,15 @@ class ReliableOrderedPacket : public Packet
     int sequenceNumber;
     //
     uint16_t ack;
-    uint8_t numMessages;
+    uint16_t numMessages;
     uint32_t ackBits;
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
         stream.serialize(sequenceNumber);
+        stream.serialize(ack);
+        stream.serialize(ackBits);
         // Write the number of messages
         SerializeMessages(stream);
 
@@ -44,8 +47,24 @@ class ReliableOrderedPacket : public Packet
     bool SerializeMessages(InputMemoryBitStream& stream)
     {
         stream.serialize(numMessages);
+
+        // read the message ids of the messages included in this packet
+        uint16_t messageIds[32];
+        for (int i = 0; i < numMessages; i++)
+        {
+            stream.serialize(messageIds[i]);
+        }
+
         messages = std::move(messageFactory->ReadMessages(stream, numMessages));
-        // if writing, use factory to write the rest
+
+        // go into the messages and assign their ids.Why aren't these in the messages
+        // them selves? Well technically they aren't the ones that assign it
+        // when they get created so it kinda makes sense.
+        for (int i = 0; i < numMessages; i++)
+        {
+            (*messages)[i]->AssignId(messageIds[i]);
+        }
+
         return true;
     }
 
@@ -53,10 +72,12 @@ class ReliableOrderedPacket : public Packet
     {
         numMessages = messages->size();
         stream.serialize(numMessages);
-        messageFactory->WriteMessages(messages, stream);
+        for (int i = 0; i < numMessages; i++)
+        {
+            stream.serialize((*messages)[i]->GetId());
+        }
 
+        messageFactory->WriteMessages(messages, stream);
         return true;
     }
-
-  private:
 };
