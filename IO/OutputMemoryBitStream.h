@@ -39,16 +39,14 @@ class OutputMemoryBitStream
         WriteBits(inData, inByteCount << 3);
     }
 
-    // TODO: Pass a reference?
+    // TODO: Why is this done differently than the input memory bit stream
     template <typename T>
-    void Write(std::vector<T> inData)
+    void Write(std::vector<T>& inData)
     {
-        Write(&inData[0], sizeof(T) * 8);
-    }
-
-    template <typename T>
-    void Write(std::vector<T> inData, uint32_t byteCount)
-    {
+        // // ByteCount is actually wrong, we don't use it at all. Make the
+        // // unused variable warning happy but look into removing it.
+        // (void)byteCount;
+        // The bits of each element.
         uint32_t inBitCount = sizeof(T) * 8;
         for (auto t : inData)
         {
@@ -77,6 +75,17 @@ class OutputMemoryBitStream
         {
             Write(element);
         }
+    }
+
+    template <typename T>
+    void serialize(std::vector<T>& inData, int byteCount)
+    {
+        // we don't use byteCount at all. Make the
+        // unused variable warning happy but look into removing it more better.
+        // Need to do some weird ness to keep the same interface with the
+        // input stream
+        (void)byteCount;
+        Write(inData);
     }
 
     template <typename T>

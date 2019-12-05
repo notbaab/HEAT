@@ -18,8 +18,8 @@
 class Message
 {
   public:
-    Message(){};
-    virtual ~Message(){};
+    Message() {}
+    virtual ~Message() {}
 
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;

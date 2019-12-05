@@ -27,9 +27,10 @@ class PacketSerializer
 {
   public:
     PacketSerializer(std::shared_ptr<MessageSerializer> messageFactory)
-        : messageFactory(messageFactory){};
-    // PacketSerializer(){};
-    ~PacketSerializer(){};
+        : messageFactory(messageFactory)
+    {
+    }
+    ~PacketSerializer() {}
     std::unordered_map<uint32_t, PacketConstructor> packetConstructors;
 
     bool AddConstructor(uint32_t id, PacketConstructor constructor);

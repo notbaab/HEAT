@@ -19,8 +19,8 @@ using MessageConstructor = std::function<std::unique_ptr<Message>()>;
 class MessageSerializer
 {
   public:
-    MessageSerializer(){};
-    ~MessageSerializer(){};
+    MessageSerializer() {}
+    ~MessageSerializer() {}
     std::unordered_map<uint32_t, MessageConstructor> messageConstructors;
 
     bool AddConstructor(uint32_t id, MessageConstructor constructor);
