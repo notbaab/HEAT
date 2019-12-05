@@ -12,12 +12,20 @@ class InputMemoryBitStream
 {
   public:
     InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer)
-        : InputMemoryBitStream(inBuffer, inBuffer->size() * 8)
+        : InputMemoryBitStream(inBuffer, inBuffer->size() * 8.0)
     {
     }
 
     InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer, uint32_t inBitCount)
         : mBuffer(inBuffer), mBitHead(0), mBitCapacity(inBitCount)
+    {
+    }
+
+    // Kinda a crappy constructor that results in copying the entire buffer but it's a sacrifice for
+    // safety
+    InputMemoryBitStream(uint8_t* inBuffPtr, uint32_t inByteCount)
+        : mBuffer(std::make_shared<std::vector<uint8_t>>(inBuffPtr, inBuffPtr + inByteCount)),
+          mBitHead(0), mBitCapacity(inByteCount * 8)
     {
     }
 
