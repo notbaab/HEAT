@@ -9,6 +9,7 @@ bool MessageSerializer::AddConstructor(uint32_t id, MessageConstructor construct
 {
     if (messageConstructors.find(id) != messageConstructors.end())
     {
+        // already added, maybe log so?
         return false;
     }
 

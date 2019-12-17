@@ -43,9 +43,6 @@ class OutputMemoryBitStream
     template <typename T>
     void Write(std::vector<T>& inData)
     {
-        // // ByteCount is actually wrong, we don't use it at all. Make the
-        // // unused variable warning happy but look into removing it.
-        // (void)byteCount;
         // The bits of each element.
         uint32_t inBitCount = sizeof(T) * 8;
         for (auto t : inData)
