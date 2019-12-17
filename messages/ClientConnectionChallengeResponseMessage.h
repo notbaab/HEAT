@@ -1,4 +1,4 @@
-
+#pragma once
 #include "packets/Message.h"
 
 class ClientConnectionChallengeResponseMessage : public Message

@@ -24,8 +24,12 @@ class NetworkManagerServer : public NetworkManager
 
     bool HandleNewClient(ClientData& client, const std::shared_ptr<Packet> packet);
     bool HandleChallenedClient(ClientData& client, const std::shared_ptr<Packet> packet);
+
+    // Message handler functions
     bool ReadConnectionRequestMessage(ClientData& client, const std::shared_ptr<Message> message);
     bool ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message);
+    bool ReadLoginMessage(ClientData& client, const std::shared_ptr<Message> message);
+
     void Tick(double timeStep);
 
   protected:

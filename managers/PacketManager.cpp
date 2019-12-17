@@ -125,7 +125,7 @@ std::shared_ptr<Message> PacketManager::ReceiveMessage()
     return message;
 }
 
-// Writes up to max packets into the passed in vector.
+// Writes up to max messages into the passed in vector.
 void PacketManager::ReceiveMessages(std::vector<std::shared_ptr<Message>>& messages, uint16_t max)
 {
     auto message = ReceiveMessage();
@@ -303,11 +303,15 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
         assert(message);
         const uint16_t messageId = message->GetId();
 
+        // Already received this message, just waiting for a call to receive messages to
+        // dequeue it
         if (m_messageReceiveQueue->Find(messageId))
         {
             continue;
         }
 
+        // The message is too old to be read. This should not happen except for
+        // weird cases
         if (sequence_less_than(messageId, minMessageId))
         {
             continue;
@@ -318,6 +322,7 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
             return;
         }
 
+        // Unseen message, add it to the queue
         MessageReceiveQueueEntry* entry = m_messageReceiveQueue->Insert(messageId);
 
         assert(entry);

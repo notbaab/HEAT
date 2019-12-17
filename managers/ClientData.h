@@ -10,6 +10,7 @@ enum ClientConnectionState
     CONNECTING,    // Just created
     CHALLENGED,    // They are unauthenticated and we have sent the challenge request
     AUTHENTICATED, // They have gone through the whole handshake and are now authenticated
+    LOGGED_IN,     // Assigned a game Id
     DISCONNECTED,  // They are dead to us
 };
 
@@ -25,6 +26,8 @@ class ClientData
     uint32_t serverSalt;
     uint32_t clientSalt;
     uint32_t xOrSalt;
+    uint32_t gameId;
+    std::string userName;
 
     SocketAddress socketAddress;
     PacketManager packetManager;

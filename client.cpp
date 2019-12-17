@@ -24,6 +24,9 @@
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
 #include "messages/ClientConnectionChallengeMessage.h"
+#include "messages/ClientLoginMessage.h"
+#include "messages/ClientLoginResponse.h"
+#include "messages/ClientWelcomeMessage.h"
 #include "messages/PlayerMessage.h"
 #include "networking/SocketAddressFactory.h"
 #include "networking/SocketManager.h"
@@ -123,12 +126,15 @@ void initStuffs()
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
     AddMessageCtor(messageSerializer, ClientConnectionChallengeMessage);
+    AddMessageCtor(messageSerializer, ClientLoginMessage);
+    AddMessageCtor(messageSerializer, ClientLoginResponse);
+
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddPacketCtor(packetSerializer, UnauthenticatedPacket);
     AddPacketCtor(packetSerializer, AuthenticatedPacket);
 
-    NetworkManagerClient::StaticInit(destination, packetSerializer);
+    NetworkManagerClient::StaticInit(destination, packetSerializer, "Joe Mamma");
     NetworkManagerClient::sInstance->StartServerHandshake();
     NetworkManagerClient::sInstance->SendOutgoingPackets();
 

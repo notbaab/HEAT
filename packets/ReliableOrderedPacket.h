@@ -24,7 +24,6 @@ class ReliableOrderedPacket : public Packet
     std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages;
     // Sequence number of this packet
     uint32_t sequenceNumber;
-    //
     uint16_t ack;
     uint16_t numMessages;
     uint32_t ackBits;

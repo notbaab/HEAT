@@ -4,6 +4,8 @@
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
+#include "messages/ClientLoginMessage.h"
+#include "messages/ClientLoginResponse.h"
 #include "messages/ClientWelcomeMessage.h"
 #include "packets/AuthenticatedPacket.h"
 #include "packets/Message.h"
@@ -54,6 +56,7 @@ void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
             break;
         case ClientConnectionState::CHALLENGED:
         case ClientConnectionState::AUTHENTICATED:
+        case ClientConnectionState::LOGGED_IN:
             HandleChallenedClient(client, packet);
             break;
         case ClientConnectionState::DISCONNECTED:
@@ -152,6 +155,9 @@ void NetworkManagerServer::ProcessMessages()
             case ClientConnectionChallengeResponseMessage::CLASS_ID:
                 ReadChallengeResponseMessage(client, message);
                 break;
+            case ClientLoginMessage::CLASS_ID:
+                ReadLoginMessage(client, message);
+                break;
             default:
                 ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
                       message->GetIdentifier());
@@ -177,6 +183,37 @@ bool NetworkManagerServer::ReadChallengeResponseMessage(ClientData& client,
     client.state = ClientConnectionState::AUTHENTICATED;
     return true;
 }
+bool NetworkManagerServer::ReadLoginMessage(ClientData& client,
+                                            const std::shared_ptr<Message> message)
+{
+    auto castMsg = std::static_pointer_cast<ClientLoginMessage>(message);
+
+    // successfully got the response, move to authenticated client
+    client.userName = castMsg->userName;
+    uint32_t id = GenerateSalt();
+    client.gameId = id;
+    client.state = ClientConnectionState::LOGGED_IN;
+    INFO("Logging in {} with id {}", client.userName, client.gameId);
+
+    std::vector<std::tuple<uint32_t, std::string>> loggedInClients;
+
+    // PIMP save this so we don't create it each time?
+    for (auto& element : cData)
+    {
+        auto& c = element.second;
+        loggedInClients.emplace_back(c.gameId, c.userName);
+    }
+
+    // PIMP will copy the whole vector. Probably fine?
+    auto resp = std::make_unique<ClientLoginResponse>(client.gameId, loggedInClients);
+    // respond to this client only
+    client.packetManager.SendMessage(std::move(resp));
+
+    // TODO: Tell everyone else about the new client
+    return true;
+}
+
+// bool NetworkManagerServer::QueueBroadCastMessage(){}
 
 bool NetworkManagerServer::ReadConnectionRequestMessage(ClientData& client,
                                                         const std::shared_ptr<Message> message)
@@ -217,7 +254,8 @@ void NetworkManagerServer::SendOutgoingPackets()
 
         std::shared_ptr<ReliableOrderedPacket> packet;
 
-        if (client.state == ClientConnectionState::AUTHENTICATED)
+        if (client.state == ClientConnectionState::AUTHENTICATED ||
+            client.state == ClientConnectionState::LOGGED_IN)
         {
             // This is stupid. Why do I have to cast it to reach and and set it?
             packet = client.packetManager.WritePacket(AuthenticatedPacket::CLASS_ID);
@@ -230,8 +268,6 @@ void NetworkManagerServer::SendOutgoingPackets()
             packet = client.packetManager.WritePacket(UnauthenticatedPacket::CLASS_ID);
             TRACE("Sending anuthed packet with {} messages", packet->messages->size());
         }
-
-        client.packetManager.StepTime(0.1);
 
         auto stream = OutputMemoryBitStream();
         auto good = packetSerializer->WritePacket(packet, stream);

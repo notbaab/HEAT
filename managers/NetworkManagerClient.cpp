@@ -4,6 +4,8 @@
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
+#include "messages/ClientLoginMessage.h"
+#include "messages/ClientLoginResponse.h"
 #include "messages/ClientWelcomeMessage.h"
 #include "networking/SocketAddressFactory.h"
 #include "packets/AuthenticatedPacket.h"
@@ -11,14 +13,17 @@
 #include "packets/UnauthenticatedPacket.h"
 
 void NetworkManagerClient::StaticInit(std::string serverAddress,
-                                      std::shared_ptr<PacketSerializer> packetSerializer)
+                                      std::shared_ptr<PacketSerializer> packetSerializer,
+                                      std::string userName)
 {
-    sInstance.reset(new NetworkManagerClient(serverAddress, packetSerializer));
+    sInstance.reset(new NetworkManagerClient(serverAddress, packetSerializer, userName));
 }
 
 NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
-                                           std::shared_ptr<PacketSerializer> packetSerializer)
-    : packetManager(PacketManager(packetSerializer)), NetworkManager(packetSerializer)
+                                           std::shared_ptr<PacketSerializer> packetSerializer,
+                                           std::string userName)
+    : packetManager(PacketManager(packetSerializer)), NetworkManager(packetSerializer),
+      userName(userName)
 {
     logger::InitLog(logger::level::DEBUG, "Network Manager Client");
     DEBUG("Made NetworkManagerClient");
@@ -54,6 +59,7 @@ void NetworkManagerClient::dataRecievedCallback(SocketAddress fromAddress,
             handled = HandleUnauthenticatedPacket(packet);
             break;
         case CurrentConnectionState::AUTHENTICATED:
+        case CurrentConnectionState::LOGGED_IN:
             handled = HandleAuthenticatedPacket(packet);
             break;
         }
@@ -99,7 +105,6 @@ bool NetworkManagerClient::HandleAuthenticatedPacket(const std::shared_ptr<Packe
 
 void NetworkManagerClient::ProcessMessages()
 {
-    // DEBUG("Processing Messages");
     messageBuf.clear();
     packetManager.ReceiveMessages(messageBuf);
     TRACE("Processing {} messages", messageBuf.size());
@@ -110,10 +115,25 @@ void NetworkManagerClient::ProcessMessages()
         case ClientConnectionChallengeMessage::CLASS_ID:
             ReadChallengeMessage(message);
             break;
+        case ClientLoginResponse::CLASS_ID:
+            ReadLoginMessage(message);
+            break;
         default:
             ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
                   message->GetIdentifier());
         }
+    }
+}
+bool NetworkManagerClient::ReadLoginMessage(const std::shared_ptr<Message> message)
+{
+    auto cast = std::static_pointer_cast<ClientLoginResponse>(message);
+    this->clientId = cast->clientId;
+    INFO("Logged with id {}", cast->clientId)
+    this->connectionState = CurrentConnectionState::LOGGED_IN;
+    for (auto& idNameTup : cast->currentClients)
+    {
+        INFO("Current clients and ids are {} Id {}", std::get<0>(idNameTup),
+             std::get<1>(idNameTup));
     }
 }
 
@@ -132,15 +152,37 @@ bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> m
         std::make_unique<ClientConnectionChallengeResponseMessage>(this->xOrSalt);
 
     TRACE("Queueing challenge response");
-    this->packetManager.SendMessage(std::move(challengeResponse));
+    this->QueueMessage(std::move(challengeResponse));
+
+    // Login? I'm not sure if these in the right spot to do this but
+    auto loginRequest = std::make_unique<ClientLoginMessage>(this->userName);
+    this->QueueMessage(std::move(loginRequest));
+
     return true;
+}
+
+// queue up any messages it needs to send out. This could be the actual
+// logging in message or any of the game state input packets
+void NetworkManagerClient::Update()
+{
+    if (connectionState != CurrentConnectionState::AUTHENTICATED)
+    {
+        TRACE("Not authenticated yet, don't do anything");
+        return;
+    }
+}
+
+void NetworkManagerClient::QueueMessage(std::unique_ptr<Message> messageToQueue)
+{
+    this->packetManager.SendMessage(std::move(messageToQueue));
 }
 
 // Create an output stream and write out our outgoing packet
 void NetworkManagerClient::SendOutgoingPackets()
 {
     std::shared_ptr<ReliableOrderedPacket> packet;
-    if (connectionState == CurrentConnectionState::AUTHENTICATED)
+    if (connectionState == CurrentConnectionState::AUTHENTICATED ||
+        connectionState == CurrentConnectionState::LOGGED_IN)
     {
         // TODO: We should just have the packet manager know if it's writing
         // an unreliable or reliable packet
@@ -165,4 +207,6 @@ void NetworkManagerClient::SendOutgoingPackets()
 
     // ship it into the ether
     socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(), *serverAddress);
+
+    // TODO: send it to the debug port as well. From there it can be recorded or discarded
 }
