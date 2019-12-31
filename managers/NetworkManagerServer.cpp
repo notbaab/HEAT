@@ -145,9 +145,7 @@ void NetworkManagerServer::ProcessMessages()
         client.packetManager.ReceiveMessages(messageBuf);
         for (auto const& message : messageBuf)
         {
-            // Maybe gaurd these with what state the client is in so we can just
-            // ignore messages that don't fit with what we are currently doing.
-            switch (message->GetIdentifier())
+            switch (message->GetClassIdentifier())
             {
             case ClientConnectionRequestMessage::CLASS_ID:
                 ReadConnectionRequestMessage(client, message);
@@ -160,7 +158,7 @@ void NetworkManagerServer::ProcessMessages()
                 break;
             default:
                 ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
-                      message->GetIdentifier());
+                      message->GetClassIdentifier());
             }
         }
     }

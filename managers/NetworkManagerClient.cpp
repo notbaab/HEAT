@@ -110,7 +110,7 @@ void NetworkManagerClient::ProcessMessages()
     TRACE("Processing {} messages", messageBuf.size());
     for (auto const& message : messageBuf)
     {
-        switch (message->GetIdentifier())
+        switch (message->GetClassIdentifier())
         {
         case ClientConnectionChallengeMessage::CLASS_ID:
             ReadChallengeMessage(message);
@@ -120,10 +120,11 @@ void NetworkManagerClient::ProcessMessages()
             break;
         default:
             ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
-                  message->GetIdentifier());
+                  message->GetClassIdentifier());
         }
     }
 }
+
 bool NetworkManagerClient::ReadLoginMessage(const std::shared_ptr<Message> message)
 {
     auto cast = std::static_pointer_cast<ClientLoginResponse>(message);

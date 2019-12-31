@@ -5,7 +5,7 @@
 class ClientLoginResponse : public Message
 {
   public:
-    IDENTIFIER(ClientLoginResponse, 'LOGR');
+    CLASS_IDENTIFIER(ClientLoginResponse, 'LOGR');
     SERIALIZER;
 
     template <typename Stream>

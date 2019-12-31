@@ -9,8 +9,8 @@
     bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
     bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
 
-#define IDENTIFIER(cls, class_id)                                                                  \
-    uint32_t GetIdentifier() const override { return cls::CLASS_ID; }                              \
+#define CLASS_IDENTIFIER(cls, class_id)                                                            \
+    uint32_t GetClassIdentifier() const override { return cls::CLASS_ID; }                         \
     static const uint32_t CLASS_ID = class_id;
 
 // The same as a packet pretty much but holds game data. A distinction I'm
@@ -23,7 +23,7 @@ class Message
 
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;
-    virtual uint32_t GetIdentifier() const = 0;
+    virtual uint32_t GetClassIdentifier() const = 0;
 
     void AssignId(uint16_t id) { this->id = id; }
     uint16_t GetId() { return id; }
@@ -45,7 +45,7 @@ class Message
     {
         // May need to check endianness of the platform we are on.
         // Probably
-        uint32_t identifier = GetIdentifier();
+        uint32_t identifier = GetClassIdentifier();
         auto s = StringFromId(identifier);
         return s;
     }

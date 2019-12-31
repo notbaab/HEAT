@@ -6,7 +6,7 @@ class ClientWelcomeMessage : public Message
 {
   public:
     std::string name;
-    IDENTIFIER(ClientWelcomeMessage, 'WLCM');
+    CLASS_IDENTIFIER(ClientWelcomeMessage, 'WLCM');
     SERIALIZER;
 
     ClientWelcomeMessage(){};

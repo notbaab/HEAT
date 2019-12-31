@@ -42,7 +42,6 @@ MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
         auto identifier = Message::StringFromId(id);
         if (messageConstructors.find(id) == messageConstructors.end())
         {
-            // auto identifier = Message::StringFromId(id);
             std::cout << "No message constructor for type " << identifier << std::endl;
             // TODO: So we just bomb out here? Maybe a little less...dramatic would be better. Or
             // configure it
@@ -63,7 +62,7 @@ bool MessageSerializer::WriteMessages(
 {
     for (auto const& message : *messages)
     {
-        uint32_t id = message->GetIdentifier();
+        uint32_t id = message->GetClassIdentifier();
         auto identifier = Message::StringFromId(id);
         out.Write(id);
         message->Write(out);
