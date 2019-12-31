@@ -4,7 +4,7 @@
 class ClientConnectionChallengeResponseMessage : public Message
 {
   public:
-    IDENTIFIER(ClientConnectionChallengeResponseMessage, 'CCRP');
+    CLASS_IDENTIFIER(ClientConnectionChallengeResponseMessage, 'CCRP');
     SERIALIZER;
 
     template <typename Stream>

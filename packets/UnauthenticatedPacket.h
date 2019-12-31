@@ -4,7 +4,7 @@
 class UnauthenticatedPacket : public ReliableOrderedPacket
 {
   public:
-    IDENTIFIER(UnauthenticatedPacket, 'URPK');
+    CLASS_IDENTIFIER(UnauthenticatedPacket, 'URPK');
     SERIALIZER;
 
     UnauthenticatedPacket(std::shared_ptr<MessageSerializer> factory)

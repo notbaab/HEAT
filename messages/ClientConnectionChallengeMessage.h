@@ -3,7 +3,7 @@
 class ClientConnectionChallengeMessage : public Message
 {
   public:
-    IDENTIFIER(ClientConnectionChallengeMessage, 'CCCM');
+    CLASS_IDENTIFIER(ClientConnectionChallengeMessage, 'CCCM');
     SERIALIZER;
 
     template <typename Stream>

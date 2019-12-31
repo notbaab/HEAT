@@ -4,7 +4,7 @@
 class AuthenticatedPacket : public ReliableOrderedPacket
 {
   public:
-    IDENTIFIER(AuthenticatedPacket, 'ARPK')
+    CLASS_IDENTIFIER(AuthenticatedPacket, 'ARPK')
     SERIALIZER
     uint32_t expectedSalt;
 

@@ -4,7 +4,7 @@
 class ClientLoginMessage : public Message
 {
   public:
-    IDENTIFIER(ClientLoginMessage, 'LOGI');
+    CLASS_IDENTIFIER(ClientLoginMessage, 'LOGI');
     SERIALIZER;
 
     template <typename Stream>

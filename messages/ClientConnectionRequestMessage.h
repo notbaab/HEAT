@@ -3,7 +3,7 @@
 class ClientConnectionRequestMessage : public Message
 {
   public:
-    IDENTIFIER(ClientConnectionRequestMessage, 'CCRM');
+    CLASS_IDENTIFIER(ClientConnectionRequestMessage, 'CCRM');
     SERIALIZER;
 
     // Message contains no information

@@ -5,7 +5,7 @@
 class PlayerMessage : public Message
 {
   public:
-    IDENTIFIER(PlayerMessage, 'PLAY');
+    CLASS_IDENTIFIER(PlayerMessage, 'PLAY');
 
     SERIALIZER;
 
