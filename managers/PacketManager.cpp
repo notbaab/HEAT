@@ -68,11 +68,10 @@ bool PacketManager::CanSendMessage() const
 
 // Refactor to QueueMessage since it doesn't send a message, just adds it to the
 // queue to be written on the next write packet call
-void PacketManager::SendMessage(std::unique_ptr<Message> message)
+void PacketManager::SendMessage(std::shared_ptr<Message> message)
 {
     assert(message);
     assert(CanSendMessage());
-
 
     // Insert into queue
     MessageSendQueueEntry* entry = m_messageSendQueue->Insert(m_sendMessageId);
