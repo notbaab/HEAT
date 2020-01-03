@@ -9,6 +9,7 @@ namespace holistic
 // create functions
 void SetupWorld()
 {
+    EventManager::StaticInit();
     gameobjects::World::StaticInit();
 
     // create registry and add all the creation functions we know about

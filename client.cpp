@@ -5,13 +5,17 @@
 #include <thread>
 #include <unordered_map>
 
+// Yeah this is too many includes
 #include "IO/InputMemoryBitStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
+#include "events/Event.h"
+#include "events/EventManager.h"
 #include "gameobjects/Player.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/SimpleGameObject.h"
+#include "gameobjects/World.h"
 #include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/GraphicsDriver.h"
 #include "graphics/RenderManager.h"
@@ -94,6 +98,9 @@ bool DoFrame()
         }
     }
 
+    // TODO: Add timing
+    EventManager::sInstance->FireEvents(10);
+
     RenderManager::sInstance->Render();
 
     NetworkManagerClient::sInstance->SendOutgoingPackets();
@@ -103,6 +110,27 @@ bool DoFrame()
 
 void AddGameObjectToWorld(GameObjectPtr ptr) {}
 
+void SetupNetworking(std::string serverDestination)
+{
+    // Make a test packet and see if it makes it to the other side
+    auto messageSerializer = std::make_shared<MessageSerializer>();
+    AddMessageCtor(messageSerializer, PlayerMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionChallengeMessage);
+    AddMessageCtor(messageSerializer, ClientLoginMessage);
+    AddMessageCtor(messageSerializer, ClientLoginResponse);
+
+    // Event constructors. Events are also messages
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
+    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
+    AddPacketCtor(packetSerializer, AuthenticatedPacket);
+
+    NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
+}
+void SetupEventListeners()
+{
+    EventManager::StaticInit();
+}
 void initStuffs()
 {
     logger::InitLog(logger::level::TRACE, "Main Logger");
@@ -117,40 +145,25 @@ void initStuffs()
 
     std::string destination = "127.0.0.1:4500";
 
-    std::random_device rd;
-    std::mt19937 eng(rd());
-    // Mainly for testing. The server is 4500 so pick a random port to be the client
-    std::uniform_int_distribution<> distr(4501, 10000);
+    SetupNetworking(destination);
+    SetupEventListeners();
 
-    // Make a test packet and see if it makes it to the other side
-    auto messageSerializer = std::make_shared<MessageSerializer>();
-    AddMessageCtor(messageSerializer, PlayerMessage);
-    AddMessageCtor(messageSerializer, ClientConnectionChallengeMessage);
-    AddMessageCtor(messageSerializer, ClientLoginMessage);
-    AddMessageCtor(messageSerializer, ClientLoginResponse);
-
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
-    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
-    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
-    AddPacketCtor(packetSerializer, AuthenticatedPacket);
-
-    NetworkManagerClient::StaticInit(destination, packetSerializer, "Joe Mamma");
     NetworkManagerClient::sInstance->StartServerHandshake();
     NetworkManagerClient::sInstance->SendOutgoingPackets();
 
-    auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
-    auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
+    // auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
+    // auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
 
-    auto pirateShip = SimpleGameObject();
-    auto megaMan = SimpleGameObject();
+    // auto pirateShip = SimpleGameObject();
+    // auto megaMan = SimpleGameObject();
 
-    auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
+    // auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
 
-    auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
-    auto megaManComponent =
-        AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
+    // auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
+    // auto megaManComponent =
+    //     AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
 
-    megaManComponent.ChangeAnimation("first");
+    // megaManComponent.ChangeAnimation("first");
     // RenderManager::sInstance->AddComponent(&pirateComponent);
     // RenderManager::sInstance->AddComponent(&megaManComponent);
 
