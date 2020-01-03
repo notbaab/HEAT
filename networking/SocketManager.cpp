@@ -91,6 +91,7 @@ int SocketManager::SendTo(const void* data, int length, const SocketAddress& toA
 void SocketManager::receiveLoop()
 {
     SocketAddress fromAddress;
+    // PIMP: Do some sort of select on the socket maybe?
     while (true)
     {
         // TODO: Pool memory?

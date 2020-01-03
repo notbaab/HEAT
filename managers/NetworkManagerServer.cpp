@@ -1,5 +1,8 @@
 #include "NetworkManagerServer.h"
 #include "PacketManager.h"
+#include "events/CreatePlayerOwnedObject.h"
+#include "events/EventManager.h"
+#include "gameobjects/Player.h"
 #include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
@@ -62,20 +65,6 @@ void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
         case ClientConnectionState::DISCONNECTED:
             break;
         }
-
-        // Should I guard this with some sort of class check?
-        // auto cast = std::static_pointer_cast<ReliableOrderedPacket>(packet);
-        // auto cast = std::static_pointer_cast<AuthenticatedPacket>(packet);
-        // bool weGood = clientManager.ReadPacket(cast);
-
-        // if (!weGood)
-        // {
-        //     std::cout << "well fuck me" << std::endl;
-        // }
-        // else
-        // {
-        //     std::cout << "Damn son, we got that shit" << std::endl;
-        // }
     }
 }
 
@@ -218,6 +207,11 @@ bool NetworkManagerServer::ReadLoginMessage(ClientData& client,
     // respond to this client only
     client.packetManager.SendMessage(std::move(resp));
 
+    // queue event to create a player owned player object
+    auto createPlayer =
+        std::make_shared<CreatePlayerOwnedObject>(client.gameId, gameobjects::PLAYER_ID);
+    EventManager::sInstance->QueueEvent(createPlayer);
+
     // TODO: Tell everyone else about the new client
     return true;
 }
@@ -275,7 +269,7 @@ void NetworkManagerServer::SendOutgoingPackets()
         else
         {
             packet = client.packetManager.WritePacket(UnauthenticatedPacket::CLASS_ID);
-            TRACE("Sending anuthed packet with {} messages", packet->messages->size());
+            TRACE("Sending unauthed packet with {} messages", packet->messages->size());
         }
 
         auto stream = OutputMemoryBitStream();
@@ -288,6 +282,25 @@ void NetworkManagerServer::SendOutgoingPackets()
         // ship it into the ether
         socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(),
                              client.socketAddress);
+    }
+}
+
+// // Callback that can be attatched to events that need to be sent out to the connected
+// // clients as messages
+void NetworkManagerServer::EventForwarder(std::shared_ptr<Event> evt)
+{
+    // Event is
+    INFO("Forwarding event");
+    BroadcastMessage(evt);
+}
+
+void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
+{
+    // For now, create a copy for every client. Oh well.
+    for (auto& element : cData)
+    {
+        auto& client = element.second;
+        client.packetManager.SendMessage(msg);
     }
 }
 

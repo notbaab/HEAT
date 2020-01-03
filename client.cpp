@@ -10,6 +10,8 @@
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
+#include "events/CreateGameObject.h"
+#include "events/CreatePlayerOwnedObject.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
 #include "gameobjects/Player.h"
@@ -120,6 +122,8 @@ void SetupNetworking(std::string serverDestination)
     AddMessageCtor(messageSerializer, ClientLoginResponse);
 
     // Event constructors. Events are also messages
+    AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
+
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddPacketCtor(packetSerializer, UnauthenticatedPacket);
@@ -127,10 +131,18 @@ void SetupNetworking(std::string serverDestination)
 
     NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
 }
+
 void SetupEventListeners()
 {
     EventManager::StaticInit();
+
+    // World listens for requests to add objects
+    auto addObject =
+        CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
+
+    EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
 }
+
 void initStuffs()
 {
     logger::InitLog(logger::level::TRACE, "Main Logger");
