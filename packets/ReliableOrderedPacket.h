@@ -20,11 +20,14 @@ class ReliableOrderedPacket : public Packet
 
     // TODO: Should this be a pointer to a vector? And just unique ptrs?
     std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages;
+
     // Sequence number of this packet
     uint32_t sequenceNumber;
+    uint32_t ackBits;
     uint16_t ack;
     uint16_t numMessages;
-    uint32_t ackBits;
+    // Assigned externally by the packet manager when writing packets
+    uint16_t messageIds[32];
 
     template <typename Stream>
     bool Serialize(Stream& stream)
@@ -46,7 +49,6 @@ class ReliableOrderedPacket : public Packet
         stream.serialize(numMessages);
 
         // read the message ids of the messages included in this packet
-        uint16_t messageIds[32];
         for (int i = 0; i < numMessages; i++)
         {
             stream.serialize(messageIds[i]);
@@ -54,9 +56,9 @@ class ReliableOrderedPacket : public Packet
 
         messages = messageFactory->ReadMessages(stream, numMessages);
 
-        // go into the messages and assign their ids.Why aren't these in the messages
-        // them selves? Well technically they aren't the ones that assign it
-        // when they get created so it kinda makes sense.
+        // go into the messages and assign their ids.
+        // Why aren't these in the messages them selves you may ask? Well the
+        // assignment happens by the packet manager to keep track of it
         for (int i = 0; i < numMessages; i++)
         {
             (*messages)[i]->AssignId(messageIds[i]);
@@ -69,9 +71,12 @@ class ReliableOrderedPacket : public Packet
     {
         numMessages = messages->size();
         stream.serialize(numMessages);
+
+        // PIMP There should be some sort of way to tell if the messageIds were
+        // initialized. We are doing this based on trust now which makes me queasy
         for (int i = 0; i < numMessages; i++)
         {
-            stream.serialize((*messages)[i]->GetId());
+            stream.serialize(messageIds[i]);
         }
 
         messageFactory->WriteMessages(messages, stream);

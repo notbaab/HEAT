@@ -18,17 +18,29 @@
 class Message
 {
   public:
-    Message() {}
+    Message() { this->idAssigned = false; }
     virtual ~Message() {}
 
     virtual bool Read(InputMemoryBitStream& stream) = 0;
     virtual bool Write(OutputMemoryBitStream& stream) = 0;
     virtual uint32_t GetClassIdentifier() const = 0;
 
-    void AssignId(uint16_t id) { this->id = id; }
-    uint16_t GetId() { return id; }
+    virtual uint32_t GetTypeIdentifier() const { return 'BMSG'; }
 
-    //
+    // Messages are assigned IDs when they are read only. When writing
+    // we write the id in a different way...
+    void AssignId(uint16_t id)
+    {
+        this->idAssigned = true;
+        this->id = id;
+    }
+
+    uint16_t GetId()
+    {
+        assert(idAssigned);
+        return id;
+    }
+
     static std::string StringFromId(uint32_t identifier)
     {
         // Need to check endianness of the platform we are on.
@@ -53,4 +65,5 @@ class Message
   protected:
     // essentially the sequence number
     uint16_t id;
+    bool idAssigned;
 };
