@@ -1,9 +1,11 @@
 #pragma once
 
-#include "IO/InputMemoryBitStream.h"
-#include "IO/OutputMemoryBitStream.h"
+#include <assert.h>
 #include <cstdint>
 #include <functional>
+
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
 
 #define SERIALIZER                                                                                 \
     bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
