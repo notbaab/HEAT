@@ -10,7 +10,6 @@
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
-#include "events/CreateGameObject.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
