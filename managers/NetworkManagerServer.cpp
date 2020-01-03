@@ -143,8 +143,19 @@ void NetworkManagerServer::ProcessMessages()
         messageBuf.clear();
         auto& client = cDataElement.second;
         client.packetManager.ReceiveMessages(messageBuf);
+
         for (auto const& message : messageBuf)
         {
+            // If a game event, feed into the event manager cause we don't
+            // need to do anything
+            if (message->GetTypeIdentifier() == Event::TYPE_ID)
+            {
+                auto evt = std::static_pointer_cast<Event>(message);
+                EventManager::sInstance->QueueEvent(evt);
+                continue;
+            }
+
+            //
             switch (message->GetClassIdentifier())
             {
             case ClientConnectionRequestMessage::CLASS_ID:

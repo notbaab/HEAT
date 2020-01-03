@@ -1,5 +1,7 @@
 #include "NetworkManagerClient.h"
 #include "PacketManager.h"
+#include "events/Event.h"
+#include "events/EventManager.h"
 #include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
@@ -108,8 +110,19 @@ void NetworkManagerClient::ProcessMessages()
     messageBuf.clear();
     packetManager.ReceiveMessages(messageBuf);
     TRACE("Processing {} messages", messageBuf.size());
+
     for (auto const& message : messageBuf)
     {
+        // If a game event, feed into the event manager cause we don't
+        // need to do anything
+        if (message->GetTypeIdentifier() == Event::TYPE_ID)
+        {
+            auto evt = std::static_pointer_cast<Event>(message);
+            EventManager::sInstance->QueueEvent(evt);
+            continue;
+        }
+
+        // Not an event, maybe we handle it?
         switch (message->GetClassIdentifier())
         {
         case ClientConnectionChallengeMessage::CLASS_ID:
@@ -136,6 +149,8 @@ bool NetworkManagerClient::ReadLoginMessage(const std::shared_ptr<Message> messa
         INFO("Current clients and ids are {} Id {}", std::get<0>(idNameTup),
              std::get<1>(idNameTup));
     }
+
+    return true;
 }
 
 bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> message)
