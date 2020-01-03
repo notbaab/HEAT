@@ -4,8 +4,8 @@
 class ClientLoginMessage : public Message
 {
   public:
-    CLASS_IDENTIFIER(ClientLoginMessage, 'LOGI');
-    SERIALIZER;
+    CLASS_IDENTIFIER(ClientLoginMessage, 'LOGI')
+    SERIALIZER
 
     template <typename Stream>
     bool Serialize(Stream& stream)

@@ -11,8 +11,9 @@
 class SimpleGameObject
 {
   public:
-    virtual uint32_t GetClassId() const { return 9; }
-    SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
+    virtual uint32_t GetClassId() const = 0;
+    virtual ~SimpleGameObject(){};
+    // SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
 
     Vector3 GetLocation() { return centerLocation; }
     // std::string getSpriteSheet() { return spriteSheetData.sheetLoc; }
@@ -20,7 +21,7 @@ class SimpleGameObject
     uint16_t GetRotation() { return rotation; }
 
     // Simple update function called every tick
-    void Update();
+    virtual void Update() = 0;
 
     uint16_t rotation;
     Vector3 centerLocation;

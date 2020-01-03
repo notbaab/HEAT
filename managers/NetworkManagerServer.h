@@ -9,6 +9,9 @@
 #include "NetworkManager.h"
 #include "PacketManager.h"
 
+class Event;
+class Message;
+
 class NetworkManagerServer : public NetworkManager
 {
   public:
@@ -21,6 +24,9 @@ class NetworkManagerServer : public NetworkManager
 
     virtual void dataRecievedCallback(SocketAddress fromAddressKey,
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
+
+    void EventForwarder(std::shared_ptr<Event> evt);
+    void BroadcastMessage(std::shared_ptr<Message> msg);
 
     bool HandleNewClient(ClientData& client, const std::shared_ptr<Packet> packet);
     bool HandleChallenedClient(ClientData& client, const std::shared_ptr<Packet> packet);
