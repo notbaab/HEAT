@@ -20,6 +20,7 @@ add_subdirectory(controls)
 add_subdirectory(gameobjects)
 add_subdirectory(engine)
 add_subdirectory(holistic)
+add_subdirectory(events)
 
 # Testing
 add_subdirectory(lib/catch)
@@ -50,6 +51,7 @@ set(shared_link_libs
         # messages
         networking
         packets
+        events
 )
 
 set(client_link_libs

@@ -13,6 +13,12 @@
     uint32_t GetClassIdentifier() const override { return cls::CLASS_ID; }                         \
     static const uint32_t CLASS_ID = class_id;
 
+#define TYPE_IDENTIFIER(cls, typeId)                                                               \
+    uint32_t GetTypeIdentifier() const override { return cls::TYPE_ID; }                           \
+    static const uint32_t TYPE_ID = typeId;
+
+const uint32_t MESSAGE_TYPE_ID = 'BMSG';
+
 // The same as a packet pretty much but holds game data. A distinction I'm
 // not quite sure I want to make yet
 class Message
@@ -25,7 +31,8 @@ class Message
     virtual bool Write(OutputMemoryBitStream& stream) = 0;
     virtual uint32_t GetClassIdentifier() const = 0;
 
-    virtual uint32_t GetTypeIdentifier() const { return 'BMSG'; }
+    // Can't use the #define cause it doesn't override anything since it's the base class
+    virtual uint32_t GetTypeIdentifier() const { return MESSAGE_TYPE_ID; }
 
     // Messages are assigned IDs when they are read only. When writing
     // we write the id in a different way...
