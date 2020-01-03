@@ -73,7 +73,6 @@ void PacketManager::SendMessage(std::unique_ptr<Message> message)
     assert(message);
     assert(CanSendMessage());
 
-    message->AssignId(m_sendMessageId);
 
     // Insert into queue
     MessageSendQueueEntry* entry = m_messageSendQueue->Insert(m_sendMessageId);
@@ -86,19 +85,6 @@ void PacketManager::SendMessage(std::unique_ptr<Message> message)
     entry->message = std::move(message);
     entry->measuredBits = 0;
     entry->timeLastSent = -1.0;
-
-    // MeasureStream measureStream(MessagePacketBudget / 2);
-
-    // message->SerializeInternal(measureStream);
-
-    // if (measureStream.GetError())
-    // {
-    //     m_error = CONNECTION_ERROR_MESSAGE_SERIALIZE_MEASURE_FAILED;
-    //     message->Release();
-    //     return;
-    // }
-
-    // entry->measuredBits = measureStream.GetBitsProcessed() + m_messageOverheadBits;
 
     m_sendMessageId++;
 }
@@ -131,6 +117,7 @@ void PacketManager::ReceiveMessages(std::vector<std::shared_ptr<Message>>& messa
     auto message = ReceiveMessage();
     uint16_t processed = 0;
 
+    // PIMP Size the vector when we start?
     while (message != NULL && processed <= max)
     {
         messages.emplace_back(message);
@@ -168,6 +155,10 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packe
     {
         MessageSendQueueEntry* entry = m_messageSendQueue->Find(messageIds[i]);
         assert(entry && entry->message);
+
+        // write the ids that the serializer will assign to the message on the
+        // receiving side.
+        packet->messageIds[i] = messageIds[i];
         // push back each message to the packet message vector
         packet->messages->push_back(entry->message);
     }
@@ -301,6 +292,9 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
     {
         std::shared_ptr<Message> message = (*messageRef)[i];
         assert(message);
+
+        // When reading a message, GetId is valid since it should have been
+        // assigned one
         const uint16_t messageId = message->GetId();
 
         // Already received this message, just waiting for a call to receive messages to
@@ -327,10 +321,7 @@ void PacketManager::ProcessPacketMessages(const ReliableOrderedPacket* packet)
 
         assert(entry);
 
-        if (entry)
-        {
-            entry->message = message;
-        }
+        entry->message = message;
     }
 }
 
@@ -357,8 +348,6 @@ void PacketManager::ProcessMessageAck(uint16_t ack)
         if (sendQueueEntry)
         {
             assert(sendQueueEntry->message);
-            assert(sendQueueEntry->message->GetId() == messageId);
-
             m_messageSendQueue->Remove(messageId);
         }
         else

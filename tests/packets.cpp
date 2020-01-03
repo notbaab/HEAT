@@ -154,6 +154,9 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         auto castPacket = static_cast<ReliableOrderedPacket*>(packet.get());
         castPacket->messages = std::move(message_vector);
 
+        castPacket->messageIds[0] = 14;
+        castPacket->messageIds[1] = 12;
+
         packetSerializer->WritePacket(std::move(packet), out);
 
         // go from the raw byte array back to a packet
