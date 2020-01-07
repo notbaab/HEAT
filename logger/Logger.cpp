@@ -54,7 +54,15 @@ std::shared_ptr<spdlog::logger> GetSpdLogger()
 {
     if (the_log == nullptr)
     {
-        InitLog(level::DEBUG, "default");
+        auto l = spdlog::get("default");
+        if (!l)
+        {
+            InitLog(level::DEBUG, "default");
+        }
+        else
+        {
+            the_log = l;
+        }
     }
 
     return the_log;
