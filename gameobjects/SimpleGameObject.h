@@ -1,8 +1,10 @@
 #pragma once
 
-#include "math/Vector3.h"
 #include <cstdint>
 #include <memory>
+
+#include "events/PhysicsComponentUpdate.h"
+#include "math/Vector3.h"
 
 #define CLASS_IDENTIFICATION(inCode)                                                               \
     virtual uint32_t GetClassId() const override { return inCode; }
@@ -25,6 +27,16 @@ class SimpleGameObject
 
     uint16_t rotation;
     Vector3 centerLocation;
+
+    // Game objects might not have a physics componenet
+    virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) = 0;
+
+    uint32_t GetWorldId() { return worldId; }
+    void SetWorldId(uint32_t worldId) { this->worldId = worldId; }
+
+  private:
+    // unique id in the world
+    uint32_t worldId;
 };
 
 typedef std::shared_ptr<SimpleGameObject> GameObjectPtr;

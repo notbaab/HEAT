@@ -2,10 +2,11 @@
 list(APPEND gameobject_src
     SimpleGameObject.cpp
     # Player.cpp
-    # PlayerClient.cpp
+    PlayerClient.cpp
     PlayerServer.cpp
     Registry.cpp
     World.cpp
+    WorldClient.cpp
 )
 
 add_library(gameobjects SHARED ${gameobject_src})
@@ -15,4 +16,4 @@ target_include_directories(gameobjects
         ${CMAKE_SOURCE_DIR}
 )
 
-target_link_libraries(gameobjects math)
+target_link_libraries(gameobjects math events logger io)

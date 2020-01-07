@@ -118,6 +118,7 @@ void NetworkManagerClient::ProcessMessages()
         if (message->GetTypeIdentifier() == Event::TYPE_ID)
         {
             auto evt = std::static_pointer_cast<Event>(message);
+            INFO("Queing event {}", message->IdentifierToString());
             EventManager::sInstance->QueueEvent(evt);
             continue;
         }

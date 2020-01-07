@@ -12,18 +12,20 @@ class CreatePlayerOwnedObject : public Event
     SERIALIZER
 
     CreatePlayerOwnedObject(){};
-    CreatePlayerOwnedObject(uint32_t playerId, uint32_t gameObjectId)
-        : playerId(playerId), gameObjectId(gameObjectId){};
+    CreatePlayerOwnedObject(uint32_t playerId, uint32_t objType, uint32_t worldId)
+        : playerId(playerId), objType(objType), worldId(worldId){};
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
         stream.serialize(playerId);
-        stream.serialize(gameObjectId);
+        stream.serialize(objType);
+        stream.serialize(worldId);
 
         return true;
     }
 
     uint32_t playerId;
-    uint32_t gameObjectId;
+    uint32_t objType;
+    uint32_t worldId;
 };

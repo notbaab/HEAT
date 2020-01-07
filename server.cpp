@@ -7,10 +7,10 @@
 #include <sys/un.h>
 
 #include "engine/Engine.h"
+#include "events/EventManager.h"
+#include "gameobjects/World.h"
 #include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
-
-#include "events/EventManager.h"
 #include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
 #include "messages/PlayerMessage.h"
@@ -34,6 +34,7 @@ bool tick()
 
     // Event manager fire events the the client has sent over and any that were in
     // the old queue?
+    gameobjects::World::sInstance->Update();
     // World update stuff. Queues events that it needs to notify other players and
     // system
 

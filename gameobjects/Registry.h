@@ -10,7 +10,7 @@ namespace gameobjects
 {
 
 using GameObjectCreationFunc = std::function<std::unique_ptr<SimpleGameObject>()>;
-using AddToWorldFunction = std::function<void(GameObjectPtr)>;
+using AddToWorldFunction = std::function<void(GameObjectPtr, uint32_t)>;
 
 class Registry
 {
