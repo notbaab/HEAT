@@ -1,5 +1,6 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
+#include "events/PhysicsComponentUpdate.h"
 #include "gameobjects/PlayerServer.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
@@ -25,6 +26,7 @@ void SetupWorld()
     auto evtForwarder =
         CREATE_DELEGATE(&NetworkManagerServer::EventForwarder, NetworkManagerServer::sInstance);
     EventManager::sInstance->AddListener(evtForwarder, CreatePlayerOwnedObject::EVENT_TYPE);
+    EventManager::sInstance->AddListener(evtForwarder, PhysicsComponentUpdate::EVENT_TYPE);
 
     // World listens for requests to add objects
     auto addObject =

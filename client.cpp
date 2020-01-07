@@ -13,10 +13,12 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
-#include "gameobjects/Player.h"
+#include "events/PhysicsComponentUpdate.h"
+#include "gameobjects/PlayerClient.h"
 #include "gameobjects/Registry.h"
+#include "gameobjects/SetupGameObjects.h"
 #include "gameobjects/SimpleGameObject.h"
-#include "gameobjects/World.h"
+#include "gameobjects/WorldClient.h"
 #include "graphics/AnimatedSpriteComponent.h"
 #include "graphics/GraphicsDriver.h"
 #include "graphics/RenderManager.h"
@@ -122,6 +124,7 @@ void SetupNetworking(std::string serverDestination)
 
     // Event constructors. Events are also messages
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
+    AddMessageCtor(messageSerializer, PhysicsComponentUpdate);
 
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
@@ -131,15 +134,26 @@ void SetupNetworking(std::string serverDestination)
     NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
 }
 
-void SetupEventListeners()
+void SetupWorld()
 {
     EventManager::StaticInit();
 
+    gameobjects::WorldClient::StaticInit();
+    gameobjects::SetupLogger(logger::level::INFO);
+
+    // create registry and add all the creation functions we know about
+    gameobjects::Registry::StaticInit(gameobjects::WorldClient::StaticAddGameObject);
+    gameobjects::Registry::sInstance->RegisterCreationFunction(
+        gameobjects::PLAYER_ID, gameobjects::PlayerClient::StaticCreate);
+
     // World listens for requests to add objects
-    auto addObject =
-        CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
+    auto addObject = CREATE_DELEGATE(&gameobjects::WorldClient::OnAddObject,
+                                     gameobjects::WorldClient::sInstance);
+    auto stateUpdate = CREATE_DELEGATE(&gameobjects::WorldClient::OnStateUpdateMessage,
+                                       gameobjects::WorldClient::sInstance);
 
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
+    EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
 }
 
 void initStuffs()
@@ -147,17 +161,16 @@ void initStuffs()
     logger::InitLog(logger::level::TRACE, "Main Logger");
     if (!startSDL())
     {
-        std::cout << "NOPE" << std::endl;
+        ERROR("Can't initialize sdl, bailing");
         SDL_Quit();
     };
 
     DEBUG("Starting Client")
-    holistic::SetupWorld();
 
     std::string destination = "127.0.0.1:4500";
 
     SetupNetworking(destination);
-    SetupEventListeners();
+    SetupWorld();
 
     NetworkManagerClient::sInstance->StartServerHandshake();
     NetworkManagerClient::sInstance->SendOutgoingPackets();

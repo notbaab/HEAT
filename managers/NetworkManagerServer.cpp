@@ -3,6 +3,7 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
 #include "gameobjects/Player.h"
+#include "gameobjects/World.h"
 #include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
@@ -208,8 +209,7 @@ bool NetworkManagerServer::ReadLoginMessage(ClientData& client,
     client.packetManager.SendMessage(std::move(resp));
 
     // queue event to create a player owned player object
-    auto createPlayer =
-        std::make_shared<CreatePlayerOwnedObject>(client.gameId, gameobjects::PLAYER_ID);
+    auto createPlayer = gameobjects::World::sInstance->CreatePlayerCreationEvent(client.gameId);
     EventManager::sInstance->QueueEvent(createPlayer);
 
     // TODO: Tell everyone else about the new client
