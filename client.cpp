@@ -56,8 +56,16 @@ int __argc;
 
 #define TESTSHIP "ship (24).png"
 
-// Init all the static things
-bool startSDL()
+void KeyPressed(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
+void KeyReleased(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
+
+void LoadTextures()
+{
+    SpriteSheetData::RegisterSpriteSheetData(gameobjects::PlayerSheetKey, TESTANIMATEDSHEET,
+                                             TESTANIMATEDDATA);
+}
+
+bool SetupRenderer()
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -72,11 +80,9 @@ bool startSDL()
     }
 
     RenderManager::StaticInit();
+    LoadTextures();
     return true;
 }
-
-void KeyPressed(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
-void KeyReleased(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
 
 //
 bool DoFrame()
@@ -159,7 +165,7 @@ void SetupWorld()
 void initStuffs()
 {
     logger::InitLog(logger::level::TRACE, "Main Logger");
-    if (!startSDL())
+    if (!SetupRenderer())
     {
         ERROR("Can't initialize sdl, bailing");
         SDL_Quit();

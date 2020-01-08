@@ -2,10 +2,13 @@
 
 #include "Player.h"
 #include "events/EventManager.h"
-#include "graphics/DrawableComponent.h"
+#include "graphics/AnimatedSpriteComponent.h"
+#include "graphics/RenderManager.h"
 
 namespace gameobjects
 {
+
+const std::string PlayerSheetKey = "player";
 
 class PlayerClient : public Player
 {
@@ -19,13 +22,22 @@ class PlayerClient : public Player
         // EventManager::sInstance->AddListener(EventListenerFunction eventDelegate, uint32_t
         // eventType)
 
+        RenderManager::sInstance->AddComponent(instance->drawable.get());
+
         return std::move(instance);
     }
 
     void Update() override;
 
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
-    PlayerClient() : stateDirty(true) {}
+
+    PlayerClient() : stateDirty(true)
+    {
+        auto playerSheet = SpriteSheetData::GetSheetData(PlayerSheetKey);
+        this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerClient>>(this, playerSheet);
+        // TODO: wut? This is stupid, do more better
+        this->drawable->ChangeAnimation("first");
+    }
 
   private:
     bool stateDirty;
@@ -34,7 +46,7 @@ class PlayerClient : public Player
     // objects locations or the location of the player after the unprocessed
     // moves have been applied.
     std::shared_ptr<PhysicsComponent> predictedState;
-    std::shared_ptr<DrawableComponent> drawable;
+    std::shared_ptr<AnimatedSpriteComponent<PlayerClient>> drawable;
 };
 
 } // namespace gameobjects

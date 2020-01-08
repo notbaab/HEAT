@@ -78,6 +78,6 @@ class StaticSpriteComponent : public DrawableComponent
 
     SDL_Texture* mTexture;
 
-    // I don't want circular reference...
+    // hmmm. This should probably be a weak ptr if we want to be all c++11 proper
     T* mGameObject;
 };

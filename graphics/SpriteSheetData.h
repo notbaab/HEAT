@@ -34,9 +34,11 @@ class SpriteSheetData
         std::ifstream ifs(dataLoc);
         rapidjson::IStreamWrapper isw(ifs);
         rapidjson::Document d;
+
         d.ParseStream(isw);
         if (d.HasParseError())
         {
+            std::cout << "ERROR loading data" << std::endl;
             return;
         }
 
@@ -82,4 +84,23 @@ class SpriteSheetData
     // map from name to single frame data on the give sprite sheet
     std::unordered_map<std::string, SingleFrameData> staticTextureMap;
     std::unordered_map<std::string, AnimationFrameData> animations;
+
+    static void RegisterSpriteSheetData(std::string name, std::string sheetLoc, std::string dataLoc)
+    {
+        auto sheetData = std::make_shared<SpriteSheetData>(sheetLoc, dataLoc);
+        Registry[name] = sheetData;
+    }
+
+    static std::shared_ptr<SpriteSheetData> GetSheetData(std::string name)
+    {
+        if (Registry.find(name) == Registry.end())
+        {
+            throw std::runtime_error("No data found for specified name");
+        }
+
+        return Registry[name];
+    }
+
+  private:
+    static inline std::unordered_map<std::string, std::shared_ptr<SpriteSheetData>> Registry;
 };

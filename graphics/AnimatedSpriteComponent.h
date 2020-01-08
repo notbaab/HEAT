@@ -14,16 +14,15 @@ template <typename T>
 class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
-    AnimatedSpriteComponent(T* inGameObject, std::string spriteSheetLoc,
-                            SpriteSheetAnimationFrameData frameData)
+    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData)
     {
         mGameObject = inGameObject;
-        mFrames = frameData;
+        mFrames = &sheetData->animations;
 
         // It is worth it to explore some sort of texture manager to cache textures.
         // Doing it this way means we load the texture for every sprite component.
         mTexture =
-            IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheetLoc.c_str());
+            IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), sheetData->sheetLoc.c_str());
     }
 
     ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
@@ -47,8 +46,8 @@ class AnimatedSpriteComponent : public DrawableComponent
     // TODO: Should it be a string still?
     void ChangeAnimation(std::string animation)
     {
-        currentAnimation = mFrames[animation];
-        framesInAnimation = mFrames[animation].size();
+        currentAnimation = (*mFrames)[animation];
+        framesInAnimation = (*mFrames)[animation].size();
         animationStartTime = SDL_GetTicks();
         animationIdx = 0;
     }
@@ -101,7 +100,7 @@ class AnimatedSpriteComponent : public DrawableComponent
 
     SDL_Texture* mTexture;
     // Animation Frame Data
-    SpriteSheetAnimationFrameData mFrames;
+    SpriteSheetAnimationFrameData* mFrames;
     // Book keeping for the current animation that is playing
     AnimationFrameData currentAnimation;
     uint32_t animationIdx;

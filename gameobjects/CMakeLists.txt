@@ -16,6 +16,7 @@ target_include_directories(gameobjects
         ${SDL2_INCLUDE_DIR}
         ${SDL2_IMAGE_INCLUDE_DIR}
         ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/lib
 )
 
 target_link_libraries(gameobjects graphics ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} math events logger io)
