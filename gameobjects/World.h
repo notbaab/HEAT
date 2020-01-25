@@ -26,7 +26,7 @@ class World
     virtual void OnAddObject(std::shared_ptr<Event> addGameObjEvent);
 
     void RemoveGameObject(GameObjectPtr inGameObject);
-    void Update();
+    void Update(uint32_t currentTime);
     std::shared_ptr<CreatePlayerOwnedObject> CreatePlayerCreationEvent(uint32_t playerId);
 
   protected:

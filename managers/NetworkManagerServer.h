@@ -36,10 +36,11 @@ class NetworkManagerServer : public NetworkManager
     bool ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message);
     bool ReadLoginMessage(ClientData& client, const std::shared_ptr<Message> message);
 
-    void Tick(double timeStep);
+    void Tick(uint32_t timeStep);
 
   protected:
     // Each client gets a packet manager as the manager is the thing that
     // manages the reliability of each message
     std::unordered_map<uint64_t, ClientData> cData;
+    uint32_t currentTime;
 };

@@ -47,6 +47,7 @@ void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
     }
 
     ClientData& client = cData.at(key);
+    client.lastHeardFrom = this->currentTime;
 
     // Loop over packets and depending on the state of the client, determine
     // if they are allowed to be sending those types of packets
@@ -67,6 +68,8 @@ void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
             break;
         }
     }
+
+    // Update last heard from time to now
 }
 
 // challenged clients will send authenticated packets but we only send it
@@ -304,10 +307,22 @@ void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
     }
 }
 
-void NetworkManagerServer::Tick(double timeStep)
+void NetworkManagerServer::Tick(uint32_t currentTime)
 {
-    for (auto& element : cData)
+    this->currentTime = currentTime;
+
+    for (auto it = cData.begin(); it != cData.end() /* not hoisted */; /* no increment */)
     {
-        element.second.packetManager.StepTime(timeStep);
+        auto& client = it->second;
+        if (currentTime - client.lastHeardFrom > 1000)
+        {
+            INFO("Client {}:{} not heard from, logging out", client.userName,
+                 client.socketAddress.ToString());
+            it = cData.erase(it);
+            continue;
+        }
+
+        client.packetManager.SetTime(currentTime);
+        it++;
     }
 }

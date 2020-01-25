@@ -27,6 +27,10 @@ class ClientData
     uint32_t clientSalt;
     uint32_t xOrSalt;
     uint32_t gameId;
+
+    // last time we heard from this client
+    uint32_t lastHeardFrom;
+
     std::string userName;
 
     SocketAddress socketAddress;

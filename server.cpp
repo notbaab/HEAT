@@ -24,7 +24,7 @@ std::shared_ptr<PacketManager> packetManager;
 std::vector<std::shared_ptr<Message>> messagesToProcess;
 std::shared_ptr<spdlog::logger> the_log;
 
-bool tick()
+bool tick(uint32_t currentTime)
 {
     // Read messages in a loop. messages can queue events
     NetworkManagerServer::sInstance->ProcessMessages();
@@ -34,7 +34,7 @@ bool tick()
 
     // Event manager fire events the the client has sent over and any that were in
     // the old queue?
-    gameobjects::World::sInstance->Update();
+    gameobjects::World::sInstance->Update(currentTime);
     // World update stuff. Queues events that it needs to notify other players and
     // system
 
@@ -43,7 +43,7 @@ bool tick()
     // This will actually be after game logic. I think? Idk
     NetworkManagerServer::sInstance->SendOutgoingPackets();
 
-    NetworkManagerServer::sInstance->Tick(0.03);
+    NetworkManagerServer::sInstance->Tick(currentTime);
     return true;
 }
 

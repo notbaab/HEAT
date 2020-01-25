@@ -72,7 +72,7 @@ void World::RemoveGameObject(GameObjectPtr obj)
     }
 }
 
-void World::Update()
+void World::Update(uint32_t currentTime)
 {
     for (auto go : mGameObjects)
     {

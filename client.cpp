@@ -85,7 +85,7 @@ bool SetupRenderer()
 }
 
 //
-bool DoFrame()
+bool DoFrame(uint32_t currentTime)
 {
     NetworkManagerClient::sInstance->ProcessMessages();
     SDL_Event event;
@@ -113,7 +113,7 @@ bool DoFrame()
     RenderManager::sInstance->Render();
 
     NetworkManagerClient::sInstance->SendOutgoingPackets();
-    NetworkManagerClient::sInstance->packetManager.StepTime(0.03);
+    NetworkManagerClient::sInstance->packetManager.StepTime(currentTime);
     return true;
 }
 
