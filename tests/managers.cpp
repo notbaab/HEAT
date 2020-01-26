@@ -118,29 +118,29 @@ TEST_CASE("Packet Manager", "[manger]")
         checkMessageId(packet, packetSerializer, 0, 0);
     }
 
-    SECTION("Client Server Test")
-    {
-        auto client = PacketManager(packetSerializer);
-        auto server = PacketManager(packetSerializer);
+    // SECTION("Client Server Test")
+    // {
+    //     auto client = PacketManager(packetSerializer);
+    //     auto server = PacketManager(packetSerializer);
 
-        sendMessages(client, messageSerializer, 5);
+    //     sendMessages(client, messageSerializer, 5);
 
-        auto packet = client.WritePacket(ReliableOrderedPacket::CLASS_ID);
-        checkMessageId(packet, packetSerializer, 0, 5);
+    //     auto packet = client.WritePacket(ReliableOrderedPacket::CLASS_ID);
+    //     checkMessageId(packet, packetSerializer, 0, 5);
 
-        // read packet
-        bool success = server.ReadPacket(packet);
-        REQUIRE(success);
+    //     // // read packet
+    //     bool success = server.ReadPacket(packet);
+    //     // REQUIRE(success);
 
-        // advance so it so server acks packet
-        server.SetTime(0.11);
-        packet = server.WritePacket(ReliableOrderedPacket::CLASS_ID);
-        success = client.ReadPacket(packet);
+    //     // // advance so it so server acks packet
+    //     // server.SetTime(0.11);
+    //     // packet = server.WritePacket(ReliableOrderedPacket::CLASS_ID);
+    //     // success = client.ReadPacket(packet);
 
-        packet = client.WritePacket(ReliableOrderedPacket::CLASS_ID);
+    //     // packet = client.WritePacket(ReliableOrderedPacket::CLASS_ID);
 
-        // next client packet won't send the olde messages
-        checkMessageId(packet, packetSerializer, 5, 0);
-        REQUIRE(success);
-    }
+    //     // // next client packet won't send the olde messages
+    //     // checkMessageId(packet, packetSerializer, 5, 0);
+    //     // REQUIRE(success);
+    // }
 }
