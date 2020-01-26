@@ -79,7 +79,8 @@ class PacketManager
 
     void InsertAckPacketEntry(uint16_t sequence);
     void ProcessAcks(uint16_t ack, uint32_t ack_bits);
-    void GetMessagesToSend(uint16_t* messageIds, int& numMessageIds);
+    void GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
+                           MessageSendQueueEntry** entries);
     void AddMessagePacketEntry(const uint16_t* messageIds, int& numMessageIds, uint16_t sequence);
     void ProcessPacketMessages(const ReliableOrderedPacket* packet);
     void ProcessMessageAck(uint16_t ack);

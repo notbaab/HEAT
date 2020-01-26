@@ -139,10 +139,11 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packe
     // do this still, but use the ids to point to an array of raw or shared ptrs I think
     int numMessageIds;
     uint16_t messageIds[MaxMessagesPerPacket];
+    MessageSendQueueEntry* entries[MaxMessagesPerPacket];
 
     // This will get the ids of messages that haven't been sent or were sent long
     // ago but we never got an ack for them and put them in the array
-    GetMessagesToSend(messageIds, numMessageIds);
+    GetMessagesToSend(messageIds, numMessageIds, entries);
 
     // ties the packet with the sequence number to the ids of those messages so
     // we know if this packet is ack'd the messages were received as well.
@@ -152,7 +153,7 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packe
 
     for (int i = 0; i < numMessageIds; ++i)
     {
-        MessageSendQueueEntry* entry = m_messageSendQueue->Find(messageIds[i]);
+        MessageSendQueueEntry* entry = entries[i];
         assert(entry && entry->message);
 
         // write the ids that the serializer will assign to the message on the
@@ -218,7 +219,8 @@ void PacketManager::ProcessAcks(uint16_t ack, uint32_t ack_bits)
 // and comparing it to the resend rate. The last time they were sent is always
 // -1 on newly created messages so no special case for messages that we just
 // create
-void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds)
+void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
+                                      MessageSendQueueEntry** entries)
 {
     numMessageIds = 0;
 
@@ -244,6 +246,7 @@ void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds)
             (availableBits - entry->measuredBits >= 0))
         {
             messageIds[numMessageIds++] = messageId;
+            entries[i] = entry;
             entry->timeLastSent = m_time;
             availableBits -= entry->measuredBits;
         }
