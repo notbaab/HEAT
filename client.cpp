@@ -14,6 +14,7 @@
 #include "events/Event.h"
 #include "events/EventManager.h"
 #include "events/PhysicsComponentUpdate.h"
+#include "events/PlayerInputEvent.h"
 #include "gameobjects/PlayerClient.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/SetupGameObjects.h"
@@ -56,8 +57,67 @@ int __argc;
 
 #define TESTSHIP "ship (24).png"
 
-void KeyPressed(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
-void KeyReleased(int keyCode) { std::cout << "Key pressed " << keyCode << std::endl; }
+class InputButtonState
+{
+  public:
+    InputButtonState() : up(false), down(false), left(false), right(false)
+    {
+        // initialize our keyboard mapping, I'm cheating right now since I
+        // know the sdl symbols
+        // w
+        keyMap[119] = &up;
+        // s
+        keyMap[115] = &down;
+        // a
+        keyMap[97] = &left;
+        // d
+        keyMap[100] = &right;
+    }
+
+    bool hasInput() { return GetHorizontalDirection() != 0 || GetVerticalDirection() != 0; }
+    // if we have input, make a PlayerInputState and queue it into the events
+    void QueueInputEvents()
+    {
+        if (hasInput())
+        {
+            auto inputState = std::make_shared<PlayerInputEvent>(GetHorizontalDirection(),
+                                                                 GetVerticalDirection(), moveSeq);
+            moveSeq++;
+            EventManager::sInstance->QueueEvent(inputState);
+        }
+    }
+    int8_t GetHorizontalDirection() const { return left - right; };
+    int8_t GetVerticalDirection() const { return up - down; };
+
+    void KeyPressed(int keyCode)
+    {
+        if (keyMap.find(keyCode) == keyMap.end())
+        {
+            return;
+        }
+
+        *keyMap[keyCode] = true;
+    }
+
+    void KeyReleased(int keyCode)
+    {
+        if (keyMap.find(keyCode) == keyMap.end())
+        {
+            return;
+        }
+
+        *keyMap[keyCode] = false;
+    }
+
+  private:
+    void setKeyVariables(uint8_t amount, int8_t& key) { key = amount; }
+    int8_t up, down, left, right;
+    std::unordered_map<int, int8_t*> keyMap;
+    uint32_t moveSeq;
+};
+
+// TODO: global input state for now until we decide what to do with it
+static auto sInputButtonState = InputButtonState();
 
 void LoadTextures()
 {
@@ -84,7 +144,6 @@ bool SetupRenderer()
     return true;
 }
 
-//
 bool DoFrame(uint32_t currentTime)
 {
     NetworkManagerClient::sInstance->ProcessMessages();
@@ -101,11 +160,14 @@ bool DoFrame(uint32_t currentTime)
         {
             // simpleGameObject.changeAnimation(rand() % 3);
             // pirateShip.SetRotation(rand() % 360);
-
             InputManager::sInstance->HandleSDLEvent(event);
             // Read some packets and do stuffs
         }
     }
+
+    // TODO: Maybe do this here? Probably should do the render stuff
+    // in a separate function
+    sInputButtonState.QueueInputEvents();
 
     // TODO: Add timing
     EventManager::sInstance->FireEvents(10);
@@ -198,8 +260,10 @@ void initStuffs()
     // RenderManager::sInstance->AddComponent(&megaManComponent);
 
     InputManager::StaticInit();
-    InputManager::sInstance->RegisterKeyDownListner(KeyPressed);
-    InputManager::sInstance->RegisterKeyUpListner(KeyReleased);
+    InputManager::sInstance->RegisterKeyDownListner(
+        [](int keyCode) { sInputButtonState.KeyPressed(keyCode); });
+    InputManager::sInstance->RegisterKeyUpListner(
+        [](int keyCode) { sInputButtonState.KeyReleased(keyCode); });
 }
 
 int main(int argc, const char* argv[])

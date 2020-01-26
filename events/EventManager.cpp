@@ -29,7 +29,7 @@ bool EventManager::TriggerEvent(std::shared_ptr<Event> evt)
     uint32_t evtType = evt->GetEventType();
     if (listeners.find(evtType) == listeners.end())
     {
-        std::cout << "no events of type " << evt->IdentifierToString() << std::endl;
+        std::cout << "no events listeners of type " << evt->IdentifierToString() << std::endl;
         return false; // No events for this type
     }
 
