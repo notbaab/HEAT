@@ -1,7 +1,7 @@
 
 list(APPEND gameobject_src
     SimpleGameObject.cpp
-    # Player.cpp
+    Player.cpp
     PlayerClient.cpp
     PlayerServer.cpp
     Registry.cpp

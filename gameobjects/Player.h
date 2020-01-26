@@ -1,8 +1,9 @@
 #pragma once
 
-#include "PhysicsComponent.h"
 #include "SimpleGameObject.h"
-#include "events/PhysicsComponentUpdate.h"
+
+class PhysicsComponent;
+class PlayerInputEvent;
 
 namespace gameobjects
 {
@@ -15,9 +16,14 @@ const uint32_t PLAYER_ID = 0x13129328;
 class Player : public SimpleGameObject
 {
   public:
-    Player() : physicsComponent(std::make_shared<PhysicsComponent>()) {}
+    Player() : physicsComponent(std::make_shared<PhysicsComponent>()), lastMoveSeq(0) {}
+    void HandleInput(std::shared_ptr<PlayerInputEvent> evt);
+    void Update();
 
     std::shared_ptr<PhysicsComponent> physicsComponent;
+
+  protected:
+    uint32_t lastMoveSeq;
 };
 
 } // namespace gameobjects
