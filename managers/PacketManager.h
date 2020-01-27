@@ -41,7 +41,6 @@ class PacketManager
     ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data);
 
     void SetTime(double time);
-    void StepTime(double timeStep);
     // ConnectionError GetError() const;
 
     // packet factory for creating and destroying connection packets

@@ -175,7 +175,7 @@ bool DoFrame(uint32_t currentTime)
     RenderManager::sInstance->Render();
 
     NetworkManagerClient::sInstance->SendOutgoingPackets();
-    NetworkManagerClient::sInstance->packetManager.StepTime(currentTime);
+    NetworkManagerClient::sInstance->packetManager.SetTime(currentTime);
     return true;
 }
 

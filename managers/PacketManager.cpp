@@ -389,9 +389,3 @@ void PacketManager::SetTime(double time)
     m_receivedPackets->RemoveOldEntries();
     m_messageSentPackets->RemoveOldEntries();
 }
-
-void PacketManager::StepTime(double timeStep)
-{
-    m_time = m_time + timeStep;
-    this->SetTime(m_time);
-}
