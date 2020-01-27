@@ -245,8 +245,8 @@ void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
         if (entry && (entry->timeLastSent + MessageResendRate <= m_time) &&
             (availableBits - entry->measuredBits >= 0))
         {
+            entries[numMessageIds] = entry;
             messageIds[numMessageIds++] = messageId;
-            entries[i] = entry;
             entry->timeLastSent = m_time;
             availableBits -= entry->measuredBits;
         }
