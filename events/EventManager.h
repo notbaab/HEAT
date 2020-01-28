@@ -11,6 +11,13 @@ using EventListenerFunction = std::function<void(std::shared_ptr<Event>)>;
 // PIMP you should prefer lambdas instead of bind
 #define CREATE_DELEGATE(func, obj) std::bind(func, std::ref(obj), std::placeholders::_1)
 
+// Only works with static objects. Probably the main use case we have so doing it this way from now
+// on
+#define CREATE_DELEGATE_LAMBDA(func) [](std::shared_ptr<Event> evt) { func(evt); }
+
+#define CREATE_DELEGATE_LAMBDA_CAPTURE(obj, func)                                                  \
+    [&obj](std::shared_ptr<Event> evt) { obj->func(evt); }
+
 class EventManager
 {
   public:
