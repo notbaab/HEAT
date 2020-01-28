@@ -1,6 +1,8 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
+#include "events/EventRouter.h"
 #include "events/PhysicsComponentUpdate.h"
+#include "events/PlayerInputEvent.h"
 #include "gameobjects/PlayerServer.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
@@ -32,6 +34,11 @@ void SetupWorld()
     auto addObject =
         CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
+
+    EventRouter<PlayerInputEvent>::StaticInit();
+    auto playerInputRouter =
+        CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
+    EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 
 } // namespace holistic

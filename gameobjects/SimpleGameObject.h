@@ -9,15 +9,19 @@
 #define CLASS_IDENTIFICATION(inCode)                                                               \
     virtual uint32_t GetClassId() const override { return inCode; }
 
+class EventManager;
 // Simple game object with a physical location
 class SimpleGameObject
 {
   public:
     virtual uint32_t GetClassId() const = 0;
+    virtual void SetupListeners(){};
     virtual ~SimpleGameObject(){};
     // SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
 
-    Vector3 GetLocation() { return centerLocation; }
+    // Vector3 GetLocation() {
+    //     return centerLocation;
+    // }
     // std::string getSpriteSheet() { return spriteSheetData.sheetLoc; }
     void SetRotation(uint16_t degress) { rotation = degress; }
     uint16_t GetRotation() { return rotation; }
@@ -33,6 +37,8 @@ class SimpleGameObject
 
     uint32_t GetWorldId() { return worldId; }
     void SetWorldId(uint32_t worldId) { this->worldId = worldId; }
+
+    uint32_t clientOwnerId;
 
   private:
     // unique id in the world

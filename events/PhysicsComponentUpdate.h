@@ -18,14 +18,16 @@ class PhysicsComponentUpdate : public Event
 
     PhysicsComponentUpdate() : physicsComponent(std::make_shared<PhysicsComponent>()){};
 
-    PhysicsComponentUpdate(uint32_t worldId, std::shared_ptr<PhysicsComponent> physicsComponent)
+    PhysicsComponentUpdate(uint32_t worldId, uint32_t moveSeq,
+                           std::shared_ptr<PhysicsComponent> physicsComponent)
 
-        : worldId(worldId), physicsComponent(physicsComponent){};
+        : worldId(worldId), moveSeq(moveSeq), physicsComponent(physicsComponent){};
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
         stream.serialize(worldId);
+        stream.serialize(moveSeq);
 
         // where is it at
         stream.serialize(physicsComponent->centerLocation.mX);
@@ -37,5 +39,8 @@ class PhysicsComponentUpdate : public Event
     }
 
     uint32_t worldId;
+
+    // last move we processed
+    uint32_t moveSeq;
     std::shared_ptr<PhysicsComponent> physicsComponent;
 };

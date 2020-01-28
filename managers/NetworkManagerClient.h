@@ -34,6 +34,7 @@ class NetworkManagerClient : public NetworkManager
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
 
     void StartServerHandshake();
+    static uint32_t GetClientId() { return sInstance->clientId; }
     void Update();
     bool HandleUnauthenticatedPacket(const std::shared_ptr<Packet> packet);
     bool HandleAuthenticatedPacket(const std::shared_ptr<Packet> packet);
@@ -41,7 +42,7 @@ class NetworkManagerClient : public NetworkManager
     bool ReadChallengeMessage(const std::shared_ptr<Message> message);
     bool ReadLoginMessage(const std::shared_ptr<Message> message);
 
-    void QueueMessage(std::unique_ptr<Message> messageToQueue);
+    void QueueMessage(std::shared_ptr<Message> messageToQueue);
     PacketManager packetManager;
 
   protected:

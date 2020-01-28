@@ -13,6 +13,7 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
+#include "events/EventRouter.h"
 #include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
 #include "gameobjects/PlayerClient.h"
@@ -75,42 +76,39 @@ class InputButtonState
     }
 
     bool hasInput() { return GetHorizontalDirection() != 0 || GetVerticalDirection() != 0; }
+    int8_t GetHorizontalDirection() const { return right - left; };
+    int8_t GetVerticalDirection() const { return down - up; };
+    void KeyPressed(int keyCode) { setKeyVariables(keyCode, true); }
+    void KeyReleased(int keyCode) { setKeyVariables(keyCode, false); }
+
     // if we have input, make a PlayerInputState and queue it into the events
     void QueueInputEvents()
     {
         if (hasInput())
         {
-            auto inputState = std::make_shared<PlayerInputEvent>(GetHorizontalDirection(),
-                                                                 GetVerticalDirection(), moveSeq);
+            // TODO: Don't grab it, just don't initialize the player input stuff until a player is
+            // added.
+            auto clientId = NetworkManagerClient::GetClientId();
+            auto playerObjId = gameobjects::PlayerClient::clientToPlayer[clientId];
+            auto inputState = std::make_shared<PlayerInputEvent>(
+                GetHorizontalDirection(), GetVerticalDirection(), moveSeq, playerObjId);
             moveSeq++;
             EventManager::sInstance->QueueEvent(inputState);
         }
     }
-    int8_t GetHorizontalDirection() const { return left - right; };
-    int8_t GetVerticalDirection() const { return up - down; };
-
-    void KeyPressed(int keyCode)
-    {
-        if (keyMap.find(keyCode) == keyMap.end())
-        {
-            return;
-        }
-
-        *keyMap[keyCode] = true;
-    }
-
-    void KeyReleased(int keyCode)
-    {
-        if (keyMap.find(keyCode) == keyMap.end())
-        {
-            return;
-        }
-
-        *keyMap[keyCode] = false;
-    }
 
   private:
-    void setKeyVariables(uint8_t amount, int8_t& key) { key = amount; }
+    void setKeyVariables(int keyCode, bool value)
+    {
+        if (keyMap.find(keyCode) == keyMap.end())
+        {
+            INFO("No key for {}", keyCode);
+            return;
+        }
+
+        *keyMap[keyCode] = value;
+    }
+
     int8_t up, down, left, right;
     std::unordered_map<int, int8_t*> keyMap;
     uint32_t moveSeq;
@@ -193,6 +191,7 @@ void SetupNetworking(std::string serverDestination)
     // Event constructors. Events are also messages
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
     AddMessageCtor(messageSerializer, PhysicsComponentUpdate);
+    AddMessageCtor(messageSerializer, PlayerInputEvent);
 
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
@@ -215,13 +214,22 @@ void SetupWorld()
         gameobjects::PLAYER_ID, gameobjects::PlayerClient::StaticCreate);
 
     // World listens for requests to add objects
-    auto addObject = CREATE_DELEGATE(&gameobjects::WorldClient::OnAddObject,
-                                     gameobjects::WorldClient::sInstance);
-    auto stateUpdate = CREATE_DELEGATE(&gameobjects::WorldClient::OnStateUpdateMessage,
-                                       gameobjects::WorldClient::sInstance);
+    auto addObject = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnAddObject);
+    auto stateUpdate =
+        CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
+    auto eventForwarder = CREATE_DELEGATE_LAMBDA(NetworkManagerClient::sInstance->QueueMessage);
 
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
     EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
+    EventManager::sInstance->AddListener(eventForwarder, PlayerInputEvent::EVENT_TYPE);
+
+    // Router for player events
+    EventRouter<PlayerInputEvent>::StaticInit();
+    // auto playerInputRouter = CREATE_DELEGATE_LAMBDA(
+    //     (EventRouter<gameobjects::PlayerClient, PlayerInputEvent>::sInstance->RouteEvent));
+    auto playerInputRouter =
+        CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
+    EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 
 void initStuffs()

@@ -11,8 +11,8 @@ void PlayerServer::Update()
     {
         // send an update message. For now it's just the physics component that is
         // being updated.
-        auto phyEvt =
-            std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), this->physicsComponent);
+        auto phyEvt = std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq,
+                                                               this->physicsComponent);
         EventManager::sInstance->QueueEvent(phyEvt);
         stateDirty = false;
     }

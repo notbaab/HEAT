@@ -1,6 +1,9 @@
 #pragma once
 
 #include "SimpleGameObject.h"
+#include "events/EventRouter.h"
+
+#include "logger/Logger.h"
 
 class PhysicsComponent;
 class PlayerInputEvent;
@@ -17,10 +20,19 @@ class Player : public SimpleGameObject
 {
   public:
     Player() : physicsComponent(std::make_shared<PhysicsComponent>()), lastMoveSeq(0) {}
+
     void HandleInput(std::shared_ptr<PlayerInputEvent> evt);
-    void Update();
+    void Update() override;
+
+    virtual void SetupListeners() override
+    {
+        INFO("Setting up listener {} ", GetWorldId());
+        EventRouter<PlayerInputEvent>::sInstance->AddListener(
+            GetWorldId(), [this](std::shared_ptr<PlayerInputEvent> evt) { HandleInput(evt); });
+    }
 
     std::shared_ptr<PhysicsComponent> physicsComponent;
+    Vector3 GetLocation() { return physicsComponent->centerLocation; }
 
   protected:
     uint32_t lastMoveSeq;

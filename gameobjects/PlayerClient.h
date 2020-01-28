@@ -14,6 +14,10 @@ class PlayerClient : public Player
 {
   public:
     CLASS_IDENTIFICATION(PLAYER_ID)
+    // PIMP: real gross static map that maps clients to players. Probably need to so something
+    // better
+    static inline std::unordered_map<uint32_t, uint32_t> clientToPlayer;
+
     static std::unique_ptr<SimpleGameObject> StaticCreate()
     {
         auto instance = std::make_unique<PlayerClient>();
@@ -30,6 +34,13 @@ class PlayerClient : public Player
     void Update() override;
 
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
+
+    virtual void SetupListeners() override
+    {
+        Player::SetupListeners();
+        // add it's world id and player id here cause I'm bad at programming
+        clientToPlayer[clientOwnerId] = GetWorldId();
+    }
 
     PlayerClient() : stateDirty(true)
     {

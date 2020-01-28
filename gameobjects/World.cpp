@@ -25,6 +25,7 @@ void World::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
 
     INFO("Adding game object {} with id {}", castAddObj->objType, castAddObj->worldId);
     auto obj = Registry::sInstance->CreateGameObject(castAddObj->objType);
+    obj->clientOwnerId = castAddObj->playerId;
     AddGameObject(obj, castAddObj->worldId);
 }
 
@@ -49,6 +50,10 @@ bool World::AddGameObject(GameObjectPtr obj, uint32_t worldId)
 
     mGameObjects.push_back(obj);
     gameObjById[worldId] = obj;
+
+    // setup the objects listeners
+    obj->SetupListeners();
+
     return true;
 }
 

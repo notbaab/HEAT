@@ -33,7 +33,6 @@ NetworkManager::NetworkManager(std::shared_ptr<PacketSerializer> packetSerialize
 void NetworkManager::dataRecievedCallback(SocketAddress fromAddress,
                                           std::unique_ptr<std::vector<uint8_t>> data)
 {
-    DEBUG("HERERE");
     // This will be a bit wonky with our setup. So we need to see if
     // we have a packet manager yet for this from address key. If so,
     // let it handle reading the packet and such. If not, we need to create

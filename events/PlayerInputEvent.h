@@ -13,12 +13,13 @@ class PlayerInputEvent : public Event
     SERIALIZER
 
     PlayerInputEvent(){};
-    PlayerInputEvent(uint8_t xDelta, uint8_t yDelta, uint32_t moveSeq)
-        : xDelta(xDelta), yDelta(yDelta), moveSeq(moveSeq){};
+    PlayerInputEvent(uint8_t xDelta, uint8_t yDelta, uint32_t moveSeq, uint32_t worldId)
+        : xDelta(xDelta), yDelta(yDelta), moveSeq(moveSeq), worldId(worldId){};
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
+        stream.serialize(worldId);
         stream.serialize(xDelta);
         stream.serialize(yDelta);
         stream.serialize(moveSeq);
@@ -29,6 +30,6 @@ class PlayerInputEvent : public Event
     // has seen. Technically with the reliability layer, we have all the info
     // we need to determine if we dig it out but it's a bit easier
     // if we control it at a high level.
-    uint32_t moveSeq;
+    uint32_t moveSeq, worldId;
     int8_t xDelta, yDelta;
 };

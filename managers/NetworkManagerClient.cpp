@@ -168,7 +168,7 @@ bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> m
     auto challengeResponse =
         std::make_unique<ClientConnectionChallengeResponseMessage>(this->xOrSalt);
 
-    TRACE("Queueing challenge response");
+    TRACE("Queuing challenge response");
     this->QueueMessage(std::move(challengeResponse));
 
     // Login? I'm not sure if these in the right spot to do this but
@@ -189,7 +189,7 @@ void NetworkManagerClient::Update()
     }
 }
 
-void NetworkManagerClient::QueueMessage(std::unique_ptr<Message> messageToQueue)
+void NetworkManagerClient::QueueMessage(std::shared_ptr<Message> messageToQueue)
 {
     this->packetManager.SendMessage(std::move(messageToQueue));
 }

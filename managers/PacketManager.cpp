@@ -1,4 +1,5 @@
 #include "PacketManager.h"
+#include "logger/Logger.h"
 
 PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
     : m_packetFactory(packetFactory)
@@ -19,7 +20,7 @@ PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
 
 PacketManager::~PacketManager()
 {
-    std::cout << "Deleting Manager" << std::endl;
+    INFO("Deleting manager");
     Reset();
 
     assert(m_sentPackets);
@@ -350,11 +351,12 @@ void PacketManager::ProcessMessageAck(uint16_t ack)
         if (sendQueueEntry)
         {
             assert(sendQueueEntry->message);
+            TRACE("Got ack for {}, removing", messageId)
             m_messageSendQueue->Remove(messageId);
         }
         else
         {
-            std::cout << "not acked" << std::endl;
+            TRACE("Already got ack for {}, nothing to do.", messageId)
         }
     }
 

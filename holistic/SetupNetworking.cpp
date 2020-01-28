@@ -1,4 +1,5 @@
 #include "events/CreatePlayerOwnedObject.h"
+#include "events/PlayerInputEvent.h"
 #include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
 #include "messages/ClientConnectionChallengeMessage.h"
@@ -42,6 +43,7 @@ void SetupNetworking()
 
     // Event constructors. Also messages
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
+    AddMessageCtor(messageSerializer, PlayerInputEvent);
 
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
 
