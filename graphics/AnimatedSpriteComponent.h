@@ -8,21 +8,30 @@
 #include "DrawableComponent.h"
 #include "GraphicsDriver.h"
 #include "SpriteSheetData.h"
+#include "logger/Logger.h"
 #include "math/Vector3.h"
 
 template <typename T>
 class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
-    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData)
+    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData,
+                            bool justOutline)
+
     {
         mGameObject = inGameObject;
         mFrames = &sheetData->animations;
+        this->justOutline = justOutline;
 
         // It is worth it to explore some sort of texture manager to cache textures.
         // Doing it this way means we load the texture for every sprite component.
         mTexture =
             IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), sheetData->sheetLoc.c_str());
+    }
+
+    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData)
+        : AnimatedSpriteComponent(inGameObject, sheetData, false)
+    {
     }
 
     ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
@@ -62,7 +71,8 @@ class AnimatedSpriteComponent : public DrawableComponent
         // What size should we render the texture? We probably will need to
         // flesh out the game object to get a better sense of how we should
         // do that.
-        Vector3 objLocation = mGameObject->GetLocation();
+        Vector3 objLocation = mGameObject->centerLocation;
+        TRACE("Object at {} {}", objLocation.mX, objLocation.mY);
         uint32_t halfWidth = frame.w / 2;
         uint32_t halfHeight = frame.h / 2;
 
@@ -76,8 +86,13 @@ class AnimatedSpriteComponent : public DrawableComponent
         // SDL_SetRenderDrawColor(renderer, red, green, blue, 255);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-        SDL_RenderCopy(renderer, mTexture, &frame, &currentFrameRect);
         DrawSpriteOutline();
+        if (justOutline)
+        {
+            return;
+        }
+
+        SDL_RenderCopy(renderer, mTexture, &frame, &currentFrameRect);
     }
 
     // Draws a square around the sprite dimensions.
@@ -108,6 +123,7 @@ class AnimatedSpriteComponent : public DrawableComponent
     uint32_t framesInAnimation;
 
     SDL_Rect currentFrameRect;
+    bool justOutline;
 
     // I don't want circular reference...
     T* mGameObject;
