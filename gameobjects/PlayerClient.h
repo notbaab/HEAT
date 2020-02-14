@@ -21,12 +21,8 @@ class PlayerClient : public Player
     static std::unique_ptr<SimpleGameObject> StaticCreate()
     {
         auto instance = std::make_unique<PlayerClient>();
-
-        // listen for move events
-        // EventManager::sInstance->AddListener(EventListenerFunction eventDelegate, uint32_t
-        // eventType)
-
         RenderManager::sInstance->AddComponent(instance->drawable.get());
+        RenderManager::sInstance->AddComponent(instance->serverLocation.get());
 
         return std::move(instance);
     }
@@ -42,22 +38,31 @@ class PlayerClient : public Player
         clientToPlayer[clientOwnerId] = GetWorldId();
     }
 
-    PlayerClient() : stateDirty(true)
+    PlayerClient() : stateDirty(true), predictedState(std::make_shared<PhysicsComponent>())
     {
         auto playerSheet = SpriteSheetData::GetSheetData(PlayerSheetKey);
-        this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerClient>>(this, playerSheet);
+
+        this->drawable = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
+            predictedState.get(), playerSheet);
+        this->serverLocation = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
+            physicsComponent.get(), playerSheet, true);
+
         // TODO: wut? This is stupid, do more better
         this->drawable->ChangeAnimation("first");
+        this->serverLocation->ChangeAnimation("first");
     }
 
   private:
+    void RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves);
+    void PredictState();
     bool stateDirty;
     // The player has a physics component that holds the state the server
     // thinks the player is. The predicted state is used to predict other player
     // objects locations or the location of the player after the unprocessed
     // moves have been applied.
     std::shared_ptr<PhysicsComponent> predictedState;
-    std::shared_ptr<AnimatedSpriteComponent<PlayerClient>> drawable;
+    std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> drawable;
+    std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> serverLocation;
 };
 
 } // namespace gameobjects

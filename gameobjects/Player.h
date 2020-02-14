@@ -1,5 +1,7 @@
 #pragma once
 
+#include <deque>
+
 #include "SimpleGameObject.h"
 #include "events/EventRouter.h"
 
@@ -21,21 +23,23 @@ class Player : public SimpleGameObject
   public:
     Player() : physicsComponent(std::make_shared<PhysicsComponent>()), lastMoveSeq(0) {}
 
-    void HandleInput(std::shared_ptr<PlayerInputEvent> evt);
-    void Update() override;
+    void AddMove(std::shared_ptr<PlayerInputEvent> evt);
 
     virtual void SetupListeners() override
     {
         INFO("Setting up listener {} ", GetWorldId());
         EventRouter<PlayerInputEvent>::sInstance->AddListener(
-            GetWorldId(), [this](std::shared_ptr<PlayerInputEvent> evt) { HandleInput(evt); });
+            GetWorldId(), [this](std::shared_ptr<PlayerInputEvent> evt) { AddMove(evt); });
     }
 
     std::shared_ptr<PhysicsComponent> physicsComponent;
     Vector3 GetLocation() { return physicsComponent->centerLocation; }
 
   protected:
+    void ApplyMoves(std::shared_ptr<PhysicsComponent> component,
+                    std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     uint32_t lastMoveSeq;
+    std::deque<std::shared_ptr<PlayerInputEvent>> moves;
 };
 
 } // namespace gameobjects

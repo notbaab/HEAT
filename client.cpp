@@ -82,17 +82,18 @@ class InputButtonState
     void KeyReleased(int keyCode) { setKeyVariables(keyCode, false); }
 
     // if we have input, make a PlayerInputState and queue it into the events
-    void QueueInputEvents()
+    void QueueInputEvent()
     {
         if (hasInput())
         {
             // TODO: Don't grab it, just don't initialize the player input stuff until a player is
             // added.
+            // Skip 0
+            moveSeq++;
             auto clientId = NetworkManagerClient::GetClientId();
             auto playerObjId = gameobjects::PlayerClient::clientToPlayer[clientId];
             auto inputState = std::make_shared<PlayerInputEvent>(
                 GetHorizontalDirection(), GetVerticalDirection(), moveSeq, playerObjId);
-            moveSeq++;
             EventManager::sInstance->QueueEvent(inputState);
         }
     }
@@ -145,6 +146,7 @@ bool SetupRenderer()
 bool DoFrame(uint32_t currentTime)
 {
     NetworkManagerClient::sInstance->ProcessMessages();
+
     SDL_Event event;
     memset(&event, 0, sizeof(SDL_Event));
     if (SDL_PollEvent(&event))
@@ -165,10 +167,11 @@ bool DoFrame(uint32_t currentTime)
 
     // TODO: Maybe do this here? Probably should do the render stuff
     // in a separate function
-    sInputButtonState.QueueInputEvents();
+    sInputButtonState.QueueInputEvent();
 
     // TODO: Add timing
-    EventManager::sInstance->FireEvents(10);
+    EventManager::sInstance->FireEvents(currentTime);
+    gameobjects::WorldClient::sInstance->Update(currentTime);
 
     RenderManager::sInstance->Render();
 
@@ -206,7 +209,7 @@ void SetupWorld()
     EventManager::StaticInit();
 
     gameobjects::WorldClient::StaticInit();
-    gameobjects::SetupLogger(logger::level::INFO);
+    gameobjects::SetupLogger(logger::level::DEBUG);
 
     // create registry and add all the creation functions we know about
     gameobjects::Registry::StaticInit(gameobjects::WorldClient::StaticAddGameObject);
@@ -234,14 +237,14 @@ void SetupWorld()
 
 void initStuffs()
 {
-    logger::InitLog(logger::level::TRACE, "Main Logger");
+    logger::InitLog(logger::DEBUG, "Main Logger");
     if (!SetupRenderer())
     {
         ERROR("Can't initialize sdl, bailing");
         SDL_Quit();
     };
 
-    DEBUG("Starting Client")
+    INFO("Starting Client");
 
     std::string destination = "127.0.0.1:4500";
 

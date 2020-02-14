@@ -11,6 +11,7 @@ class PhysicsComponent
   public:
     uint16_t rotation;
     Vector3 centerLocation;
+    Vector3 speed;
 
     // Probably like a width height etc
 };

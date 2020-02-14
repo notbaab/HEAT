@@ -5,17 +5,21 @@
 namespace gameobjects
 {
 
-void Player::HandleInput(std::shared_ptr<PlayerInputEvent> evt)
-{
-    DEBUG("Handing input {} {}", evt->xDelta, physicsComponent->centerLocation.mX);
-    // take the input and apply it to the next state the player will be
-    physicsComponent->centerLocation.mX += evt->xDelta;
-    physicsComponent->centerLocation.mY += evt->yDelta;
-}
+void Player::AddMove(std::shared_ptr<PlayerInputEvent> evt) { moves.emplace_back(evt); }
 
-void Player::Update()
+void Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
+                        std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves)
 {
-    // queue up a move to be processed in the players update event
+    for (auto&& move : inMoves)
+    {
+        component->centerLocation.mX += move->xDelta * 2;
+        component->centerLocation.mY += move->yDelta * 2;
+        TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.mX,
+              component->centerLocation.mY);
+    }
+
+    TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.mX,
+          component->centerLocation.mY);
 }
 
 } // namespace gameobjects
