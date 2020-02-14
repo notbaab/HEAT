@@ -30,7 +30,7 @@ bool tick(uint32_t currentTime)
     NetworkManagerServer::sInstance->ProcessMessages();
 
     // TODO: Add timing
-    EventManager::sInstance->FireEvents(10);
+    EventManager::sInstance->FireEvents(currentTime);
 
     // Event manager fire events the the client has sent over and any that were in
     // the old queue?
