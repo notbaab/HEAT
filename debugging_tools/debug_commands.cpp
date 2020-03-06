@@ -2,6 +2,7 @@
 #include <unordered_map>
 
 #include "debug_commands.h"
+#include "logger/Logger.h"
 
 static std::unordered_map<std::string, DebugCommand> commands;
 
@@ -21,7 +22,7 @@ bool tryExecuteCommand(std::string command, std::vector<std::string> args, std::
         }
         catch (const std::exception& e)
         {
-            std::cerr << "Exception thrown" << e.what() << '\n';
+            ERROR("Exception thrown {}", e.what());
             return false;
         }
     }

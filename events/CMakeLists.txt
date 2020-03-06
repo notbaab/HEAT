@@ -1,9 +1,10 @@
 list(APPEND events_src
-    # Event.cpp
     EventManager.cpp
 )
 
-add_library(events SHARED ${events_src})
+add_library(events SHARED ${events_src}  )
+
+target_link_libraries(events logger)
 
 target_include_directories(events
         PUBLIC

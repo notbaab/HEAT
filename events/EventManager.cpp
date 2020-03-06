@@ -1,12 +1,13 @@
 #include "EventManager.h"
 #include "Event.h"
+#include "logger/Logger.h"
 
 void EventManager::StaticInit() { sInstance.reset(new EventManager()); }
 
 bool EventManager::AddListener(EventListenerFunction eventDelegate, uint32_t eventType)
 {
     // Creates a list if it doesn't exist
-    std::cout << "adding listener of type" << Event::StringFromId(eventType) << std::endl;
+    INFO("adding listener of type {}", Event::StringFromId(eventType));
     listeners[eventType].push_back(eventDelegate);
     return true;
 }
@@ -29,7 +30,7 @@ bool EventManager::TriggerEvent(std::shared_ptr<Event> evt)
     uint32_t evtType = evt->GetEventType();
     if (listeners.find(evtType) == listeners.end())
     {
-        std::cout << "no events listeners of type " << evt->IdentifierToString() << std::endl;
+        WARN("no events listeners of type {}", evt->IdentifierToString());
         return false; // No events for this type
     }
 

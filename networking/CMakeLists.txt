@@ -7,3 +7,8 @@ list(APPEND network_src
 )
 
 add_library(networking SHARED ${network_src})
+target_link_libraries(networking logger)
+target_include_directories(networking
+        PUBLIC
+        ${CMAKE_SOURCE_DIR}
+)

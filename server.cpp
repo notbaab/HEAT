@@ -99,6 +99,7 @@ const char** __argv;
 int __argc;
 int main(int argc, const char* argv[])
 {
+    logger::InitLog(logger::DEBUG, "Main");
     while (argc > 1)
     {
         argc--;
@@ -108,12 +109,11 @@ int main(int argc, const char* argv[])
             argv++;
             argc--;
             const char* socketPath = *argv;
-            std::cout << "Starting a debug socket at" << socketPath << std::endl;
+            INFO("Starting a debug socket at {}", socketPath);
             SpawnSocket(socketPath, DebugCommandHandler);
         }
     }
 
-    logger::InitLog(logger::DEBUG, "Main");
     add_command("tick", DebugSetEngineTick);
     // holistic::SetupNetworking();
     messagesToProcess.reserve(30);

@@ -2,6 +2,7 @@
 
 #include "SocketManager.h"
 #include "SocketUtil.h"
+#include "logger/Logger.h"
 
 namespace networking
 {
@@ -40,12 +41,11 @@ void SocketManager::bindSocket(uint16_t port)
     {
         throw std::runtime_error("Failed binding socket");
     }
-    std::cout << "Bound Address " << ownAddress.ToString() << std::endl;
+    INFO("Bound address {}", ownAddress.ToString());
 }
 
 void SocketManager::startReceiveThread()
 {
-
     receiveThread = std::thread(&SocketManager::receiveLoop, this);
 }
 

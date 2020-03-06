@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "debug_socket.h"
+#include "logger/Logger.h"
 
 class SocketThreadContainer
 {
@@ -19,10 +20,9 @@ class SocketThreadContainer
 
         if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
         {
-            perror("socket error");
+            ERROR("socket error");
             return nullptr;
         }
-        std::cout << fd << "1" << std::endl;
 
         memset(&addr, 0, sizeof(addr));
         addr.sun_family = AF_UNIX;
@@ -32,14 +32,13 @@ class SocketThreadContainer
 
         if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
         {
-            perror("bind error");
+            ERROR("bind error");
             return nullptr;
         }
-        std::cout << fd << "1" << std::endl;
 
         if (listen(fd, 5) == -1)
         {
-            perror("listen error");
+            ERROR("listen error");
             return nullptr;
         }
 
@@ -55,7 +54,7 @@ class SocketThreadContainer
         {
             if ((acceptedFd = accept(socketFd, NULL, NULL)) == -1)
             {
-                perror("accept error");
+                ERROR("accept error");
                 return;
             }
             while ((readCount = read(acceptedFd, buf, sizeof(buf))) > 0)
@@ -64,7 +63,7 @@ class SocketThreadContainer
             }
             if (readCount == -1)
             {
-                perror("Unexpected error while reading");
+                ERROR("Unexpected error while reading");
                 return;
             }
             else if (readCount == 0)
