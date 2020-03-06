@@ -14,7 +14,6 @@ void WorldClient::OnStateUpdateMessage(std::shared_ptr<Event> objectStateEvent)
 {
     // Takes the state and event and passes it the the game object with the id
     // to be processed later?
-    INFO("Got a state update");
     auto castMsg = std::static_pointer_cast<PhysicsComponentUpdate>(objectStateEvent);
     uint32_t worldId = castMsg->worldId;
 
@@ -23,6 +22,7 @@ void WorldClient::OnStateUpdateMessage(std::shared_ptr<Event> objectStateEvent)
         ERROR("No game object with id {}", worldId);
         return;
     }
+    TRACE("Got a state update for id {}", worldId);
 
     // This should be replaced with something like "Networked Object"
     gameObjById[worldId]->HandleStateMessage(castMsg);

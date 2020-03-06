@@ -292,8 +292,8 @@ void NetworkManagerServer::SendOutgoingPackets()
 // // clients as messages
 void NetworkManagerServer::EventForwarder(std::shared_ptr<Event> evt)
 {
+    TRACE("Forwarding event");
     // Event is
-    INFO("Forwarding event");
     BroadcastMessage(evt);
 }
 
@@ -316,8 +316,8 @@ void NetworkManagerServer::Tick(uint32_t currentTime)
         auto& client = it->second;
         if (currentTime - client.lastHeardFrom > 1000)
         {
-            INFO("Client {}:{} not heard from, logging out", client.userName,
-                 client.socketAddress.ToString());
+            INFO("Client {}:{} not heard from since {}, it's now {}, logging out", client.userName,
+                 client.socketAddress.ToString(), client.lastHeardFrom, currentTime);
             it = cData.erase(it);
             continue;
         }
