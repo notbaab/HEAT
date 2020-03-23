@@ -23,6 +23,7 @@ add_subdirectory(gameobjects)
 add_subdirectory(engine)
 add_subdirectory(holistic)
 add_subdirectory(debugging_tools)
+add_subdirectory(console)
 
 # Testing
 add_subdirectory(lib/catch)
