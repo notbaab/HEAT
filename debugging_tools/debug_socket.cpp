@@ -59,7 +59,11 @@ class SocketThreadContainer
             }
             while ((readCount = read(acceptedFd, buf, sizeof(buf))) > 0)
             {
-                callback(buf, readCount);
+                std::string out = callback(buf, readCount);
+                if (out != "")
+                {
+                    int writeCount = write(acceptedFd, out.c_str(), out.size());
+                }
             }
             if (readCount == -1)
             {

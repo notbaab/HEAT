@@ -8,6 +8,7 @@
 
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
+#include "debugging_tools/debug_tools.h"
 #include "engine/Engine.h"
 #include "events/EventManager.h"
 #include "gameobjects/World.h"
@@ -32,10 +33,14 @@ static std::shared_ptr<Engine> serverInstance;
 
 std::string DebugSetEngineTick(std::vector<std::string> args)
 {
+    if (args.size() != 1)
+    {
+        throw std::runtime_error("Must supply one argument");
+    }
     int fps = stoi(args[0]);
     INFO("Setting server to {} fps", fps);
     serverInstance->SetTicksPerSecond(fps);
-    return "";
+    return "Set engine tick";
 }
 
 void SplitCommandString(uint8_t* data, std::string* outCommand, std::vector<std::string>* outArgs)
@@ -52,7 +57,7 @@ void SplitCommandString(uint8_t* data, std::string* outCommand, std::vector<std:
     }
 }
 
-void DebugCommandHandler(uint8_t* data, size_t size)
+std::string DebugCommandHandler(uint8_t* data, size_t size)
 {
     // Accepting commands of the form <action> <args>
     std::string command;
@@ -63,7 +68,9 @@ void DebugCommandHandler(uint8_t* data, size_t size)
     if (!tryExecuteCommand(command, args, &out))
     {
         ERROR("failed executing command {}", command);
+        return "error\n\0";
     }
+    return out;
 }
 
 bool tick(uint32_t currentTime)
@@ -89,10 +96,17 @@ bool tick(uint32_t currentTime)
     return true;
 }
 
+void SetupDebugTools()
+{
+    InitDebugingTools();
+    add_command("tick", DebugSetEngineTick);
+}
+
 void initStuffs()
 {
     holistic::SetupNetworking();
     holistic::SetupWorld();
+    SetupDebugTools();
 }
 
 const char** __argv;
@@ -114,8 +128,6 @@ int main(int argc, const char* argv[])
         }
     }
 
-    add_command("tick", DebugSetEngineTick);
-    // holistic::SetupNetworking();
     messagesToProcess.reserve(30);
     DEBUG("Starting")
 
