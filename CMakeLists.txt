@@ -9,6 +9,7 @@ if(NOT APPLE)
 endif()
 
 add_subdirectory(logger)
+add_subdirectory(datastructures)
 add_subdirectory(networking)
 add_subdirectory(IO)
 add_subdirectory(packets)
