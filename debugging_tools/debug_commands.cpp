@@ -9,7 +9,7 @@ static std::unordered_map<std::string, DebugCommand> commands;
 void add_command(std::string command, DebugCommand callback)
 {
     commands.emplace(command, callback);
-    INFO("Adding {}|", command);
+    INFO("Adding {}", command);
 }
 
 bool tryExecuteCommand(std::string command, std::vector<std::string> args, std::string* outInfo)

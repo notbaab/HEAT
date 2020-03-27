@@ -8,6 +8,7 @@ if(NOT APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
+add_subdirectory(str_utils)
 add_subdirectory(logger)
 add_subdirectory(datastructures)
 add_subdirectory(networking)

@@ -10,30 +10,13 @@
 #include "console.h"
 #include "datastructures/Trie.h"
 #include "linenoise/linenoise.h"
+#include "str_utils/str_utils.h"
 // keep all the command and completions in this space
 
 static std::unordered_set<std::string> commands;
 static std::unordered_map<std::string, ConsoleCallback> exitCommands;
 static std::unordered_map<std::string, std::vector<std::string>> hints_map;
 static DictionaryTrie hintTrie = DictionaryTrie();
-
-static std::vector<std::string> SplitString(std::string str, std::string delimiter)
-{
-    std::vector<std::string> strings;
-
-    std::string::size_type pos = 0;
-    std::string::size_type prev = 0;
-    size_t strSize = delimiter.size();
-
-    while ((pos = str.find(delimiter, prev)) != std::string::npos)
-    {
-        auto splitStr = str.substr(prev, pos - prev);
-        strings.emplace_back(splitStr);
-        prev = pos + strSize;
-    }
-
-    return strings;
-}
 
 void add_command(std::string full_command)
 {
@@ -112,10 +95,10 @@ void interactive_console(const char* socketPath)
     linenoiseHistoryLoad("history.txt"); /* Load the history at startup */
 
     std::vector<std::string> strings;
-    auto commandStr = SplitString(str, "\n");
-    for (const auto& command : commandStr)
+    auto commandStrs = str_utils::SplitString(str, "\n");
+    for (const auto& command : *commandStrs)
     {
-        std::cout << "Adding" << command << std::endl;
+        std::cout << "Adding " << command << std::endl;
         add_command(command);
     }
 
@@ -124,23 +107,6 @@ void interactive_console(const char* socketPath)
         /* Do something with the string. */
         if (line[0] != '\0' && line[0] != '/')
         {
-            // if (commands.find(line) == commands.end())
-            // {
-            //     if (exitCommands.find(line) != exitCommands.end())
-            //     {
-            //         // pack it up, we out
-            //         auto exitFunc = exitCommands[line];
-            //         free(line);
-            //         exitFunc();
-            //         return;
-            //     }
-
-            //     printf("Unknown command: '%s'\n", line);
-            //     continue;
-            // }
-
-            std::cout << line << std::endl;
-            std::cout << strlen(line) << std::endl;
             sent = send(fd, line, strlen(line) + 1, 0);
             if (sent == -1)
             {
@@ -151,7 +117,7 @@ void interactive_console(const char* socketPath)
             int bytes = recv(fd, buf, 100, 0);
             std::string str;
             str.assign(buf, bytes);
-            std::cout << bytes << "|" << str << "|" << std::endl;
+            std::cout << str << std::endl;
 
             linenoiseHistoryAdd(line);
             linenoiseHistorySave("history.txt");
