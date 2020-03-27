@@ -40,7 +40,11 @@ std::string DebugSetEngineTick(std::vector<std::string> args)
     int fps = stoi(args[0]);
     INFO("Setting server to {} fps", fps);
     serverInstance->SetTicksPerSecond(fps);
-    return "Set engine tick";
+
+    std::stringstream s;
+    s << "Set engine tick to " << fps;
+
+    return s.str();
 }
 
 void SplitCommandString(uint8_t* data, std::string* outCommand, std::vector<std::string>* outArgs)
