@@ -1,6 +1,5 @@
 #pragma once
 #include "packets/Message.h"
-#include <unordered_map>
 
 class ClientLoginResponse : public Message
 {
