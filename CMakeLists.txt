@@ -8,6 +8,9 @@ if(NOT APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
+set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
 add_subdirectory(str_utils)
 add_subdirectory(logger)
 add_subdirectory(datastructures)
