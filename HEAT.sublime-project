@@ -8,8 +8,7 @@
 				"build-linux",
 				"cmake-build-debug",
 				".idea",
-				"node_modules",
-				"lib"
+				"node_modules"
 			],
 			"path": "."
 		},
