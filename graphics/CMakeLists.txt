@@ -7,6 +7,9 @@ list(APPEND graphics_src
     GraphicsDriver.cpp
     TextureManager.cpp
     WindowManager.cpp
+    AssetManager.cpp
+    TiledTileLoader.cpp
+    TiledAnimatedSpriteSheetData.cpp
 )
 
 add_library(graphics SHARED ${graphics_src})
@@ -16,6 +19,7 @@ target_include_directories(graphics
         ${SDL2_INCLUDE_DIR}
         ${SDL2_IMAGE_INCLUDE_DIR}
         ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/lib
 )
 
-target_link_libraries(graphics ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} math)
+target_link_libraries(graphics ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} math logger)

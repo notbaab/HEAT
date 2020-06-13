@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "events/EventManager.h"
 #include "graphics/AnimatedSpriteComponent.h"
+#include "graphics/AssetManager.h"
 #include "graphics/RenderManager.h"
 
 namespace gameobjects
@@ -28,7 +29,6 @@ class PlayerClient : public Player
     }
 
     void Update() override;
-
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
 
     virtual void SetupListeners() override
@@ -40,22 +40,24 @@ class PlayerClient : public Player
 
     PlayerClient() : stateDirty(true), predictedState(std::make_shared<PhysicsComponent>())
     {
-        auto playerSheet = SpriteSheetData::GetSheetData(PlayerSheetKey);
+        auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
 
         this->drawable = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
             predictedState.get(), playerSheet);
+
         this->serverLocation = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
             physicsComponent.get(), playerSheet, true);
 
         // TODO: wut? This is stupid, do more better
-        this->drawable->ChangeAnimation("first");
-        this->serverLocation->ChangeAnimation("first");
+        this->drawable->ChangeAnimation("idle-standing");
+        this->serverLocation->ChangeAnimation("idle-standing");
     }
 
   private:
     void RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves);
     void PredictState();
     bool stateDirty;
+
     // The player has a physics component that holds the state the server
     // thinks the player is. The predicted state is used to predict other player
     // objects locations or the location of the player after the unprocessed

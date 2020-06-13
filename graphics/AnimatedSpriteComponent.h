@@ -5,9 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "AssetManager.h"
 #include "DrawableComponent.h"
 #include "GraphicsDriver.h"
-#include "SpriteSheetData.h"
+#include "TiledAnimatedSpriteSheetData.h"
 #include "logger/Logger.h"
 #include "math/Vector3.h"
 
@@ -15,39 +16,49 @@ template <typename T>
 class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
-    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData,
+    AnimatedSpriteComponent(T* inGameObject,
+                            std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData,
                             bool justOutline)
 
     {
         mGameObject = inGameObject;
-        mFrames = &sheetData->animations;
+        animationFrameData = &sheetData->animations;
         this->justOutline = justOutline;
 
         // It is worth it to explore some sort of texture manager to cache textures.
         // Doing it this way means we load the texture for every sprite component.
-        mTexture =
-            IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), sheetData->sheetLoc.c_str());
+        mTexture = AssetManager::sInstance->GetTexture(sheetData->name);
+        // mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(),
+        // "images/megaman.png"); IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(),
+        // sheetData->sheetLoc.c_str());
     }
 
-    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<SpriteSheetData> sheetData)
+    AnimatedSpriteComponent(T* inGameObject,
+                            std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData)
         : AnimatedSpriteComponent(inGameObject, sheetData, false)
     {
     }
-
     ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
 
     SDL_Rect getCurrentAnimationFrame()
     {
         // Group these together in a single call?
-        int delayPerFrame = 80;
-        uint32_t adjustedTick = SDL_GetTicks() - animationStartTime;
-        uint32_t frameIdx = (adjustedTick / delayPerFrame) % framesInAnimation;
+        uint32_t currentTick = SDL_GetTicks();
+        uint32_t drawTime = currentTick - currentFrameStart;
+        uint32_t frameDuration = (*currentAnimation)[frameIndex].duration;
+        if (drawTime >= frameDuration)
+        {
+            frameIndex++;
+            frameIndex %= framesInAnimation;
+            currentFrameStart = currentTick;
+        }
 
+        // PIMP Wtf is this shit, this is hideous
         SDL_Rect textureRect;
-        textureRect.x = currentAnimation[frameIdx][0];
-        textureRect.y = currentAnimation[frameIdx][1];
-        textureRect.w = currentAnimation[frameIdx][2];
-        textureRect.h = currentAnimation[frameIdx][3];
+        textureRect.x = (*currentAnimation)[frameIndex].drawRect.x;
+        textureRect.y = (*currentAnimation)[frameIndex].drawRect.y;
+        textureRect.w = (*currentAnimation)[frameIndex].drawRect.width;
+        textureRect.h = (*currentAnimation)[frameIndex].drawRect.height;
 
         return textureRect;
     }
@@ -55,10 +66,11 @@ class AnimatedSpriteComponent : public DrawableComponent
     // TODO: Should it be a string still?
     void ChangeAnimation(std::string animation)
     {
-        currentAnimation = (*mFrames)[animation];
-        framesInAnimation = (*mFrames)[animation].size();
-        animationStartTime = SDL_GetTicks();
-        animationIdx = 0;
+        currentAnimationData = &(*animationFrameData)[animation];
+        currentAnimation = &currentAnimationData->animations;
+        framesInAnimation = currentAnimationData->NumAnimations();
+        currentFrameStart = SDL_GetTicks();
+        frameIndex = 0;
     }
 
     void Draw(const SDL_Rect& inViewTransform)
@@ -115,11 +127,15 @@ class AnimatedSpriteComponent : public DrawableComponent
 
     SDL_Texture* mTexture;
     // Animation Frame Data
-    SpriteSheetAnimationFrameData* mFrames;
+    // SpriteSheetAnimationFrameData* animationFrameData;sheetName
+
+    std::unordered_map<std::string, SpriteAnimationData>* animationFrameData;
     // Book keeping for the current animation that is playing
-    AnimationFrameData currentAnimation;
-    uint32_t animationIdx;
-    uint32_t animationStartTime;
+    SpriteAnimationData* currentAnimationData;
+
+    std::vector<SpriteAnimationFrameData>* currentAnimation;
+    uint32_t frameIndex;
+    uint32_t currentFrameStart;
     uint32_t framesInAnimation;
 
     SDL_Rect currentFrameRect;

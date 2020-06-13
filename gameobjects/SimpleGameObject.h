@@ -22,7 +22,6 @@ class SimpleGameObject
     // Vector3 GetLocation() {
     //     return centerLocation;
     // }
-    // std::string getSpriteSheet() { return spriteSheetData.sheetLoc; }
     void SetRotation(uint16_t degress) { rotation = degress; }
     uint16_t GetRotation() { return rotation; }
 

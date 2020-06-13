@@ -6,8 +6,6 @@
 #include <unordered_map>
 
 // Yeah this is too many includes
-#include "IO/InputMemoryBitStream.h"
-#include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
 #include "events/CreatePlayerOwnedObject.h"
@@ -22,10 +20,12 @@
 #include "gameobjects/SimpleGameObject.h"
 #include "gameobjects/WorldClient.h"
 #include "graphics/AnimatedSpriteComponent.h"
+#include "graphics/AssetManager.h"
 #include "graphics/GraphicsDriver.h"
 #include "graphics/RenderManager.h"
-#include "graphics/SpriteSheetData.h"
 #include "graphics/StaticSpriteComponent.h"
+#include "graphics/TiledAnimatedSpriteSheetData.h"
+#include "graphics/TiledTileLoader.h"
 #include "graphics/WindowManager.h"
 #include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
@@ -55,6 +55,8 @@ int __argc;
 
 #define TESTSTATICSHEET "images/shipsMiscellaneous_sheet.png"
 #define TESTSTATICSHEETDATA "images/ship-sheet.json"
+
+#define ASSET_MAP "images/asset-map.json"
 
 #define TESTSHIP "ship (24).png"
 
@@ -120,8 +122,11 @@ static auto sInputButtonState = InputButtonState();
 
 void LoadTextures()
 {
-    SpriteSheetData::RegisterSpriteSheetData(gameobjects::PlayerSheetKey, TESTANIMATEDSHEET,
-                                             TESTANIMATEDDATA);
+    auto loaded = AssetManager::StaticInit(ASSET_MAP);
+
+    TiledTileLoader t = TiledTileLoader();
+    auto sheetData = t.LoadAnimationSheetInfo("images/player.json");
+    AssetManager::sInstance->PushAnimatedTiledSheet(std::move(sheetData), "images/chara_hero.png");
 }
 
 bool SetupRenderer()
@@ -253,22 +258,6 @@ void initStuffs()
 
     NetworkManagerClient::sInstance->StartServerHandshake();
     NetworkManagerClient::sInstance->SendOutgoingPackets();
-
-    // auto pirateSheet = SpriteSheetData(TESTSTATICSHEET, TESTSTATICSHEETDATA);
-    // auto megaManSheet = SpriteSheetData(TESTANIMATEDSHEET, TESTANIMATEDDATA);
-
-    // auto pirateShip = SimpleGameObject();
-    // auto megaMan = SimpleGameObject();
-
-    // auto pirateShipRect = pirateSheet.staticTextureMap[TESTSHIP];
-
-    // auto pirateComponent = StaticSpriteComponent(&pirateShip, TESTSTATICSHEET, pirateShipRect);
-    // auto megaManComponent =
-    //     AnimatedSpriteComponent(&megaMan, TESTANIMATEDSHEET, megaManSheet.animations);
-
-    // megaManComponent.ChangeAnimation("first");
-    // RenderManager::sInstance->AddComponent(&pirateComponent);
-    // RenderManager::sInstance->AddComponent(&megaManComponent);
 
     InputManager::StaticInit();
     InputManager::sInstance->RegisterKeyDownListner(
