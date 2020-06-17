@@ -152,5 +152,10 @@ int main(int argc, const char* argv[])
             }
             interactive_console(socketPath);
         }
+        else
+        {
+            std::cout << "Usage: " << std::endl;
+            std::cout << "        console --debug-socket <socket_location>" << std::endl;
+        }
     }
 }
