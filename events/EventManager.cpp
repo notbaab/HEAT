@@ -12,10 +12,7 @@ bool EventManager::AddListener(EventListenerFunction eventDelegate, uint32_t eve
     return true;
 }
 
-bool EventManager::RemoveListener(EventListenerFunction eventDelegate, uint32_t eventType)
-{
-    return false;
-}
+bool EventManager::RemoveListener(EventListenerFunction eventDelegate, uint32_t eventType) { return false; }
 
 bool EventManager::QueueEvent(std::shared_ptr<Event> event)
 {

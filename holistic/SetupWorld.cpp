@@ -21,23 +21,20 @@ void SetupWorld()
 
     // create registry and add all the creation functions we know about
     gameobjects::Registry::StaticInit(gameobjects::World::StaticAddGameObject);
-    gameobjects::Registry::sInstance->RegisterCreationFunction(
-        gameobjects::PLAYER_ID, gameobjects::PlayerServer::StaticCreate);
+    gameobjects::Registry::sInstance->RegisterCreationFunction(gameobjects::PLAYER_ID,
+                                                               gameobjects::PlayerServer::StaticCreate);
 
     // Event forwarder takes events and pushes them to clients
-    auto evtForwarder =
-        CREATE_DELEGATE(&NetworkManagerServer::EventForwarder, NetworkManagerServer::sInstance);
+    auto evtForwarder = CREATE_DELEGATE(&NetworkManagerServer::EventForwarder, NetworkManagerServer::sInstance);
     EventManager::sInstance->AddListener(evtForwarder, CreatePlayerOwnedObject::EVENT_TYPE);
     EventManager::sInstance->AddListener(evtForwarder, PhysicsComponentUpdate::EVENT_TYPE);
 
     // World listens for requests to add objects
-    auto addObject =
-        CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
+    auto addObject = CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
 
     EventRouter<PlayerInputEvent>::StaticInit();
-    auto playerInputRouter =
-        CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
+    auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 

@@ -42,11 +42,10 @@ class PlayerClient : public Player
     {
         auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
 
-        this->drawable = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
-            predictedState.get(), playerSheet);
+        this->drawable = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(predictedState.get(), playerSheet);
 
-        this->serverLocation = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(
-            physicsComponent.get(), playerSheet, true);
+        this->serverLocation =
+            std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
 
         // TODO: wut? This is stupid, do more better
         this->drawable->ChangeAnimation("idle-standing");

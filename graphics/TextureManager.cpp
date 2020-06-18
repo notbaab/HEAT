@@ -10,10 +10,7 @@ void TextureManager::StaticInit() { sInstance.reset(new TextureManager()); }
 
 TextureManager::TextureManager() {}
 
-TexturePtr TextureManager::GetTexture(const std::string& inTextureName)
-{
-    return mNameToTextureMap[inTextureName];
-}
+TexturePtr TextureManager::GetTexture(const std::string& inTextureName) { return mNameToTextureMap[inTextureName]; }
 
 bool TextureManager::CacheTexture(std::string inTextureName, const char* inFileName)
 {

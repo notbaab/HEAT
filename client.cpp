@@ -94,8 +94,8 @@ class InputButtonState
             moveSeq++;
             auto clientId = NetworkManagerClient::GetClientId();
             auto playerObjId = gameobjects::PlayerClient::clientToPlayer[clientId];
-            auto inputState = std::make_shared<PlayerInputEvent>(
-                GetHorizontalDirection(), GetVerticalDirection(), moveSeq, playerObjId);
+            auto inputState = std::make_shared<PlayerInputEvent>(GetHorizontalDirection(), GetVerticalDirection(),
+                                                                 moveSeq, playerObjId);
             EventManager::sInstance->QueueEvent(inputState);
         }
     }
@@ -218,13 +218,12 @@ void SetupWorld()
 
     // create registry and add all the creation functions we know about
     gameobjects::Registry::StaticInit(gameobjects::WorldClient::StaticAddGameObject);
-    gameobjects::Registry::sInstance->RegisterCreationFunction(
-        gameobjects::PLAYER_ID, gameobjects::PlayerClient::StaticCreate);
+    gameobjects::Registry::sInstance->RegisterCreationFunction(gameobjects::PLAYER_ID,
+                                                               gameobjects::PlayerClient::StaticCreate);
 
     // World listens for requests to add objects
     auto addObject = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnAddObject);
-    auto stateUpdate =
-        CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
+    auto stateUpdate = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
     auto eventForwarder = CREATE_DELEGATE_LAMBDA(NetworkManagerClient::sInstance->QueueMessage);
 
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
@@ -235,8 +234,7 @@ void SetupWorld()
     EventRouter<PlayerInputEvent>::StaticInit();
     // auto playerInputRouter = CREATE_DELEGATE_LAMBDA(
     //     (EventRouter<gameobjects::PlayerClient, PlayerInputEvent>::sInstance->RouteEvent));
-    auto playerInputRouter =
-        CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
+    auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 
@@ -260,10 +258,8 @@ void initStuffs()
     NetworkManagerClient::sInstance->SendOutgoingPackets();
 
     InputManager::StaticInit();
-    InputManager::sInstance->RegisterKeyDownListner(
-        [](int keyCode) { sInputButtonState.KeyPressed(keyCode); });
-    InputManager::sInstance->RegisterKeyUpListner(
-        [](int keyCode) { sInputButtonState.KeyReleased(keyCode); });
+    InputManager::sInstance->RegisterKeyDownListner([](int keyCode) { sInputButtonState.KeyPressed(keyCode); });
+    InputManager::sInstance->RegisterKeyUpListner([](int keyCode) { sInputButtonState.KeyReleased(keyCode); });
 }
 
 int main(int argc, const char* argv[])

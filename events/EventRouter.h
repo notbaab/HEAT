@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <unordered_map>
 
 #include "logger/Logger.h"

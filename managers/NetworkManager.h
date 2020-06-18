@@ -22,8 +22,7 @@ class NetworkManager
     virtual void SendOutgoingPackets() = 0;
 
   protected:
-    virtual void dataRecievedCallback(SocketAddress fromAddress,
-                                      std::unique_ptr<std::vector<uint8_t>> data);
+    virtual void dataRecievedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data);
     // where the client and server start processing messages
 
     SocketManager socketManager;

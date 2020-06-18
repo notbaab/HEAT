@@ -7,8 +7,7 @@ class UnauthenticatedPacket : public ReliableOrderedPacket
     CLASS_IDENTIFIER(UnauthenticatedPacket, 'URPK');
     SERIALIZER;
 
-    UnauthenticatedPacket(std::shared_ptr<MessageSerializer> factory)
-        : ReliableOrderedPacket(factory)
+    UnauthenticatedPacket(std::shared_ptr<MessageSerializer> factory) : ReliableOrderedPacket(factory)
     {
         ddosMinPadding.reserve(1000);
         ddosMinPadding.assign(1000, 0);

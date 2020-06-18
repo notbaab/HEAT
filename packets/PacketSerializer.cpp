@@ -24,8 +24,7 @@ std::shared_ptr<Packet> PacketSerializer::CreatePacket(uint32_t id)
     return packetConstructors[id](messageFactory);
 }
 
-std::vector<std::shared_ptr<Packet>>
-PacketSerializer::ReadPackets(std::unique_ptr<std::vector<uint8_t>> data)
+std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(std::unique_ptr<std::vector<uint8_t>> data)
 {
     auto in = InputMemoryBitStream(std::move(data));
     return ReadPackets(in);
@@ -54,8 +53,7 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBi
     return packets;
 }
 
-bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packets,
-                                    OutputMemoryBitStream& out)
+bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packets, OutputMemoryBitStream& out)
 {
     for (auto const& packet : packets)
     {

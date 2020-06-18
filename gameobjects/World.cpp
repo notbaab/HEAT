@@ -32,8 +32,7 @@ void World::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
 // Kinda the factory function for creating object creation events?
 std::shared_ptr<CreatePlayerOwnedObject> World::CreatePlayerCreationEvent(uint32_t playerId)
 {
-    auto createPlayer =
-        std::make_shared<CreatePlayerOwnedObject>(playerId, PLAYER_ID, nextGameObjectId);
+    auto createPlayer = std::make_shared<CreatePlayerOwnedObject>(playerId, PLAYER_ID, nextGameObjectId);
     nextGameObjectId++;
     return createPlayer;
 }
@@ -57,9 +56,15 @@ bool World::AddGameObject(GameObjectPtr obj, uint32_t worldId)
     return true;
 }
 
-bool World::StaticAddGameObject(GameObjectPtr obj, uint32_t worldId)
+bool World::StaticAddGameObject(GameObjectPtr obj, uint32_t worldId) { return sInstance->AddGameObject(obj, worldId); }
+
+std::string World::DebugWorld(std::vector<std::string> args)
 {
-    return sInstance->AddGameObject(obj, worldId);
+    for (auto go : sInstance->mGameObjects)
+    {
+        // TODO: Print Info delegate to game object
+    }
+    return "did a thing";
 }
 
 void World::PrintInfo()

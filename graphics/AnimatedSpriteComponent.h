@@ -16,25 +16,19 @@ template <typename T>
 class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
-    AnimatedSpriteComponent(T* inGameObject,
-                            std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData,
-                            bool justOutline)
+    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData, bool justOutline)
 
     {
         mGameObject = inGameObject;
         animationFrameData = &sheetData->animations;
+        // PIMP: This is so we can have a server ghost of just the outline, probably a much better
+        // way
         this->justOutline = justOutline;
 
-        // It is worth it to explore some sort of texture manager to cache textures.
-        // Doing it this way means we load the texture for every sprite component.
         mTexture = AssetManager::sInstance->GetTexture(sheetData->name);
-        // mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(),
-        // "images/megaman.png"); IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(),
-        // sheetData->sheetLoc.c_str());
     }
 
-    AnimatedSpriteComponent(T* inGameObject,
-                            std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData)
+    AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData)
         : AnimatedSpriteComponent(inGameObject, sheetData, false)
     {
     }

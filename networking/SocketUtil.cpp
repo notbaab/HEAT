@@ -27,9 +27,8 @@ void SocketUtil::ReportError(const char* inOperationDesc)
     LPVOID lpMsgBuf;
     DWORD errorNum = GetLastError();
 
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, errorNum, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+                  errorNum, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
 
     LOG("Error %s: %d- %s", inOperationDesc, errorNum, lpMsgBuf);
 #else

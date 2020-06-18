@@ -27,8 +27,7 @@ class ClientLoginResponse : public Message
     }
 
     ClientLoginResponse(){};
-    ClientLoginResponse(uint32_t clientId,
-                        std::vector<std::tuple<uint32_t, std::string>> currentClients)
+    ClientLoginResponse(uint32_t clientId, std::vector<std::tuple<uint32_t, std::string>> currentClients)
         : clientId(clientId), currentClients(currentClients)
     {
         this->sizeOfClientMap = currentClients.size();

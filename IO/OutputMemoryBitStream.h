@@ -34,10 +34,7 @@ class OutputMemoryBitStream
     uint32_t GetByteLength() const { return (mBitHead + 7) >> 3; }
 
     // Convenient wrapper around write bits for byte aligned data
-    void WriteBytes(const void* inData, uint32_t inByteCount)
-    {
-        WriteBits(inData, inByteCount << 3);
-    }
+    void WriteBytes(const void* inData, uint32_t inByteCount) { WriteBits(inData, inByteCount << 3); }
 
     // TODO: Why is this done differently than the input memory bit stream
     template <typename T>

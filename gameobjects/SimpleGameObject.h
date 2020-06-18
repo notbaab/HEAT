@@ -6,7 +6,7 @@
 #include "events/PhysicsComponentUpdate.h"
 #include "math/Vector3.h"
 
-#define CLASS_IDENTIFICATION(inCode)                                                               \
+#define CLASS_IDENTIFICATION(inCode)                                                                                   \
     virtual uint32_t GetClassId() const override { return inCode; }
 
 class EventManager;

@@ -133,16 +133,16 @@ TEST_CASE("Packet Serialize Test", "[packet]")
         float xLoc = 2.2f;
         float yLoc = 2.0f;
 
-        auto fullPacketIn = std::make_unique<PlayerMessage>(
-            PlayerMessage::ReplicationState::ALL_STATE, xVel, yVel, xLoc, yLoc);
+        auto fullPacketIn =
+            std::make_unique<PlayerMessage>(PlayerMessage::ReplicationState::ALL_STATE, xVel, yVel, xLoc, yLoc);
         fullPacketIn->AssignId(14);
         // Make one with only the id
-        auto onlyIdIn = std::make_unique<PlayerMessage>(PlayerMessage::ReplicationState::PRS_PID,
-                                                        xVel, yVel, xLoc, yLoc);
+        auto onlyIdIn =
+            std::make_unique<PlayerMessage>(PlayerMessage::ReplicationState::PRS_PID, xVel, yVel, xLoc, yLoc);
         onlyIdIn->AssignId(12);
         // one with only the position
-        auto onlyPositionIn = std::make_unique<PlayerMessage>(
-            PlayerMessage::ReplicationState::PRS_POSI, xVel, yVel, xLoc, yLoc);
+        auto onlyPositionIn =
+            std::make_unique<PlayerMessage>(PlayerMessage::ReplicationState::PRS_POSI, xVel, yVel, xLoc, yLoc);
 
         auto out = OutputMemoryBitStream();
         auto message_vector = std::make_unique<std::vector<std::shared_ptr<Message>>>();

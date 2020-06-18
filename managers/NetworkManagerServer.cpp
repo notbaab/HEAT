@@ -15,20 +15,17 @@
 #include "packets/Message.h"
 #include "packets/UnauthenticatedPacket.h"
 
-void NetworkManagerServer::StaticInit(uint16_t port,
-                                      std::shared_ptr<PacketSerializer> packetSerializer)
+void NetworkManagerServer::StaticInit(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer)
 {
     sInstance.reset(new NetworkManagerServer(port, packetSerializer));
 }
 
-NetworkManagerServer::NetworkManagerServer(uint16_t port,
-                                           std::shared_ptr<PacketSerializer> packetSerializer)
+NetworkManagerServer::NetworkManagerServer(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer)
     : NetworkManager(port, packetSerializer)
 {
 }
 
-void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
-                                                std::unique_ptr<std::vector<uint8_t>> data)
+void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     // Deserialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
@@ -74,8 +71,7 @@ void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress,
 
 // challenged clients will send authenticated packets but we only send it
 // unauthenticated packets since we don't know if it' got through yet
-bool NetworkManagerServer::HandleChallenedClient(ClientData& client,
-                                                 const std::shared_ptr<Packet> packet)
+bool NetworkManagerServer::HandleChallenedClient(ClientData& client, const std::shared_ptr<Packet> packet)
 {
     // A challenged client will send authed packets, if it's sending unauthed,
     // ignore. Maybe? That does seem kinda weird to enforce
@@ -88,8 +84,8 @@ bool NetworkManagerServer::HandleChallenedClient(ClientData& client,
     }
     if (cast->expectedSalt != client.xOrSalt)
     {
-        WARN("xor'd salt doesn't match client, expecting {} got {} ignoring packet",
-             cast->expectedSalt, client.xOrSalt);
+        WARN("xor'd salt doesn't match client, expecting {} got {} ignoring packet", cast->expectedSalt,
+             client.xOrSalt);
         return false;
     }
 
@@ -168,8 +164,7 @@ void NetworkManagerServer::ProcessMessages()
     }
 }
 
-bool NetworkManagerServer::ReadChallengeResponseMessage(ClientData& client,
-                                                        const std::shared_ptr<Message> message)
+bool NetworkManagerServer::ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message)
 {
     if (client.state != ClientConnectionState::CHALLENGED)
     {
@@ -185,8 +180,7 @@ bool NetworkManagerServer::ReadChallengeResponseMessage(ClientData& client,
     client.state = ClientConnectionState::AUTHENTICATED;
     return true;
 }
-bool NetworkManagerServer::ReadLoginMessage(ClientData& client,
-                                            const std::shared_ptr<Message> message)
+bool NetworkManagerServer::ReadLoginMessage(ClientData& client, const std::shared_ptr<Message> message)
 {
     auto castMsg = std::static_pointer_cast<ClientLoginMessage>(message);
 
@@ -221,8 +215,7 @@ bool NetworkManagerServer::ReadLoginMessage(ClientData& client,
 
 // bool NetworkManagerServer::QueueBroadCastMessage(){}
 
-bool NetworkManagerServer::ReadConnectionRequestMessage(ClientData& client,
-                                                        const std::shared_ptr<Message> message)
+bool NetworkManagerServer::ReadConnectionRequestMessage(ClientData& client, const std::shared_ptr<Message> message)
 {
     if (client.state != ClientConnectionState::CONNECTING)
     {
@@ -260,8 +253,7 @@ void NetworkManagerServer::SendOutgoingPackets()
 
         std::shared_ptr<ReliableOrderedPacket> packet;
 
-        if (client.state == ClientConnectionState::AUTHENTICATED ||
-            client.state == ClientConnectionState::LOGGED_IN)
+        if (client.state == ClientConnectionState::AUTHENTICATED || client.state == ClientConnectionState::LOGGED_IN)
         {
             // This is stupid. Why do I have to cast it to reach and and set it?
             packet = client.packetManager.WritePacket(AuthenticatedPacket::CLASS_ID);
@@ -283,8 +275,7 @@ void NetworkManagerServer::SendOutgoingPackets()
             return;
         }
         // ship it into the ether
-        socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(),
-                             client.socketAddress);
+        socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(), client.socketAddress);
     }
 }
 

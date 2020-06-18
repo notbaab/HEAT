@@ -17,6 +17,9 @@ class World
     static void StaticInit();
     static std::unique_ptr<World> sInstance;
 
+    // Debug stuff
+    static std::string DebugWorld(std::vector<std::string> args);
+
     // void OnAddObject(std::shared_ptr<Event> addGameObjEvent);
     bool AddGameObject(GameObjectPtr inGameObject, uint32_t worldId);
     static bool StaticAddGameObject(GameObjectPtr inGameObject, uint32_t worldId);

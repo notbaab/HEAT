@@ -40,10 +40,6 @@ struct SpriteAnimationFrameData
     uint32_t tileid;
 
     DrawRect drawRect;
-    // uint32_t x;
-    // uint32_t y;
-    // uint32_t width;
-    // uint32_t height;
     uint32_t duration;
     // hitbox info here?
 };
@@ -88,7 +84,11 @@ class TiledAnimatedSpriteSheetData
 
     bool PushAnimationData(std::string name, SpriteAnimationData frameData)
     {
+        // Assuming the first animation added is the idle animation. Could
+        // add a whole thing to set the first animation but just
+        // making it the top of the sheet is simple and makes sense.
         animations[name] = frameData;
+
         return true;
     };
 
@@ -97,4 +97,5 @@ class TiledAnimatedSpriteSheetData
     std::unordered_map<std::string, SpriteAnimationData> animations;
     std::shared_ptr<TiledSheetData> baseSheetData;
     std::string name;
+    std::shared_ptr<SpriteAnimationData> firstAnimation;
 };

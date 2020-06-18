@@ -6,10 +6,10 @@
 #include <iostream>
 #include <string>
 
-#include "packets/MessageSerializer.h"
-#include "packets/Message.h"
-#include "packets/PacketSerializer.h"
 #include "packets/AuthenticatedPacket.h"
+#include "packets/Message.h"
+#include "packets/MessageSerializer.h"
+#include "packets/PacketSerializer.h"
 
 #define FAL_PORT 4500
 
@@ -39,7 +39,7 @@ static int dissect_heat(tvbuff_t* tvb, packet_info* pinfo, proto_tree* tree _U_,
     col_set_str(pinfo->cinfo, COL_PROTOCOL, "HEAT");
 
     proto_item* ti = proto_tree_add_item(tree, proto_heat, tvb, 0, -1, ENC_NA);
-    proto_tree *heat_tree = proto_item_add_subtree(ti, ett_heat);
+    proto_tree* heat_tree = proto_item_add_subtree(ti, ett_heat);
 
     int offset = 0;
     int size = 0;
@@ -80,26 +80,14 @@ extern "C" void proto_register_fal(void)
     proto_heat = proto_register_protocol("Heat Game Protocol", "heat", "ht");
 
     static hf_register_info hf[] = {
-        { &hf_packet_type,
-            { "Packet Type", "heat.p_type", FT_STRING, BASE_NONE, NULL, 0x0, NULL, HFILL}
-        },
-        { &hf_client_salt,
-            { "Client Salt", "heat.salt", FT_UINT32, BASE_HEX, NULL, 0x0, NULL, HFILL}
-        },
-        { &hf_packet_sequence,
-            { "Sequence Number", "heat.seq_num", FT_UINT32, BASE_DEC, NULL, 0x0, NULL, HFILL}
-        },
-        { &hf_packet_ack,
-            { "Ack", "heat.ack", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL}
-        },
-        { &hf_packet_ack_bits,
-            { "Ack Bits", "heat.ack_bits", FT_UINT32, BASE_HEX, NULL, 0x0, NULL, HFILL}
-        },
+        {&hf_packet_type, {"Packet Type", "heat.p_type", FT_STRING, BASE_NONE, NULL, 0x0, NULL, HFILL}},
+        {&hf_client_salt, {"Client Salt", "heat.salt", FT_UINT32, BASE_HEX, NULL, 0x0, NULL, HFILL}},
+        {&hf_packet_sequence, {"Sequence Number", "heat.seq_num", FT_UINT32, BASE_DEC, NULL, 0x0, NULL, HFILL}},
+        {&hf_packet_ack, {"Ack", "heat.ack", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL}},
+        {&hf_packet_ack_bits, {"Ack Bits", "heat.ack_bits", FT_UINT32, BASE_HEX, NULL, 0x0, NULL, HFILL}},
     };
 
-    static gint *ett[] = {
-        &ett_heat
-    };
+    static gint* ett[] = {&ett_heat};
 
     proto_register_field_array(proto_heat, hf, array_length(hf));
     proto_register_subtree_array(ett, array_length(ett));

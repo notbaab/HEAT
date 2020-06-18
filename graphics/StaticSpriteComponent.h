@@ -15,8 +15,7 @@ template <typename T>
 class StaticSpriteComponent : public DrawableComponent
 {
   public:
-    StaticSpriteComponent(T* inGameObject, std::string spriteSheetLoc,
-                          std::vector<uint32_t> drawRect)
+    StaticSpriteComponent(T* inGameObject, std::string spriteSheetLoc, std::vector<uint32_t> drawRect)
     {
         mGameObject = inGameObject;
 
@@ -29,8 +28,7 @@ class StaticSpriteComponent : public DrawableComponent
 
         // It is worth it to explore some sort of texture manager to cache textures.
         // Doing it this way means we load the texture for every sprite component.
-        mTexture =
-            IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheetLoc.c_str());
+        mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheetLoc.c_str());
     }
 
     ~StaticSpriteComponent() { SDL_DestroyTexture(mTexture); }
@@ -58,8 +56,7 @@ class StaticSpriteComponent : public DrawableComponent
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
         // SDL_RenderCopy(renderer, mTexture, &mTextureRect, &mWorldRect);
-        SDL_RenderCopyEx(renderer, mTexture, &mTextureRect, &mWorldRect, rotation, NULL,
-                         SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, mTexture, &mTextureRect, &mWorldRect, rotation, NULL, SDL_FLIP_NONE);
         DrawSpriteOutline();
     }
 

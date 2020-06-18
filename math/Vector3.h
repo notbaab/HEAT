@@ -112,10 +112,7 @@ class Vector3
         return temp;
     }
 
-    friend Vector3 Lerp(const Vector3& inA, const Vector3& inB, float t)
-    {
-        return Vector3(inA + t * (inB - inA));
-    }
+    friend Vector3 Lerp(const Vector3& inA, const Vector3& inB, float t) { return Vector3(inA + t * (inB - inA)); }
 
     static const Vector3 Zero;
     static const Vector3 UnitX;
@@ -130,10 +127,7 @@ float GetRandomFloat();
 
 Vector3 GetRandomVector(const Vector3& inMin, const Vector3& inMax);
 
-inline bool Is2DVectorEqual(const Vector3& inA, const Vector3& inB)
-{
-    return (inA.mX == inB.mX && inA.mY == inB.mY);
-}
+inline bool Is2DVectorEqual(const Vector3& inA, const Vector3& inB) { return (inA.mX == inB.mX && inA.mY == inB.mY); }
 
 inline float ToDegrees(float inRadians) { return inRadians * 180.0f / PI; }
 } // namespace Math

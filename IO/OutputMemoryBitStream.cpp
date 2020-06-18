@@ -20,8 +20,7 @@ void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
     uint32_t bitOffset = mBitHead & 0x7;
 
     uint8_t currentMask = ~(0xff << bitOffset);
-    mBuffer->data()[byteOffset] =
-        (mBuffer->data()[byteOffset] & currentMask) | (inData << bitOffset);
+    mBuffer->data()[byteOffset] = (mBuffer->data()[byteOffset] & currentMask) | (inData << bitOffset);
 
     // calculate how many bits were not yet used in
     // our target byte in the buffer

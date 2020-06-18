@@ -29,8 +29,8 @@ int UDPSocket::Bind(const SocketAddress& inBindAddress)
 
 int UDPSocket::SendTo(const void* inToSend, int inLength, const SocketAddress& inToAddress)
 {
-    int byteSentCount = (int)sendto(mSocket, static_cast<const char*>(inToSend), inLength, 0,
-                                    &inToAddress.mSockAddr, inToAddress.GetSize());
+    int byteSentCount = (int)sendto(mSocket, static_cast<const char*>(inToSend), inLength, 0, &inToAddress.mSockAddr,
+                                    inToAddress.GetSize());
     if (byteSentCount <= 0)
     {
         // we'll return error as negative number to indicate less than requested

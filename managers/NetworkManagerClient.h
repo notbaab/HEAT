@@ -21,13 +21,12 @@ class NetworkManagerClient : public NetworkManager
 {
   public:
     static inline std::unique_ptr<NetworkManagerClient> sInstance;
-    NetworkManagerClient(std::string serverAddress,
-                         std::shared_ptr<PacketSerializer> packetSerializer, std::string userName);
+    NetworkManagerClient(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
+                         std::string userName);
 
     virtual void ProcessMessages() override;
     virtual void SendOutgoingPackets() override;
-    static void StaticInit(std::string serverAddress,
-                           std::shared_ptr<PacketSerializer> packetSerializer,
+    static void StaticInit(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                            std::string userName);
 
     virtual void dataRecievedCallback(SocketAddress fromAddressKey,

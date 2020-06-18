@@ -44,10 +44,7 @@ void SocketManager::bindSocket(uint16_t port)
     INFO("Bound address {}", ownAddress.ToString());
 }
 
-void SocketManager::startReceiveThread()
-{
-    receiveThread = std::thread(&SocketManager::receiveLoop, this);
-}
+void SocketManager::startReceiveThread() { receiveThread = std::thread(&SocketManager::receiveLoop, this); }
 
 SocketManager::SocketManager(uint16_t port, ReceiveCallback receiveCallback)
     : receiveCallback(receiveCallback), stopFlag(false)
@@ -57,8 +54,7 @@ SocketManager::SocketManager(uint16_t port, ReceiveCallback receiveCallback)
 }
 
 // non specific port constructor, bind to a random one
-SocketManager::SocketManager(ReceiveCallback receiveCallback)
-    : receiveCallback(receiveCallback), stopFlag(false)
+SocketManager::SocketManager(ReceiveCallback receiveCallback) : receiveCallback(receiveCallback), stopFlag(false)
 {
     std::random_device rd;
     std::mt19937 eng(rd());
@@ -96,8 +92,7 @@ void SocketManager::receiveLoop()
     {
         // TODO: Pool memory?
         auto packetMem = std::make_unique<std::vector<uint8_t>>(SocketManager::kMaxPacketSize);
-        int readByteCount =
-            mSocket->ReceiveFrom(packetMem->data(), SocketManager::kMaxPacketSize, fromAddress);
+        int readByteCount = mSocket->ReceiveFrom(packetMem->data(), SocketManager::kMaxPacketSize, fromAddress);
 
         // if we were stopped, don't call the callback
         if (stopFlag)

@@ -7,8 +7,7 @@
 #include "SocketAddress.h"
 #include "UDPSocket.h"
 
-using ReceiveCallback =
-    std::function<void(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>>)>;
+using ReceiveCallback = std::function<void(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>>)>;
 
 namespace networking
 {

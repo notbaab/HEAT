@@ -24,8 +24,8 @@ class InputMemoryBitStream
     // Kinda a crappy constructor that results in copying the entire buffer but it's a sacrifice for
     // safety
     InputMemoryBitStream(uint8_t* inBuffPtr, uint32_t inByteCount)
-        : mBuffer(std::make_shared<std::vector<uint8_t>>(inBuffPtr, inBuffPtr + inByteCount)),
-          mBitHead(0), mBitCapacity(inByteCount * 8)
+        : mBuffer(std::make_shared<std::vector<uint8_t>>(inBuffPtr, inBuffPtr + inByteCount)), mBitHead(0),
+          mBitCapacity(inByteCount * 8)
     {
     }
 

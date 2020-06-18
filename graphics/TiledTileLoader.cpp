@@ -39,8 +39,7 @@ DrawRect TiledSheetData::ConvertIdToRect(uint32_t tileId)
     return rect;
 }
 
-static bool HandleAnimationData(rapidjson::Value::Object& tile,
-                                TiledAnimatedSpriteSheetData& outSheetData)
+static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpriteSheetData& outSheetData)
 {
     assert(tile["id"].IsUint());
     unsigned int id = tile["id"].GetUint();
@@ -154,8 +153,7 @@ static void PopulateBaseData(rapidjson::Value::Object& sheetObj, TiledSheetData&
     outSheet.tiledVersion = sheetObj["tiledversion"].GetString();
 }
 
-std::unique_ptr<TiledAnimatedSpriteSheetData>
-TiledTileLoader::LoadAnimationSheetInfo(std::string infoFile)
+std::unique_ptr<TiledAnimatedSpriteSheetData> TiledTileLoader::LoadAnimationSheetInfo(std::string infoFile)
 {
     std::ifstream ifs(infoFile);
     rapidjson::IStreamWrapper isw(ifs);

@@ -9,27 +9,22 @@ class OutputMemoryBitStream;
 class Packet;
 class MessageSerializer;
 
-using PacketConstructor =
-    std::function<std::shared_ptr<Packet>(std::shared_ptr<MessageSerializer>)>;
+using PacketConstructor = std::function<std::shared_ptr<Packet>(std::shared_ptr<MessageSerializer>)>;
 // using PacketConstructor = std::function<std::shared_ptr<Packet>()>;
 
 // A lambda for instantiating the default packet constructor and returning ptr to it
-#define PacketCtor(packetType)                                                                     \
-    [](auto messageFactory) -> std::shared_ptr<Packet> {                                           \
-        return std::move(std::make_unique<packetType>(messageFactory));                            \
+#define PacketCtor(packetType)                                                                                         \
+    [](auto messageFactory) -> std::shared_ptr<Packet> {                                                               \
+        return std::move(std::make_unique<packetType>(messageFactory));                                                \
     }
 
 // Cleaner wrapper around adding the constructor by using the expected static ID
-#define AddPacketCtor(serializer, packetType)                                                      \
-    serializer->AddConstructor(packetType::CLASS_ID, PacketCtor(packetType))
+#define AddPacketCtor(serializer, packetType) serializer->AddConstructor(packetType::CLASS_ID, PacketCtor(packetType))
 
 class PacketSerializer
 {
   public:
-    PacketSerializer(std::shared_ptr<MessageSerializer> messageFactory)
-        : messageFactory(messageFactory)
-    {
-    }
+    PacketSerializer(std::shared_ptr<MessageSerializer> messageFactory) : messageFactory(messageFactory) {}
     ~PacketSerializer() {}
     std::unordered_map<uint32_t, PacketConstructor> packetConstructors;
 

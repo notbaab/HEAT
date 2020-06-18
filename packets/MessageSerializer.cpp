@@ -27,8 +27,8 @@ std::unique_ptr<Message> MessageSerializer::CreateMessage(uint32_t id)
     return messageConstructors[id]();
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<Message>>>
-MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
+std::shared_ptr<std::vector<std::shared_ptr<Message>>> MessageSerializer::ReadMessages(InputMemoryBitStream& in,
+                                                                                       uint8_t numMessages)
 {
     uint32_t id;
 
@@ -57,8 +57,8 @@ MessageSerializer::ReadMessages(InputMemoryBitStream& in, uint8_t numMessages)
     return std::move(messages);
 }
 
-bool MessageSerializer::WriteMessages(
-    std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages, OutputMemoryBitStream& out)
+bool MessageSerializer::WriteMessages(std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages,
+                                      OutputMemoryBitStream& out)
 {
     for (auto const& message : *messages)
     {

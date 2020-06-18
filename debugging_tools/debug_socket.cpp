@@ -12,8 +12,7 @@
 class SocketThreadContainer
 {
   public:
-    static std::unique_ptr<SocketThreadContainer> BuildContainer(const char* socketPath,
-                                                                 ReadCallback callback)
+    static std::unique_ptr<SocketThreadContainer> BuildContainer(const char* socketPath, ReadCallback callback)
     {
         int fd;
         struct sockaddr_un addr;
@@ -114,8 +113,7 @@ bool SpawnSocket(const char* socketPath, ReadCallback callback)
         return false;
     }
 
-    std::unique_ptr<SocketThreadContainer> container =
-        SocketThreadContainer::BuildContainer(socketPath, callback);
+    std::unique_ptr<SocketThreadContainer> container = SocketThreadContainer::BuildContainer(socketPath, callback);
     container->start();
     socketMap[socketPath] = std::move(container);
 

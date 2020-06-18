@@ -36,8 +36,7 @@ class Player : public SimpleGameObject
     Vector3 GetLocation() { return physicsComponent->centerLocation; }
 
   protected:
-    void ApplyMoves(std::shared_ptr<PhysicsComponent> component,
-                    std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
+    void ApplyMoves(std::shared_ptr<PhysicsComponent> component, std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     uint32_t lastMoveSeq;
     std::deque<std::shared_ptr<PlayerInputEvent>> moves;
 };

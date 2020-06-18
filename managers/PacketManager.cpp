@@ -1,8 +1,7 @@
 #include "PacketManager.h"
 #include "logger/Logger.h"
 
-PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory)
-    : m_packetFactory(packetFactory)
+PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory) : m_packetFactory(packetFactory)
 {
     assert((65536 % SlidingWindowSize) == 0);
     assert((65536 % MessageSendQueueSize) == 0);
@@ -62,10 +61,7 @@ void PacketManager::Reset()
     m_messageReceiveQueue->Reset();
 }
 
-bool PacketManager::CanSendMessage() const
-{
-    return m_messageSendQueue->IsAvailable(m_sendMessageId);
-}
+bool PacketManager::CanSendMessage() const { return m_messageSendQueue->IsAvailable(m_sendMessageId); }
 
 // Refactor to QueueMessage since it doesn't send a message, just adds it to the
 // queue to be written on the next write packet call
@@ -167,8 +163,7 @@ std::shared_ptr<ReliableOrderedPacket> PacketManager::WritePacket(uint32_t packe
     return packet;
 }
 
-std::vector<std::shared_ptr<Packet>>
-PacketManager::ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data)
+std::vector<std::shared_ptr<Packet>> PacketManager::ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data)
 {
     return m_packetFactory->ReadPackets(std::move(data));
 }
@@ -220,8 +215,7 @@ void PacketManager::ProcessAcks(uint16_t ack, uint32_t ack_bits)
 // and comparing it to the resend rate. The last time they were sent is always
 // -1 on newly created messages so no special case for messages that we just
 // create
-void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
-                                      MessageSendQueueEntry** entries)
+void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds, MessageSendQueueEntry** entries)
 {
     numMessageIds = 0;
 
@@ -243,8 +237,7 @@ void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
         MessageSendQueueEntry* entry = m_messageSendQueue->Find(messageId);
 
         // TODO: I don't measure the bits so the check there is worthless
-        if (entry && (entry->timeLastSent + MessageResendRate <= m_time) &&
-            (availableBits - entry->measuredBits >= 0))
+        if (entry && (entry->timeLastSent + MessageResendRate <= m_time) && (availableBits - entry->measuredBits >= 0))
         {
             entries[numMessageIds] = entry;
             messageIds[numMessageIds++] = messageId;
@@ -260,8 +253,7 @@ void PacketManager::GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
     }
 }
 
-void PacketManager::AddMessagePacketEntry(const uint16_t* messageIds, int& numMessageIds,
-                                          uint16_t sequenceNumber)
+void PacketManager::AddMessagePacketEntry(const uint16_t* messageIds, int& numMessageIds, uint16_t sequenceNumber)
 {
     MessageSentPacketEntry* sentPacket = m_messageSentPackets->Insert(sequenceNumber);
 

@@ -2,8 +2,8 @@
 
 #include "packets/Message.h"
 
-#define EVENT_IDENTIFIER(cls, eventType)                                                           \
-    uint32_t GetEventType() const override { return cls::EVENT_TYPE; }                             \
+#define EVENT_IDENTIFIER(cls, eventType)                                                                               \
+    uint32_t GetEventType() const override { return cls::EVENT_TYPE; }                                                 \
     static const uint32_t EVENT_TYPE = eventType;
 
 // base class for an event to differentiate itself from the message class

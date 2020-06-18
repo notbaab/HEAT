@@ -14,18 +14,15 @@
 #include "packets/Message.h"
 #include "packets/UnauthenticatedPacket.h"
 
-void NetworkManagerClient::StaticInit(std::string serverAddress,
-                                      std::shared_ptr<PacketSerializer> packetSerializer,
+void NetworkManagerClient::StaticInit(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                                       std::string userName)
 {
     sInstance.reset(new NetworkManagerClient(serverAddress, packetSerializer, userName));
 }
 
 NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
-                                           std::shared_ptr<PacketSerializer> packetSerializer,
-                                           std::string userName)
-    : packetManager(PacketManager(packetSerializer)), NetworkManager(packetSerializer),
-      userName(userName)
+                                           std::shared_ptr<PacketSerializer> packetSerializer, std::string userName)
+    : packetManager(PacketManager(packetSerializer)), NetworkManager(packetSerializer), userName(userName)
 {
     logger::InitLog(logger::level::DEBUG, "Network Manager Client");
     DEBUG("Made NetworkManagerClient");
@@ -45,8 +42,7 @@ void NetworkManagerClient::StartServerHandshake()
 
 // read the packet according to the state the client is in into the packet
 // manager
-void NetworkManagerClient::dataRecievedCallback(SocketAddress fromAddress,
-                                                std::unique_ptr<std::vector<uint8_t>> data)
+void NetworkManagerClient::dataRecievedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     // De serialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
@@ -147,8 +143,7 @@ bool NetworkManagerClient::ReadLoginMessage(const std::shared_ptr<Message> messa
     this->connectionState = CurrentConnectionState::LOGGED_IN;
     for (auto& idNameTup : cast->currentClients)
     {
-        INFO("Current clients and ids are {} Id {}", std::get<0>(idNameTup),
-             std::get<1>(idNameTup));
+        INFO("Current clients and ids are {} Id {}", std::get<0>(idNameTup), std::get<1>(idNameTup));
     }
 
     return true;
@@ -165,8 +160,7 @@ bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> m
     connectionState = CurrentConnectionState::AUTHENTICATED;
     INFO("Authenticated, sending only authed packets now");
 
-    auto challengeResponse =
-        std::make_unique<ClientConnectionChallengeResponseMessage>(this->xOrSalt);
+    auto challengeResponse = std::make_unique<ClientConnectionChallengeResponseMessage>(this->xOrSalt);
 
     TRACE("Queuing challenge response");
     this->QueueMessage(std::move(challengeResponse));

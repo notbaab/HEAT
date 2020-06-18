@@ -14,12 +14,10 @@ void Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
     {
         component->centerLocation.mX += move->xDelta * 2;
         component->centerLocation.mY += move->yDelta * 2;
-        TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.mX,
-              component->centerLocation.mY);
+        TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.mX, component->centerLocation.mY);
     }
 
-    TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.mX,
-          component->centerLocation.mY);
+    TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.mX, component->centerLocation.mY);
 }
 
 } // namespace gameobjects

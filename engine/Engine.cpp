@@ -5,8 +5,8 @@
 Engine::Engine(IntializerFunc initFunc, TickFunc tickFunc) : Engine(initFunc, tickFunc, []() {}) {}
 
 Engine::Engine(IntializerFunc initFunc, TickFunc tickFunc, CleanUpFunc cleanUpFunc)
-    : running(false), initFunc(initFunc), tickFunc(tickFunc), cleanUpFunc(cleanUpFunc),
-      currentFrame(0), ticksPerSecond(50), currentTime(0)
+    : running(false), initFunc(initFunc), tickFunc(tickFunc), cleanUpFunc(cleanUpFunc), currentFrame(0),
+      ticksPerSecond(50), currentTime(0)
 {
     initFunc();
     frameTimeInMs = 1000 / ticksPerSecond;

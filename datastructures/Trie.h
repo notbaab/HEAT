@@ -15,8 +15,8 @@ class TrieNode
     int freq;
 
     /* Constructor */
-    TrieNode(char symbol, TrieNode* left = 0, TrieNode* right = 0, TrieNode* mid = 0,
-             bool isAWord = false, int freq = 0)
+    TrieNode(char symbol, TrieNode* left = 0, TrieNode* right = 0, TrieNode* mid = 0, bool isAWord = false,
+             int freq = 0)
         : symbol(symbol), left(left), right(right), mid(mid), isAWord(isAWord), freq(freq){};
 };
 
@@ -39,8 +39,7 @@ class DictionaryTrie
     TrieNode* root;
     std::pair<TrieNode*, unsigned int> traverse(std::string word) const;
     bool prefixExists(std::string prefix);
-    void findPrefixWords(std::string prefix,
-                         std::multimap<int, std::string, std::greater<int>>& prefixWords);
+    void findPrefixWords(std::string prefix, std::multimap<int, std::string, std::greater<int>>& prefixWords);
     void getPrefixWords(TrieNode* curr, std::string prefix,
                         std::multimap<int, std::string, std::greater<int>>& prefixWords);
 

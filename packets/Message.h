@@ -7,16 +7,16 @@
 #include "IO/InputMemoryBitStream.h"
 #include "IO/OutputMemoryBitStream.h"
 
-#define SERIALIZER                                                                                 \
-    bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                 \
+#define SERIALIZER                                                                                                     \
+    bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                                     \
     bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
 
-#define CLASS_IDENTIFIER(cls, class_id)                                                            \
-    uint32_t GetClassIdentifier() const override { return cls::CLASS_ID; }                         \
+#define CLASS_IDENTIFIER(cls, class_id)                                                                                \
+    uint32_t GetClassIdentifier() const override { return cls::CLASS_ID; }                                             \
     static const uint32_t CLASS_ID = class_id;
 
-#define TYPE_IDENTIFIER(cls, typeId)                                                               \
-    uint32_t GetTypeIdentifier() const override { return cls::TYPE_ID; }                           \
+#define TYPE_IDENTIFIER(cls, typeId)                                                                                   \
+    uint32_t GetTypeIdentifier() const override { return cls::TYPE_ID; }                                               \
     static const uint32_t TYPE_ID = typeId;
 
 const uint32_t MESSAGE_TYPE_ID = 'BMSG';

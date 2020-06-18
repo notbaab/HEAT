@@ -8,9 +8,7 @@ class AuthenticatedPacket : public ReliableOrderedPacket
     SERIALIZER
     uint32_t expectedSalt;
 
-    AuthenticatedPacket(std::shared_ptr<MessageSerializer> factory) : ReliableOrderedPacket(factory)
-    {
-    }
+    AuthenticatedPacket(std::shared_ptr<MessageSerializer> factory) : ReliableOrderedPacket(factory) {}
 
     template <typename Stream>
     bool Serialize(Stream& stream)

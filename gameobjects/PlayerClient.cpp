@@ -32,8 +32,7 @@ void PlayerClient::PredictState()
 
     ApplyMoves(predictedState, moves);
 
-    TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.mX,
-          predictedState->centerLocation.mY);
+    TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.mX, predictedState->centerLocation.mY);
 }
 
 void PlayerClient::Update()
@@ -53,8 +52,8 @@ void PlayerClient::HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> st
 {
     // snap movement to the state event.
     TRACE("Handling state, moving to moveSeq {} from {},{} to {},{}", stateEvent->moveSeq,
-          this->physicsComponent->centerLocation.mX, this->physicsComponent->centerLocation.mY,
-          stateEvent->x, stateEvent->y);
+          this->physicsComponent->centerLocation.mX, this->physicsComponent->centerLocation.mY, stateEvent->x,
+          stateEvent->y);
 
     this->physicsComponent->centerLocation.mX = stateEvent->x;
     this->physicsComponent->centerLocation.mY = stateEvent->y;

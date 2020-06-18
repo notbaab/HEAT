@@ -132,8 +132,7 @@ std::pair<TrieNode*, unsigned int> DictionaryTrie::traverse(std::string word) co
     return std::make_pair(curr, i);
 }
 
-std::vector<std::string> DictionaryTrie::predictCompletions(std::string prefix,
-                                                            unsigned int num_completions)
+std::vector<std::string> DictionaryTrie::predictCompletions(std::string prefix, unsigned int num_completions)
 {
 
     // First check if the prefix is in the TST & if not return an empty vector
@@ -156,8 +155,7 @@ std::vector<std::string> DictionaryTrie::predictCompletions(std::string prefix,
 
     // Based on the num_completions add only the top # of words
     unsigned int count = 0;
-    for (auto it = prefixWords.begin(); (count < num_completions) && (it != prefixWords.end());
-         ++it)
+    for (auto it = prefixWords.begin(); (count < num_completions) && (it != prefixWords.end()); ++it)
     {
 
         words.push_back(it->second);
@@ -166,8 +164,8 @@ std::vector<std::string> DictionaryTrie::predictCompletions(std::string prefix,
     return words;
 }
 
-void DictionaryTrie::findPrefixWords(
-    std::string prefix, std::multimap<int, std::string, std::greater<int>>& prefixWords)
+void DictionaryTrie::findPrefixWords(std::string prefix,
+                                     std::multimap<int, std::string, std::greater<int>>& prefixWords)
 {
 
     auto retVal = traverse(prefix);

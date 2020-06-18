@@ -37,8 +37,7 @@ class PacketManager
     std::shared_ptr<ReliableOrderedPacket> WritePacket(uint32_t packetType);
     bool ReadPacket(std::shared_ptr<ReliableOrderedPacket> packet);
 
-    std::vector<std::shared_ptr<Packet>>
-    ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data);
+    std::vector<std::shared_ptr<Packet>> ConvertBytesToPackets(std::unique_ptr<std::vector<uint8_t>> data);
 
     void SetTime(double time);
     // ConnectionError GetError() const;
@@ -78,8 +77,7 @@ class PacketManager
 
     void InsertAckPacketEntry(uint16_t sequence);
     void ProcessAcks(uint16_t ack, uint32_t ack_bits);
-    void GetMessagesToSend(uint16_t* messageIds, int& numMessageIds,
-                           MessageSendQueueEntry** entries);
+    void GetMessagesToSend(uint16_t* messageIds, int& numMessageIds, MessageSendQueueEntry** entries);
     void AddMessagePacketEntry(const uint16_t* messageIds, int& numMessageIds, uint16_t sequence);
     void ProcessPacketMessages(const ReliableOrderedPacket* packet);
     void ProcessMessageAck(uint16_t ack);
@@ -95,9 +93,8 @@ class PacketManager
     SequenceBuffer<SentPacketData>* m_sentPackets; // sequence buffer of recently sent packets
     // sequence buffer of recently received packets
     SequenceBuffer<ReceivedPacketData>* m_receivedPackets;
-    SequenceBuffer<MessageSendQueueEntry>* m_messageSendQueue; // message send queue
-    SequenceBuffer<MessageSentPacketEntry>*
-        m_messageSentPackets; // messages in sent packets (for acks)
+    SequenceBuffer<MessageSendQueueEntry>* m_messageSendQueue;       // message send queue
+    SequenceBuffer<MessageSentPacketEntry>* m_messageSentPackets;    // messages in sent packets (for acks)
     SequenceBuffer<MessageReceiveQueueEntry>* m_messageReceiveQueue; // message receive queue
 
     int m_messageOverheadBits;         // number of bits overhead per-serialized message
