@@ -4,6 +4,7 @@
 #include <typeinfo>
 
 #include "Packet.h"
+#include "logger/Logger.h"
 
 // class that holds the reliability layer of the protocol. The sequence number
 // ack'd packet range.
@@ -27,7 +28,7 @@ class ReliableOrderedPacket : public Packet
     uint16_t ack;
     uint16_t numMessages;
     // Assigned externally by the packet manager when writing packets
-    uint16_t messageIds[32];
+    uint16_t messageIds[64];
 
     template <typename Stream>
     bool Serialize(Stream& stream)
@@ -47,6 +48,10 @@ class ReliableOrderedPacket : public Packet
     bool SerializeMessages(InputMemoryBitStream& stream)
     {
         stream.serialize(numMessages);
+        if (numMessages > 64)
+        {
+            ERROR("FUCKING SHIT BALLS");
+        }
 
         // read the message ids of the messages included in this packet
         for (int i = 0; i < numMessages; i++)
