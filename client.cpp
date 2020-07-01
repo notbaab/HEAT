@@ -50,15 +50,7 @@
 const char** __argv;
 int __argc;
 
-#define TESTANIMATEDSHEET "images/megaman.png"
-#define TESTANIMATEDDATA "images/megaman-sheet-data.json"
-
-#define TESTSTATICSHEET "images/shipsMiscellaneous_sheet.png"
-#define TESTSTATICSHEETDATA "images/ship-sheet.json"
-
 #define ASSET_MAP "images/asset-map.json"
-
-#define TESTSHIP "ship (24).png"
 
 class InputButtonState
 {
@@ -153,8 +145,10 @@ bool DoFrame(uint32_t currentTime)
     NetworkManagerClient::sInstance->ProcessMessages();
 
     SDL_Event event;
+
+    // clear out the event queue
     memset(&event, 0, sizeof(SDL_Event));
-    if (SDL_PollEvent(&event))
+    while (SDL_PollEvent(&event))
     {
         if (event.type == SDL_QUIT)
         {
@@ -163,10 +157,7 @@ bool DoFrame(uint32_t currentTime)
         }
         else
         {
-            // simpleGameObject.changeAnimation(rand() % 3);
-            // pirateShip.SetRotation(rand() % 360);
             InputManager::sInstance->HandleSDLEvent(event);
-            // Read some packets and do stuffs
         }
     }
 
