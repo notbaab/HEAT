@@ -20,9 +20,9 @@ class PhysicsComponentUpdate : public Event
 
     // TODO: don't use a pointer here since it gets moved before it's sent
     PhysicsComponentUpdate(uint32_t worldId, uint32_t moveSeq, std::shared_ptr<PhysicsComponent> physicsComponent)
-        : worldId(worldId), moveSeq(moveSeq), x(physicsComponent->centerLocation.mX),
-          y(physicsComponent->centerLocation.mY), z(physicsComponent->centerLocation.mZ),
-          dX(physicsComponent->speed.mX), dY(physicsComponent->speed.mY), dZ(physicsComponent->speed.mZ),
+        : worldId(worldId), moveSeq(moveSeq), x(physicsComponent->centerLocation.x),
+          y(physicsComponent->centerLocation.y), z(physicsComponent->centerLocation.z),
+          dX(physicsComponent->speed.x), dY(physicsComponent->speed.y), dZ(physicsComponent->speed.z),
           rotation(physicsComponent->rotation){};
 
     template <typename Stream>

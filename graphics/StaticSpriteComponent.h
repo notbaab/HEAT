@@ -47,8 +47,8 @@ class StaticSpriteComponent : public DrawableComponent
 
         // top right coordinates should be offset by the size of the frame.
         // This produces kinda a weird effect with odd sized frames
-        mWorldRect.x = objLocation.mX - mHalfTextureWidth;
-        mWorldRect.y = objLocation.mY - mHalfTextureHeight;
+        mWorldRect.x = objLocation.x - mHalfTextureWidth;
+        mWorldRect.y = objLocation.y - mHalfTextureHeight;
         mWorldRect.w = mTextureRect.w;
         mWorldRect.h = mTextureRect.h;
 

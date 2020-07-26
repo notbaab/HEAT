@@ -24,15 +24,15 @@ void PlayerClient::RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>&
 
 void PlayerClient::PredictState()
 {
-    predictedState->centerLocation.mX = physicsComponent->centerLocation.mX;
-    predictedState->centerLocation.mY = physicsComponent->centerLocation.mY;
+    predictedState->centerLocation.x = physicsComponent->centerLocation.x;
+    predictedState->centerLocation.y = physicsComponent->centerLocation.y;
 
-    TRACE("Snapped predicted state to {}, {}. Applying {} moves", predictedState->centerLocation.mX,
-          predictedState->centerLocation.mY, moves.size());
+    TRACE("Snapped predicted state to {}, {}. Applying {} moves", predictedState->centerLocation.x,
+          predictedState->centerLocation.y, moves.size());
 
     ApplyMoves(predictedState, moves);
 
-    TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.mX, predictedState->centerLocation.mY);
+    TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.x, predictedState->centerLocation.y);
 }
 
 void PlayerClient::Update()
@@ -52,12 +52,15 @@ void PlayerClient::HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> st
 {
     // snap movement to the state event.
     TRACE("Handling state, moving to moveSeq {} from {},{} to {},{}", stateEvent->moveSeq,
-          this->physicsComponent->centerLocation.mX, this->physicsComponent->centerLocation.mY, stateEvent->x,
+          this->physicsComponent->centerLocation.x, this->physicsComponent->centerLocation.y, stateEvent->x,
           stateEvent->y);
 
-    this->physicsComponent->centerLocation.mX = stateEvent->x;
-    this->physicsComponent->centerLocation.mY = stateEvent->y;
+    this->physicsComponent->centerLocation.x = stateEvent->x;
+    this->physicsComponent->centerLocation.y = stateEvent->y;
     this->lastMoveSeq = stateEvent->moveSeq;
+
+    this->physicsComponent->speed.x = stateEvent->dX;
+    this->physicsComponent->speed.y = stateEvent->dY;
 }
 
 } // namespace gameobjects
