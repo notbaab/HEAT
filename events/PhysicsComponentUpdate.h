@@ -52,8 +52,8 @@ class PhysicsComponentUpdate : public Event
     // last move we processed
     uint32_t moveSeq;
     // position
-    uint32_t x, y, z;
+    int32_t x, y, z;
     // velocities
-    uint32_t dX, dY, dZ;
+    int32_t dX, dY, dZ;
     uint16_t rotation;
 };
