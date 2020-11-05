@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SDL_image.h>
 #include <memory>
 #include <string>
@@ -9,6 +10,7 @@
 #include "DrawableComponent.h"
 #include "GraphicsDriver.h"
 #include "TiledAnimatedSpriteSheetData.h"
+#include "gameobjects/PhysicsComponent.h"
 #include "logger/Logger.h"
 #include "math/Vector3.h"
 
@@ -17,7 +19,7 @@ class AnimatedSpriteComponent : public DrawableComponent
 {
   public:
     AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData, bool justOutline)
-
+        : sheetData(sheetData)
     {
         mGameObject = inGameObject;
         animationFrameData = &sheetData->animations;
@@ -26,6 +28,9 @@ class AnimatedSpriteComponent : public DrawableComponent
         this->justOutline = justOutline;
 
         mTexture = AssetManager::sInstance->GetTexture(sheetData->name);
+
+        // this->ChangeAnimation(sheetData->firstAnimation);
+        this->ChangeAnimation(MovementType::IDLE, MovementOrientation::NONE);
     }
 
     AnimatedSpriteComponent(T* inGameObject, std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData)
@@ -36,6 +41,14 @@ class AnimatedSpriteComponent : public DrawableComponent
 
     SDL_Rect getCurrentAnimationFrame()
     {
+        MovementType newMovementType = mGameObject->GetCurrentMovementType();
+        MovementOrientation newOrientation = mGameObject->GetCurrentOrientation();
+
+        if (newMovementType != currentType || newOrientation != currentOrientation)
+        {
+            ChangeAnimation(newMovementType, newOrientation);
+        }
+
         // Group these together in a single call?
         uint32_t currentTick = SDL_GetTicks();
         uint32_t drawTime = currentTick - currentFrameStart;
@@ -55,6 +68,29 @@ class AnimatedSpriteComponent : public DrawableComponent
         textureRect.h = (*currentAnimation)[frameIndex].drawRect.height;
 
         return textureRect;
+    }
+
+    void ChangeAnimation(MovementType type, MovementOrientation orientation)
+    {
+        // Set it even if we don't have an animation for this type
+        currentType = type;
+        currentOrientation = orientation;
+
+        auto animation = sheetData->GetAnimation(type, orientation);
+        if (animation == nullptr)
+        {
+            ERROR("No animation found for {} {}", currentType, currentOrientation);
+            return;
+        }
+
+        INFO("Changing animation to {} {}", type, orientation);
+        assert(animation);
+
+        currentAnimationData = animation.get();
+        currentAnimation = &currentAnimationData->animations;
+        framesInAnimation = currentAnimationData->NumAnimations();
+        currentFrameStart = SDL_GetTicks();
+        frameIndex = 0;
     }
 
     // TODO: Should it be a string still?
@@ -77,15 +113,15 @@ class AnimatedSpriteComponent : public DrawableComponent
         // What size should we render the texture? We probably will need to
         // flesh out the game object to get a better sense of how we should
         // do that.
-        Vector3 objLocation = mGameObject->centerLocation;
-        TRACE("Object at {} {}", objLocation.mX, objLocation.mY);
+        Vector3 objLocation = mGameObject->GetLocation();
+        TRACE("Object at {} {}", objLocation.x, objLocation.y);
         uint32_t halfWidth = frame.w / 2;
         uint32_t halfHeight = frame.h / 2;
 
         // top right coordinates should be offset by the size of the frame.
         // This produces kinda a weird effect with odd sized frames
-        currentFrameRect.x = objLocation.mX - halfWidth;
-        currentFrameRect.y = objLocation.mY - halfHeight;
+        currentFrameRect.x = objLocation.x - halfWidth;
+        currentFrameRect.y = objLocation.y - halfHeight;
         currentFrameRect.w = frame.w;
         currentFrameRect.h = frame.h;
 
@@ -98,7 +134,14 @@ class AnimatedSpriteComponent : public DrawableComponent
             return;
         }
 
-        SDL_RenderCopy(renderer, mTexture, &frame, &currentFrameRect);
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        if (currentAnimationData->flipped)
+        {
+            // For now flip horizontally
+            flip = SDL_FLIP_HORIZONTAL;
+        }
+
+        SDL_RenderCopyEx(renderer, mTexture, &frame, &currentFrameRect, 0, NULL, flip);
     }
 
     // Draws a square around the sprite dimensions.
@@ -111,9 +154,9 @@ class AnimatedSpriteComponent : public DrawableComponent
 
     void SetColor(Vector3* inColor)
     {
-        mColor.mX = inColor->mX;
-        mColor.mY = inColor->mY;
-        mColor.mZ = inColor->mZ;
+        mColor.x = inColor->x;
+        mColor.y = inColor->y;
+        mColor.z = inColor->z;
     }
 
   private:
@@ -121,9 +164,9 @@ class AnimatedSpriteComponent : public DrawableComponent
 
     SDL_Texture* mTexture;
     // Animation Frame Data
-    // SpriteSheetAnimationFrameData* animationFrameData;sheetName
+    std::shared_ptr<TiledAnimatedSpriteSheetData> sheetData;
 
-    std::unordered_map<std::string, SpriteAnimationData>* animationFrameData;
+    std::unordered_map<std::string, std::shared_ptr<SpriteAnimationData>>* animationFrameData;
     // Book keeping for the current animation that is playing
     SpriteAnimationData* currentAnimationData;
 
@@ -131,6 +174,9 @@ class AnimatedSpriteComponent : public DrawableComponent
     uint32_t frameIndex;
     uint32_t currentFrameStart;
     uint32_t framesInAnimation;
+
+    MovementType currentType;
+    MovementOrientation currentOrientation;
 
     SDL_Rect currentFrameRect;
     bool justOutline;

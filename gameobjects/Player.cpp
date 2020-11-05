@@ -12,12 +12,17 @@ void Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
 {
     for (auto&& move : inMoves)
     {
-        component->centerLocation.mX += move->xDelta * 2;
-        component->centerLocation.mY += move->yDelta * 2;
-        TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.mX, component->centerLocation.mY);
+        component->centerLocation.x += move->xDelta * 2;
+        component->centerLocation.y += move->yDelta * 2;
+        TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.x, component->centerLocation.y);
+        component->speed.x = move->xDelta;
+        component->speed.y = move->yDelta;
     }
 
-    TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.mX, component->centerLocation.mY);
+    moving = component->IsMoving();
+    attacking = false;
+
+    TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.x, component->centerLocation.y);
 }
 
 } // namespace gameobjects

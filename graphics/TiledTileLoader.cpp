@@ -14,6 +14,7 @@
 
 // The key we use in the properties object for animation orientation
 #define ANIM_ORIENTATION_KEY "orientation"
+#define ANIM_ORIENTATION_FLIPPABLE_KEY "flippable"
 
 // returns where in the sheet to draw the sprite
 DrawRect TiledSheetData::ConvertIdToRect(uint32_t tileId)
@@ -50,7 +51,9 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
     }
 
     assert(tile["type"].IsString());
-    std::string animationType = tile["type"].GetString();
+    std::string animationTypeStr = tile["type"].GetString();
+
+    MovementType animationType = MovementTypeFromString(animationTypeStr);
 
     if (!tile.HasMember("properties"))
     {
@@ -65,7 +68,9 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
 
     // janky but theses are the properties we care about
     std::string animationName;
-    AnimationOrientation orientation = AnimationOrientation::NONE;
+    MovementOrientation orientation = MovementOrientation::NONE;
+    MovementOrientation flipedOrientation = MovementOrientation::NONE;
+    bool flippable;
 
     for (auto& p : tile["properties"].GetArray())
     {
@@ -80,7 +85,12 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
         {
             assert(p["value"].IsString());
             std::string orientationStr = p["value"].GetString();
-            orientation = AnimationOrientationFromString(orientationStr);
+            orientation = MovementOrientationFromString(orientationStr);
+        }
+        else if (strncmp(propertyName, ANIM_ORIENTATION_FLIPPABLE_KEY, sizeof(*propertyName)) == 0)
+        {
+            assert(p["value"].IsBool());
+            flippable = p["value"].GetBool();
         }
     }
 
@@ -111,13 +121,20 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
         animatedTiles.push_back(frameData);
     }
 
-    SpriteAnimationData animationData;
-    animationData.type = animationType;
-    animationData.name = animationName;
-    animationData.orientation = orientation;
-    animationData.animations = animatedTiles;
+    SpriteAnimationData animationData(animationName, animationType, orientation, animatedTiles, false);
+    outSheetData.PushAnimationData(animationData);
 
-    outSheetData.PushAnimationData(animationName, animationData);
+    if (flippable)
+    {
+        flipedOrientation = FlippedOrientation(orientation);
+
+        SpriteAnimationData flippedAnimation(animationData);
+        flippedAnimation.orientation = flipedOrientation;
+        flippedAnimation.name = flippedAnimation.name + "-flipped";
+        flippedAnimation.flipped = true;
+
+        outSheetData.PushAnimationData(flippedAnimation);
+    }
 
     return true;
 }
@@ -196,11 +213,20 @@ std::unique_ptr<TiledAnimatedSpriteSheetData> TiledTileLoader::LoadAnimationShee
         }
     }
 
-    for (auto& anim : animatedSpriteData->animations)
+    for (auto anim : animatedSpriteData->byType)
     {
-        auto spriteData = anim.second;
-        INFO("Animation name {}, type {}", spriteData.name, spriteData.type);
+
+        for (auto& animData : anim.second)
+        {
+            INFO("Animation name {}, orientation {}, type {}", animData->name, animData->orientation, anim.first);
+        }
     }
+
+    // for (auto& anim : animatedSpriteData->byType)
+    // {
+    //     auto spriteData = anim.second;
+    //     INFO("Animation name {}, type {}", spriteData.name, spriteData.type);
+    // }
 
     return std::move(animatedSpriteData);
 }

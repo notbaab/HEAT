@@ -4,7 +4,7 @@
      "export":
         {
          "format":"json",
-         "target":"..\/..\/..\/..\/tmp\/player.json"
+         "target":"player.json"
         }
     },
  "image":"..\/..\/..\/..\/Library\/Application Support\/itch\/apps\/rpg-dungeon-tileset\/rpg-dungeon-pack v1.1(wonderdot)\/chara_hero.png",
@@ -65,7 +65,7 @@
                  "type":"string",
                  "value":"idle-standing"
                 }],
-         "type":"idle-animation"
+         "type":"idle"
         }, 
         {
          "id":1,
@@ -150,7 +150,8 @@
              "visible":true,
              "x":0,
              "y":0
-            }
+            },
+         "type":"pose"
         }, 
         {
          "animation":[
@@ -202,7 +203,7 @@
                  "type":"string",
                  "value":"down"
                 }],
-         "type":"walking-animation"
+         "type":"walk"
         }, 
         {
          "animation":[
@@ -230,11 +231,16 @@
                  "value":true
                 }, 
                 {
+                 "name":"name",
+                 "type":"string",
+                 "value":"walking-horizontal"
+                }, 
+                {
                  "name":"orientation",
                  "type":"string",
                  "value":"right"
                 }],
-         "type":"walking-animation"
+         "type":"walk"
         }, 
         {
          "animation":[
@@ -257,11 +263,16 @@
          "id":16,
          "properties":[
                 {
+                 "name":"name",
+                 "type":"string",
+                 "value":"walking-up"
+                }, 
+                {
                  "name":"orientation",
                  "type":"string",
                  "value":"up"
                 }],
-         "type":"walking-animation"
+         "type":"walk"
         }, 
         {
          "animation":[
@@ -281,7 +292,19 @@
                  "duration":100,
                  "tileid":23
                 }],
-         "id":20
+         "id":20,
+         "properties":[
+                {
+                 "name":"name",
+                 "type":"string",
+                 "value":"attack-down"
+                }, 
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"down"
+                }],
+         "type":"attack"
         }, 
         {
          "animation":[
@@ -301,7 +324,24 @@
                  "duration":100,
                  "tileid":27
                 }],
-         "id":24
+         "id":24,
+         "properties":[
+                {
+                 "name":"flibable",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"name",
+                 "type":"string",
+                 "value":"attack-horizontal"
+                }, 
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"right"
+                }],
+         "type":"attack"
         }, 
         {
          "animation":[
@@ -321,7 +361,19 @@
                  "duration":100,
                  "tileid":31
                 }],
-         "id":28
+         "id":28,
+         "properties":[
+                {
+                 "name":"name",
+                 "type":"string",
+                 "value":"attack-up"
+                }, 
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"up"
+                }],
+         "type":"attack"
         }, 
         {
          "animation":[
@@ -341,7 +393,14 @@
                  "duration":80,
                  "tileid":36
                 }],
-         "id":32
+         "id":32,
+         "properties":[
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"down"
+                }],
+         "type":"damage"
         }, 
         {
          "animation":[
@@ -357,7 +416,19 @@
                  "duration":80,
                  "tileid":38
                 }],
-         "id":36
+         "id":36,
+         "properties":[
+                {
+                 "name":"flipable",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"right"
+                }],
+         "type":"damage"
         }, 
         {
          "animation":[
@@ -373,7 +444,14 @@
                  "duration":80,
                  "tileid":42
                 }],
-         "id":40
+         "id":40,
+         "properties":[
+                {
+                 "name":"orientation",
+                 "type":"string",
+                 "value":"up"
+                }],
+         "type":"damage"
         }],
  "tilewidth":48,
  "type":"tileset",

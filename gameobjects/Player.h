@@ -21,7 +21,9 @@ const uint32_t PLAYER_ID = 0x13129328;
 class Player : public SimpleGameObject
 {
   public:
-    Player() : physicsComponent(std::make_shared<PhysicsComponent>()), lastMoveSeq(0) {}
+    Player() : physicsComponent(std::make_shared<PhysicsComponent>()), lastMoveSeq(0), moving(false), attacking(false)
+    {
+    }
 
     void AddMove(std::shared_ptr<PlayerInputEvent> evt);
 
@@ -34,11 +36,14 @@ class Player : public SimpleGameObject
 
     std::shared_ptr<PhysicsComponent> physicsComponent;
     Vector3 GetLocation() { return physicsComponent->centerLocation; }
+    Vector3 GetVelocity() { return physicsComponent->speed; }
 
   protected:
     void ApplyMoves(std::shared_ptr<PhysicsComponent> component, std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     uint32_t lastMoveSeq;
     std::deque<std::shared_ptr<PlayerInputEvent>> moves;
+
+    bool moving, attacking;
 };
 
 } // namespace gameobjects

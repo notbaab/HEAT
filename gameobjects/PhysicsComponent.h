@@ -1,7 +1,9 @@
 #pragma once
 
-#include "math/Vector3.h"
 #include <cstdint>
+#include <string>
+
+#include "math/Vector3.h"
 
 // Container for holding physical data about something.
 // Not really anything but probably want to add an update to it at some
@@ -13,5 +15,6 @@ class PhysicsComponent
     Vector3 centerLocation;
     Vector3 speed;
 
-    // Probably like a width height etc
+    MovementOrientation GetCurrentOrientation() { return OrientationFromVector(speed); }
+    bool IsMoving() { return speed.x != 0 || speed.y != 0 || speed.z != 0; }
 };

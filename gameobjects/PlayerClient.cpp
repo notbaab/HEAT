@@ -35,6 +35,21 @@ void PlayerClient::PredictState()
     TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.x, predictedState->centerLocation.y);
 }
 
+MovementOrientation PlayerClient::GetCurrentOrientation() { return physicsComponent->GetCurrentOrientation(); }
+
+MovementType PlayerClient::GetCurrentMovementType()
+{
+    if (attacking)
+    {
+        return MovementType::ATTACK;
+    }
+    if (moving)
+    {
+        return MovementType::WALK;
+    }
+    return MovementType::IDLE;
+}
+
 void PlayerClient::Update()
 {
     // remove any moves that we need to

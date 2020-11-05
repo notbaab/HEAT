@@ -15,6 +15,12 @@ class PlayerClient : public Player
 {
   public:
     CLASS_IDENTIFICATION(PLAYER_ID)
+    MovementOrientation GetCurrentOrientation();
+    MovementType GetCurrentMovementType();
+
+    void Update() override;
+    virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
+
     // PIMP: real gross static map that maps clients to players. Probably need to so something
     // better
     static inline std::unordered_map<uint32_t, uint32_t> clientToPlayer;
@@ -23,13 +29,10 @@ class PlayerClient : public Player
     {
         auto instance = std::make_unique<PlayerClient>();
         RenderManager::sInstance->AddComponent(instance->drawable.get());
-        RenderManager::sInstance->AddComponent(instance->serverLocation.get());
+        // RenderManager::sInstance->AddComponent(instance->serverLocation.get());
 
         return std::move(instance);
     }
-
-    void Update() override;
-    virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
 
     virtual void SetupListeners() override
     {
@@ -42,14 +45,11 @@ class PlayerClient : public Player
     {
         auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
 
-        this->drawable = std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(predictedState.get(), playerSheet);
+        this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerClient>>(this, playerSheet);
 
-        this->serverLocation =
-            std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
-
-        // TODO: wut? This is stupid, do more better
-        this->drawable->ChangeAnimation("idle-standing");
-        this->serverLocation->ChangeAnimation("idle-standing");
+        // TODO: Extract this out to something better
+        // this->serverLocation =
+        //     std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
     }
 
   private:
@@ -62,8 +62,9 @@ class PlayerClient : public Player
     // objects locations or the location of the player after the unprocessed
     // moves have been applied.
     std::shared_ptr<PhysicsComponent> predictedState;
-    std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> drawable;
-    std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> serverLocation;
+    std::shared_ptr<AnimatedSpriteComponent<PlayerClient>> drawable;
+    // std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> serverLocation;
+    MovementOrientation direction;
 };
 
 } // namespace gameobjects

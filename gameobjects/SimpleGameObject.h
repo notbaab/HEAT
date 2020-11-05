@@ -28,6 +28,7 @@ class SimpleGameObject
     // Simple update function called every tick
     virtual void Update() = 0;
 
+    // TODO: Remove it cause it overlaps with predicted state
     uint16_t rotation;
     Vector3 centerLocation;
 
