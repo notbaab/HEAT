@@ -144,6 +144,7 @@ enum class MovementOrientation
 MovementOrientation MovementOrientationFromString(std::string orientationStr);
 MovementType MovementTypeFromString(std::string animType);
 MovementOrientation OrientationFromVector(Vector3 movement);
+MovementOrientation FlippedOrientation(MovementOrientation orientation);
 
 namespace Math
 {
