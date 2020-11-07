@@ -4,7 +4,11 @@ std::unique_ptr<WindowManager> WindowManager::sInstance;
 
 bool WindowManager::StaticInit()
 {
-    SDL_Window* wnd = SDL_CreateWindow("WINDOW!", 100, 100, 1200, 1200, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    // SDL_Window* wnd = SDL_CreateWindow("WINDOW!", 100, 100, 500, 500,
+    //                                    SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+    SDL_Window* wnd = SDL_CreateWindow("WINDOW!", 100, 100, 600, 600,
+                                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
     if (wnd == nullptr)
     {
