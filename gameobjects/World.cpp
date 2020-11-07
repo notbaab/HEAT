@@ -13,10 +13,36 @@ World::World() { nextGameObjectId = 1; }
 
 void World::StaticInit() { sInstance.reset(new World()); };
 
-// void World::OnCreateObject(std::shared_ptr<Event> addGameObjEvent)
-// {
-//     auto castAddObj = std::static_pointer_cast<CreateGameObject>(addGameObjEvent);
-// }
+// Go through the game objects and generate events for things that new players
+// need to know about. Should just be player creation events?
+// PIMP: Keep all the needed events for login in a buffer somewhere
+std::vector<std::shared_ptr<Event>> World::CreateWelcomeStateEvents()
+{
+    std::vector<std::shared_ptr<Event>> events;
+    for (auto go : mGameObjects)
+    {
+        // Get all player control objects
+        if (go->GetClassId() == PLAYER_ID)
+        {
+            auto createPlayerEvent =
+                std::make_shared<CreatePlayerOwnedObject>(go->clientOwnerId, PLAYER_ID, go->GetWorldId());
+            events.push_back(createPlayerEvent);
+        }
+    }
+    return events;
+}
+
+std::vector<std::shared_ptr<Event>> World::CreateWorldSnapshot()
+{
+    std::vector<std::shared_ptr<Event>> events;
+    for (auto go : mGameObjects)
+    {
+        auto worldState = go->CreateStateEvent();
+        events.push_back(worldState);
+    }
+
+    return events;
+}
 
 // Adds the object with the given id
 void World::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
@@ -29,6 +55,7 @@ void World::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
     AddGameObject(obj, castAddObj->worldId);
 }
 
+// TODO: This is only ever called on the server which is correct, but maybe factor out world server into it's own thing
 // Kinda the factory function for creating object creation events?
 std::shared_ptr<CreatePlayerOwnedObject> World::CreatePlayerCreationEvent(uint32_t playerId)
 {

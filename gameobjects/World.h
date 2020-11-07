@@ -31,6 +31,8 @@ class World
     void RemoveGameObject(GameObjectPtr inGameObject);
     void Update(uint32_t currentTime);
     std::shared_ptr<CreatePlayerOwnedObject> CreatePlayerCreationEvent(uint32_t playerId);
+    std::vector<std::shared_ptr<Event>> CreateWelcomeStateEvents();
+    std::vector<std::shared_ptr<Event>> CreateWorldSnapshot();
 
   protected:
     World();

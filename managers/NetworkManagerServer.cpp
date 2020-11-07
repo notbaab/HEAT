@@ -209,7 +209,19 @@ bool NetworkManagerServer::ReadLoginMessage(ClientData& client, const std::share
     auto createPlayer = gameobjects::World::sInstance->CreatePlayerCreationEvent(client.gameId);
     EventManager::sInstance->QueueEvent(createPlayer);
 
-    // TODO: Tell everyone else about the new client
+    // Add the rest of the world objects to the packet
+    auto welcomeEvents = gameobjects::World::sInstance->CreateWelcomeStateEvents();
+    for (auto& evt : welcomeEvents)
+    {
+        client.packetManager.SendMessage(evt);
+    }
+
+    auto snapShot = gameobjects::World::sInstance->CreateWorldSnapshot();
+    for (auto& evt : snapShot)
+    {
+        client.packetManager.SendMessage(evt);
+    }
+
     return true;
 }
 
