@@ -34,6 +34,7 @@ class SimpleGameObject
 
     // Game objects might not have a physics componenet
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) = 0;
+    virtual std::shared_ptr<PhysicsComponentUpdate> CreateStateEvent() = 0;
 
     uint32_t GetWorldId() { return worldId; }
     void SetWorldId(uint32_t worldId) { this->worldId = worldId; }

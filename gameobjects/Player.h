@@ -38,6 +38,11 @@ class Player : public SimpleGameObject
     Vector3 GetLocation() { return physicsComponent->centerLocation; }
     Vector3 GetVelocity() { return physicsComponent->speed; }
 
+    virtual std::shared_ptr<PhysicsComponentUpdate> CreateStateEvent() override
+    {
+        return std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq, this->physicsComponent);
+    }
+
   protected:
     void ApplyMoves(std::shared_ptr<PhysicsComponent> component, std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     uint32_t lastMoveSeq;

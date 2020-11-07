@@ -6,6 +6,11 @@
 namespace gameobjects
 {
 
+std::shared_ptr<PhysicsComponentUpdate> PlayerServer::CreateStateUpdateEvent()
+{
+    return std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq, this->physicsComponent);
+}
+
 void PlayerServer::Update()
 {
     if (moves.empty())
@@ -20,7 +25,7 @@ void PlayerServer::Update()
 
     // send an update message. For now it's just the physics component that is
     // being updated.
-    auto phyEvt = std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq, this->physicsComponent);
+    auto phyEvt = CreateStateUpdateEvent();
     EventManager::sInstance->QueueEvent(phyEvt);
     TRACE("Sent {}, {}", phyEvt->x, phyEvt->y);
 }

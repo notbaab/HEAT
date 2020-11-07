@@ -22,6 +22,7 @@ class PlayerServer : public Player
 
     void Update() override;
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
+    std::shared_ptr<PhysicsComponentUpdate> CreateStateUpdateEvent();
 
     PlayerServer() : stateDirty(true) {}
 
