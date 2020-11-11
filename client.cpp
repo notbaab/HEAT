@@ -8,6 +8,7 @@
 // Yeah this is too many includes
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
+#include "engine/ServiceLocatorClient.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
@@ -142,7 +143,8 @@ bool SetupRenderer()
 
 bool DoFrame(uint32_t currentTime)
 {
-    NetworkManagerClient::sInstance->ProcessMessages();
+    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    networkManager->ProcessMessages();
 
     SDL_Event event;
 
@@ -171,8 +173,9 @@ bool DoFrame(uint32_t currentTime)
 
     RenderManager::sInstance->Render();
 
-    NetworkManagerClient::sInstance->SendOutgoingPackets();
-    NetworkManagerClient::sInstance->packetManager.SetTime(currentTime);
+    networkManager->SendOutgoingPackets();
+    networkManager->Tick(currentTime);
+
     return true;
 }
 
@@ -198,10 +201,17 @@ void SetupNetworking(std::string serverDestination)
     AddPacketCtor(packetSerializer, AuthenticatedPacket);
 
     NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
+
+    // Well. Alright then, so much for unique ptr providing some safety
+    ServiceLocatorClient::Provide(NetworkManagerClient::sInstance.get());
 }
 
 void SetupWorld()
 {
+    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    // Need to be called after the service locater has provided a network manager client
+    assert(networkManager);
+
     EventManager::StaticInit();
 
     gameobjects::WorldClient::StaticInit();
@@ -215,7 +225,9 @@ void SetupWorld()
     // World listens for requests to add objects
     auto addObject = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnAddObject);
     auto stateUpdate = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
-    auto eventForwarder = CREATE_DELEGATE_LAMBDA(NetworkManagerClient::sInstance->QueueMessage);
+
+    // TODO: This means we cannot change it while running. We should find a way to signal that
+    auto eventForwarder = CREATE_DELEGATE_LAMBDA_CAPTURE_BY_VALUE(networkManager, QueueMessage);
 
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
     EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
@@ -223,8 +235,6 @@ void SetupWorld()
 
     // Router for player events
     EventRouter<PlayerInputEvent>::StaticInit();
-    // auto playerInputRouter = CREATE_DELEGATE_LAMBDA(
-    //     (EventRouter<gameobjects::PlayerClient, PlayerInputEvent>::sInstance->RouteEvent));
     auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
@@ -244,9 +254,11 @@ void initStuffs()
 
     SetupNetworking(destination);
     SetupWorld();
+    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
 
-    NetworkManagerClient::sInstance->StartServerHandshake();
-    NetworkManagerClient::sInstance->SendOutgoingPackets();
+    // Start the handshake asap and force the packets to be sent
+    networkManager->StartServerHandshake();
+    networkManager->SendOutgoingPackets();
 
     InputManager::StaticInit();
     InputManager::sInstance->RegisterKeyDownListner([](int keyCode) { sInputButtonState.KeyPressed(keyCode); });

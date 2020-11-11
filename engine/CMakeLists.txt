@@ -6,3 +6,4 @@ list(APPEND engine_src
 )
 
 add_library(engine SHARED ${engine_src})
+target_link_libraries(engine holistic)

@@ -15,7 +15,7 @@ using EventListenerFunction = std::function<void(std::shared_ptr<Event>)>;
 // on
 #define CREATE_DELEGATE_LAMBDA(func) [](std::shared_ptr<Event> evt) { func(evt); }
 
-#define CREATE_DELEGATE_LAMBDA_CAPTURE(obj, func) [&obj](std::shared_ptr<Event> evt) { obj->func(evt); }
+#define CREATE_DELEGATE_LAMBDA_CAPTURE_BY_VALUE(obj, func) [obj](std::shared_ptr<Event> evt) { obj->func(evt); }
 
 class EventManager
 {
