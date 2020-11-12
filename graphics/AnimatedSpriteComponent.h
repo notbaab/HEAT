@@ -74,16 +74,24 @@ class AnimatedSpriteComponent : public DrawableComponent
     {
         // Set it even if we don't have an animation for this type
         currentType = type;
-        currentOrientation = orientation;
+        if (type == MovementType::IDLE)
+        {
+            // TODO: This is wrong, we should have idle animations for all orientations.
+            currentOrientation = MovementOrientation::NONE;
+        }
+        else
+        {
+            currentOrientation = orientation;
+        }
 
-        auto animation = sheetData->GetAnimation(type, orientation);
+        auto animation = sheetData->GetAnimation(currentType, currentOrientation);
         if (animation == nullptr)
         {
             ERROR("No animation found for {} {}", currentType, currentOrientation);
             return;
         }
 
-        INFO("Changing animation to {} {}", type, orientation);
+        TRACE("Changing animation to {} {}", type, orientation);
         assert(animation);
 
         currentAnimationData = animation.get();
