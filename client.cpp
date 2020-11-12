@@ -81,11 +81,12 @@ class InputButtonState
     {
         if (hasInput())
         {
+            auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
             // TODO: Don't grab it, just don't initialize the player input stuff until a player is
             // added.
             // Skip 0
             moveSeq++;
-            auto clientId = NetworkManagerClient::GetClientId();
+            auto clientId = networkManager->GetClientId();
             auto playerObjId = gameobjects::PlayerClient::clientToPlayer[clientId];
             auto inputState = std::make_shared<PlayerInputEvent>(GetHorizontalDirection(), GetVerticalDirection(),
                                                                  moveSeq, playerObjId);

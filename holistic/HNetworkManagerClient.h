@@ -17,5 +17,6 @@ class HNetworkManagerClient : public HNetworkManager
     // Queue message to be sent in send outgoing packets
     virtual void QueueMessage(std::shared_ptr<Message> message) = 0;
     virtual void StartServerHandshake() = 0;
+    virtual uint32_t GetClientId() = 0;
 };
 } // namespace holistic

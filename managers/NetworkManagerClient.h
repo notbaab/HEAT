@@ -22,7 +22,7 @@ class NetworkManagerClient : public holistic::HNetworkManagerClient
   public:
     static inline std::unique_ptr<NetworkManagerClient> sInstance;
     // TODO: This presents a weird problem for us now that we are holistic
-    static uint32_t GetClientId() { return sInstance->clientId; }
+    uint32_t GetClientId() override { return clientId; }
 
     NetworkManagerClient(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                          std::string userName);
