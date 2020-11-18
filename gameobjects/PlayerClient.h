@@ -34,10 +34,9 @@ class PlayerClient : public Player
         return std::move(instance);
     }
 
-    virtual void SetupListeners() override
+    virtual void AddedToGameWorld() override
     {
-        Player::SetupListeners();
-        // add it's world id and player id here cause I'm bad at programming
+        Player::AddedToGameWorld();
         clientToPlayer[clientOwnerId] = GetWorldId();
     }
 

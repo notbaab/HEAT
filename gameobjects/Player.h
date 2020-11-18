@@ -25,9 +25,11 @@ class Player : public SimpleGameObject
     {
     }
 
+    virtual void AddedToGameWorld() override { SetupListeners(); }
+
     void AddMove(std::shared_ptr<PlayerInputEvent> evt);
 
-    virtual void SetupListeners() override
+    virtual void SetupListeners()
     {
         INFO("Setting up listener {} ", GetWorldId());
         EventRouter<PlayerInputEvent>::sInstance->AddListener(

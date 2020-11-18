@@ -15,7 +15,7 @@ class SimpleGameObject
 {
   public:
     virtual uint32_t GetClassId() const = 0;
-    virtual void SetupListeners(){};
+    // virtual void SetupListeners(){};
     virtual ~SimpleGameObject(){};
     // SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
 
@@ -35,9 +35,13 @@ class SimpleGameObject
     // Game objects might not have a physics componenet
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) = 0;
     virtual std::shared_ptr<PhysicsComponentUpdate> CreateStateEvent() = 0;
+    virtual void SetWorldId(uint32_t worldId) { this->worldId = worldId; }
 
     uint32_t GetWorldId() { return worldId; }
-    void SetWorldId(uint32_t worldId) { this->worldId = worldId; }
+
+    // Called when added to the game world. In theory, this indicates all the
+    // basic fields have been set
+    virtual void AddedToGameWorld(){};
 
     uint32_t clientOwnerId;
 
