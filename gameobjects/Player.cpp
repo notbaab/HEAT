@@ -5,11 +5,13 @@
 namespace gameobjects
 {
 
+// TODO: This doesn't actually ensure moves are in ascending move seq order
 void Player::AddMove(std::shared_ptr<PlayerInputEvent> evt) { moves.emplace_back(evt); }
 
-void Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
-                        std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves)
+uint32_t Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
+                            std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves)
 {
+    uint32_t lastMoveSeqApplied = 0;
     for (auto&& move : inMoves)
     {
         component->centerLocation.x += move->xDelta * 2;
@@ -17,12 +19,14 @@ void Player::ApplyMoves(std::shared_ptr<PhysicsComponent> component,
         TRACE("After move {} at {}, {} ", move->moveSeq, component->centerLocation.x, component->centerLocation.y);
         component->speed.x = move->xDelta;
         component->speed.y = move->yDelta;
+        lastMoveSeqApplied = move->moveSeq;
     }
 
     moving = component->IsMoving();
     attacking = false;
 
     TRACE("At {} ended at {}, {}", lastMoveSeq, component->centerLocation.x, component->centerLocation.y);
+    return lastMoveSeqApplied;
 }
 
 } // namespace gameobjects

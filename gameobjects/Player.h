@@ -43,9 +43,11 @@ class Player : public SimpleGameObject
         return std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq, this->physicsComponent);
     }
 
-  protected:
-    void ApplyMoves(std::shared_ptr<PhysicsComponent> component, std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     uint32_t lastMoveSeq;
+
+  protected:
+    uint32_t ApplyMoves(std::shared_ptr<PhysicsComponent> component,
+                        std::deque<std::shared_ptr<PlayerInputEvent>>& moves);
     std::deque<std::shared_ptr<PlayerInputEvent>> moves;
 
     bool moving, attacking;
