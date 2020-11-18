@@ -65,6 +65,12 @@ class PlayerClient : public Player
         //     std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
     }
 
+    // Use the predicted state
+    virtual std::shared_ptr<PhysicsComponentUpdate> CreateStateEvent() override
+    {
+        return std::make_shared<PhysicsComponentUpdate>(this->GetWorldId(), lastMoveSeq, this->predictedState);
+    }
+
     // Return the predicted state of the client instead of it's true location
     Vector3 GetLocation() { return predictedState->centerLocation; }
     Vector3 GetVelocity() { return predictedState->speed; }

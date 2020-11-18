@@ -49,8 +49,11 @@
 #include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
 
+#include "managers/NullNetworkManagerClient.h"
+
 const char** __argv;
 int __argc;
+static bool noServer = false;
 
 #define ASSET_MAP "images/asset-map.json"
 
@@ -201,6 +204,15 @@ void AddGameObjectToWorld(GameObjectPtr ptr) {}
 
 void SetupNetworking(std::string serverDestination)
 {
+    if (noServer)
+    {
+        NullNetworkManagerClient::StaticInit();
+
+        // Well. Alright then, so much for unique ptr providing some safety
+        ServiceLocatorClient::Provide(NullNetworkManagerClient::sInstance.get());
+        return;
+    }
+
     // Make a test packet and see if it makes it to the other side
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
