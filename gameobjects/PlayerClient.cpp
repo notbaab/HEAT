@@ -1,4 +1,5 @@
 #include "PlayerClient.h"
+#include "events/LoggedIn.h"
 #include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
 #include "logger/Logger.h"
@@ -90,6 +91,13 @@ void PlayerClient::UpdateRemotePlayer()
     predictedState->speed.x = physicsComponent->speed.x;
     predictedState->speed.y = physicsComponent->speed.y;
 }
+
+void PlayerClient::UserLoggedIn(std::shared_ptr<Event> evt)
+{
+    auto castMsg = std::static_pointer_cast<LoggedIn>(evt);
+    localPlayerClientId = castMsg->clientId;
+}
+
 void PlayerClient::Update()
 {
     if (IsLocalPlayer())

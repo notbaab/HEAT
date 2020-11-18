@@ -13,6 +13,7 @@
 #include "events/Event.h"
 #include "events/EventManager.h"
 #include "events/EventRouter.h"
+#include "events/LoggedIn.h"
 #include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
 #include "gameobjects/PlayerClient.h"
@@ -243,12 +244,16 @@ void SetupWorld()
     auto addObject = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnAddObject);
     auto stateUpdate = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
 
+    auto loggedIn = CREATE_DELEGATE_LAMBDA(gameobjects::PlayerClient::UserLoggedIn);
+
     // TODO: This means we cannot change it while running. We should find a way to signal that
     auto eventForwarder = CREATE_DELEGATE_LAMBDA_CAPTURE_BY_VALUE(networkManager, QueueMessage);
 
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
     EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
     EventManager::sInstance->AddListener(eventForwarder, PlayerInputEvent::EVENT_TYPE);
+
+    EventManager::sInstance->AddListener(loggedIn, LoggedIn::EVENT_TYPE);
 
     // Router for player events
     EventRouter<PlayerInputEvent>::StaticInit();

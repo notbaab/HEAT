@@ -21,6 +21,12 @@ class PlayerClient : public Player
     void Update() override;
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
 
+    // static inline std::shared_ptr<PlayerClient> localPlayer;
+    static inline uint32_t localPlayerClientId;
+    static inline uint32_t localPlayerId;
+
+    static void UserLoggedIn(std::shared_ptr<Event> evt);
+
     // PIMP: real gross static map that maps clients to players. Probably need to so something
     // better
     static inline std::unordered_map<uint32_t, uint32_t> clientToPlayer;
@@ -38,6 +44,14 @@ class PlayerClient : public Player
     {
         Player::AddedToGameWorld();
         clientToPlayer[clientOwnerId] = GetWorldId();
+        if (localPlayerClientId == clientOwnerId)
+        {
+            localPlayerId = GetWorldId();
+        }
+        else
+        {
+            ERROR("NOPE");
+        }
     }
 
     PlayerClient() : stateDirty(true), predictedState(std::make_shared<PhysicsComponent>())
@@ -55,6 +69,7 @@ class PlayerClient : public Player
     Vector3 GetLocation() { return predictedState->centerLocation; }
     Vector3 GetVelocity() { return predictedState->speed; }
 
+    bool IsLocalPlayer() { return clientOwnerId == localPlayerClientId; };
     void UpdateLocalPlayer();
     void UpdateRemotePlayer();
 

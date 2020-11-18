@@ -2,6 +2,7 @@
 #include "PacketManager.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
+#include "events/LoggedIn.h"
 #include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
@@ -32,11 +33,11 @@ NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
 
 void NetworkManagerClient::StartServerHandshake()
 {
+    INFO("Sending handshake");
     // create a hello message and queue it to send in the next tick
     this->clientSalt = holistic::GenerateSalt();
     auto msg = std::make_unique<ClientConnectionRequestMessage>(this->clientSalt);
     this->packetManager.SendMessage(std::move(msg));
-    DEBUG("Sending handshake");
     this->connectionState = CurrentConnectionState::CONNECTING;
 }
 
@@ -145,6 +146,10 @@ bool NetworkManagerClient::ReadLoginMessage(const std::shared_ptr<Message> messa
     {
         INFO("Current clients and ids are {} Id {}", std::get<0>(idNameTup), std::get<1>(idNameTup));
     }
+
+    // Some people care about the fact we logged in, fire a loggedIn event
+    auto loggedInEvt = std::make_shared<LoggedIn>(this->clientId);
+    EventManager::sInstance->QueueEvent(loggedInEvt);
 
     return true;
 }
