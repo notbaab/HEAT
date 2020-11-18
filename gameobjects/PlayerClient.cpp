@@ -9,7 +9,7 @@ namespace gameobjects
 void PlayerClient::RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves)
 {
     auto& move = inMoves.front();
-    TRACE("seq {} ", move->moveSeq);
+    TRACE("Have move seq {} ", move->moveSeq);
     while (move->moveSeq <= lastMoveSeq)
     {
         TRACE("Removing move {} since lower than {}", move->moveSeq, lastMoveSeq);
@@ -30,12 +30,25 @@ void PlayerClient::PredictState()
     TRACE("Snapped predicted state to {}, {}. Applying {} moves", predictedState->centerLocation.x,
           predictedState->centerLocation.y, moves.size());
 
-    ApplyMoves(predictedState, moves);
+    uint32_t lastAppliedMove = ApplyMoves(predictedState, moves);
+    TRACE("Last applied move {} vs lastPredectedMove {}", lastAppliedMove, lastPredictedMoveSeq);
+    if (lastAppliedMove != 0 && lastAppliedMove != lastPredictedMoveSeq)
+    {
+        lastPredictedMoveSeq = lastAppliedMove;
+        moving = predictedState->IsMoving();
+        currentOrientation = predictedState->GetCurrentOrientation();
+    }
+    else
+    {
+        moving = false;
+        currentOrientation = MovementOrientation::NONE;
+    }
 
-    TRACE("Predicted state ended at to {}, {} ", predictedState->centerLocation.x, predictedState->centerLocation.y);
+    TRACE("Predicted state ended at to {}, {}. Moving {} ", predictedState->centerLocation.x,
+          predictedState->centerLocation.y, moving);
 }
 
-MovementOrientation PlayerClient::GetCurrentOrientation() { return physicsComponent->GetCurrentOrientation(); }
+MovementOrientation PlayerClient::GetCurrentOrientation() { return currentOrientation; }
 
 MovementType PlayerClient::GetCurrentMovementType()
 {

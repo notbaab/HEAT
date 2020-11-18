@@ -52,6 +52,9 @@ class PlayerClient : public Player
         //     std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
     }
 
+    // Return the predicted state of the client instead of it's true location
+    Vector3 GetLocation() { return predictedState->centerLocation; }
+    Vector3 GetVelocity() { return predictedState->speed; }
   private:
     void RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves);
     void PredictState();
@@ -64,7 +67,11 @@ class PlayerClient : public Player
     std::shared_ptr<PhysicsComponent> predictedState;
     std::shared_ptr<AnimatedSpriteComponent<PlayerClient>> drawable;
     // std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> serverLocation;
-    MovementOrientation direction;
+
+    // The last move we predicted to last frame. If it matches where we
+    // ended the prediction, we are no longer moving
+    uint32_t lastPredictedMoveSeq;
+    MovementOrientation currentOrientation;
 };
 
 } // namespace gameobjects
