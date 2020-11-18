@@ -13,10 +13,6 @@ class PlayerServer : public Player
     static std::unique_ptr<SimpleGameObject> StaticCreate()
     {
         auto instance = std::make_unique<PlayerServer>();
-
-        // listen for move events
-        // EventManager::sInstance->AddListener(EventListenerFunction eventDelegate, uint32_t
-        // eventType)
         return std::move(instance);
     }
 

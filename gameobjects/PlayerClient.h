@@ -21,7 +21,6 @@ class PlayerClient : public Player
     void Update() override;
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
 
-    // static inline std::shared_ptr<PlayerClient> localPlayer;
     static inline uint32_t localPlayerClientId;
     static inline uint32_t localPlayerId;
 
@@ -59,10 +58,6 @@ class PlayerClient : public Player
         auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
 
         this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerClient>>(this, playerSheet);
-
-        // TODO: Extract this out to something better
-        // this->serverLocation =
-        //     std::make_shared<AnimatedSpriteComponent<PhysicsComponent>>(physicsComponent.get(), playerSheet, true);
     }
 
     // Use the predicted state

@@ -18,8 +18,6 @@ std::shared_ptr<SimpleGameObject> Registry::CreateGameObject(uint32_t inCCName)
 {
     GameObjectPtr newObject = sInstance->mNameToCreationFunction[inCCName]();
 
-    // sInstance->mAddToWorldFunction(newObject);
-
     return newObject;
 }
 

@@ -77,8 +77,6 @@ bool World::AddGameObject(GameObjectPtr obj, uint32_t worldId)
     mGameObjects.push_back(obj);
     gameObjById[worldId] = obj;
 
-    // setup the objects listeners
-    // obj->SetupListeners();
     obj->AddedToGameWorld();
 
     return true;

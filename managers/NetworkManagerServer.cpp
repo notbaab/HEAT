@@ -291,12 +291,11 @@ void NetworkManagerServer::SendOutgoingPackets()
     }
 }
 
-// // Callback that can be attatched to events that need to be sent out to the connected
-// // clients as messages
+// Callback that can be attatched to events that need to be sent out to the connected
+// clients as messages
 void NetworkManagerServer::EventForwarder(std::shared_ptr<Event> evt)
 {
     TRACE("Forwarding event");
-    // Event is
     BroadcastMessage(evt);
 }
 

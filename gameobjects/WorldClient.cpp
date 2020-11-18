@@ -28,13 +28,4 @@ void WorldClient::OnStateUpdateMessage(std::shared_ptr<Event> objectStateEvent)
     gameObjById[worldId]->HandleStateMessage(castMsg);
 }
 
-// void WorldClient::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
-// {
-//     // Handles adding the game object to the world
-//     auto castAddObj = std::static_pointer_cast<CreatePlayerOwnedObject>(addGameObjEvent);
-
-//     INFO("Adding game object");
-//     auto obj = Registry::sInstance->CreateGameObject(castAddObj->objType);
-//     AddGameObject(obj, castAddObj->worldId);
-// }
 } // namespace gameobjects

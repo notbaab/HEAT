@@ -15,13 +15,8 @@ class SimpleGameObject
 {
   public:
     virtual uint32_t GetClassId() const = 0;
-    // virtual void SetupListeners(){};
     virtual ~SimpleGameObject(){};
-    // SimpleGameObject() : rotation(0) { centerLocation = Vector3(23, 23, 0); };
 
-    // Vector3 GetLocation() {
-    //     return centerLocation;
-    // }
     void SetRotation(uint16_t degress) { rotation = degress; }
     uint16_t GetRotation() { return rotation; }
 
