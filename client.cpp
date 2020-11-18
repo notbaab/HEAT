@@ -81,20 +81,35 @@ class InputButtonState
     {
         if (hasInput())
         {
-            auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
-            // TODO: Don't grab it, just don't initialize the player input stuff until a player is
-            // added.
             // Skip 0
-            moveSeq++;
-            auto clientId = networkManager->GetClientId();
-            auto playerObjId = gameobjects::PlayerClient::clientToPlayer[clientId];
-            auto inputState = std::make_shared<PlayerInputEvent>(GetHorizontalDirection(), GetVerticalDirection(),
-                                                                 moveSeq, playerObjId);
-            EventManager::sInstance->QueueEvent(inputState);
+            sendMove();
+            INFO("Sending input mover");
+            sentStopInput = false;
+        }
+        else if (!sentStopInput)
+        {
+            INFO("Sending stop move");
+            sentStopInput = true;
+            sendMove();
         }
     }
 
   private:
+    void sendMove()
+    {
+        auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+
+        moveSeq++;
+
+        auto clientId = gameobjects::PlayerClient::localPlayerClientId;
+        auto playerObjId = gameobjects::PlayerClient::localPlayerId;
+        INFO("Sending move for id {}", playerObjId);
+
+        auto inputState =
+            std::make_shared<PlayerInputEvent>(GetHorizontalDirection(), GetVerticalDirection(), moveSeq, playerObjId);
+        EventManager::sInstance->QueueEvent(inputState);
+    }
+
     void setKeyVariables(int keyCode, bool value)
     {
         if (keyMap.find(keyCode) == keyMap.end())
@@ -109,6 +124,7 @@ class InputButtonState
     int8_t up, down, left, right;
     std::unordered_map<int, int8_t*> keyMap;
     uint32_t moveSeq;
+    bool sentStopInput = true;
 };
 
 // TODO: global input state for now until we decide what to do with it
