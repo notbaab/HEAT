@@ -306,6 +306,11 @@ void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
     for (auto& element : cData)
     {
         auto& client = element.second;
+        if (client.state != LOGGED_IN)
+        {
+            continue;
+        }
+
         client.packetManager.SendMessage(msg);
     }
 }
