@@ -54,6 +54,10 @@ class PlayerClient : public Player
     // Return the predicted state of the client instead of it's true location
     Vector3 GetLocation() { return predictedState->centerLocation; }
     Vector3 GetVelocity() { return predictedState->speed; }
+
+    void UpdateLocalPlayer();
+    void UpdateRemotePlayer();
+
   private:
     void RemoveOldMoves(std::deque<std::shared_ptr<PlayerInputEvent>>& inMoves);
     void PredictState();

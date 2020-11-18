@@ -63,8 +63,9 @@ MovementType PlayerClient::GetCurrentMovementType()
     return MovementType::IDLE;
 }
 
-void PlayerClient::Update()
+void PlayerClient::UpdateLocalPlayer()
 {
+    // This is kinda wonky. We don't have moves for other players
     // remove any moves that we need to
     if (moves.empty())
     {
@@ -72,8 +73,34 @@ void PlayerClient::Update()
         return;
     }
 
+    // TODO: So we don't get Moves for other players, just state messages. Does that
+    // sense to do this?
     RemoveOldMoves(moves);
     PredictState();
+}
+
+void PlayerClient::UpdateRemotePlayer()
+{
+    moving = physicsComponent->IsMoving();
+    currentOrientation = physicsComponent->GetCurrentOrientation();
+
+    // Remote player has no predicted state now, snap it to the current location
+    predictedState->centerLocation.x = physicsComponent->centerLocation.x;
+    predictedState->centerLocation.y = physicsComponent->centerLocation.y;
+    predictedState->speed.x = physicsComponent->speed.x;
+    predictedState->speed.y = physicsComponent->speed.y;
+}
+void PlayerClient::Update()
+{
+    if (IsLocalPlayer())
+    {
+        UpdateLocalPlayer();
+    }
+    else
+    {
+        TRACE("Updating Remote Player");
+        UpdateRemotePlayer();
+    }
 }
 
 void PlayerClient::HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent)
