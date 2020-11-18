@@ -103,6 +103,18 @@ void World::PrintInfo()
     }
 }
 
+GameObjectPtr World::GetGameObject(uint32_t gameObjectId)
+{
+    for (auto go : mGameObjects)
+    {
+        if (go->GetWorldId() == gameObjectId)
+        {
+            return go;
+        }
+    }
+    return nullptr;
+}
+
 void World::RemoveGameObject(GameObjectPtr obj)
 {
     for (auto go : mGameObjects)

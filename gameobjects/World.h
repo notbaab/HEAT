@@ -25,11 +25,11 @@ class World
     static bool StaticAddGameObject(GameObjectPtr inGameObject, uint32_t worldId);
     static void PrintInfo();
 
-    //
     virtual void OnAddObject(std::shared_ptr<Event> addGameObjEvent);
 
     void RemoveGameObject(GameObjectPtr inGameObject);
     void Update(uint32_t currentTime);
+    GameObjectPtr GetGameObject(uint32_t gameObjectId);
     std::shared_ptr<CreatePlayerOwnedObject> CreatePlayerCreationEvent(uint32_t playerId);
     std::vector<std::shared_ptr<Event>> CreateWelcomeStateEvents();
     std::vector<std::shared_ptr<Event>> CreateWorldSnapshot();
