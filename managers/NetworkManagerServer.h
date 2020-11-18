@@ -6,23 +6,24 @@
 #include <vector>
 
 #include "ClientData.h"
-#include "NetworkManager.h"
 #include "PacketManager.h"
+#include "holistic/HNetworkManager.h"
 
 class Event;
 class Message;
 
-class NetworkManagerServer : public NetworkManager
+class NetworkManagerServer : public holistic::HNetworkManager
 {
   public:
     static inline std::unique_ptr<NetworkManagerServer> sInstance;
+    static void StaticInit(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer);
+
     NetworkManagerServer(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer);
 
     virtual void ProcessMessages() override;
     virtual void SendOutgoingPackets() override;
-    static void StaticInit(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer);
-
-    virtual void dataRecievedCallback(SocketAddress fromAddressKey,
+    virtual void Tick(uint32_t timeStep) override;
+    virtual void DataReceivedCallback(SocketAddress fromAddressKey,
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
 
     void EventForwarder(std::shared_ptr<Event> evt);
@@ -35,8 +36,6 @@ class NetworkManagerServer : public NetworkManager
     bool ReadConnectionRequestMessage(ClientData& client, const std::shared_ptr<Message> message);
     bool ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message);
     bool ReadLoginMessage(ClientData& client, const std::shared_ptr<Message> message);
-
-    void Tick(uint32_t timeStep);
 
   protected:
     // Each client gets a packet manager as the manager is the thing that

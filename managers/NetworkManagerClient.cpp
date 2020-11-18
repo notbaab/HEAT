@@ -22,7 +22,7 @@ void NetworkManagerClient::StaticInit(std::string serverAddress, std::shared_ptr
 
 NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
                                            std::shared_ptr<PacketSerializer> packetSerializer, std::string userName)
-    : packetManager(PacketManager(packetSerializer)), NetworkManager(packetSerializer), userName(userName)
+    : packetManager(PacketManager(packetSerializer)), HNetworkManagerClient(packetSerializer), userName(userName)
 {
     logger::InitLog(logger::level::DEBUG, "Network Manager Client");
     DEBUG("Made NetworkManagerClient");
@@ -33,7 +33,7 @@ NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
 void NetworkManagerClient::StartServerHandshake()
 {
     // create a hello message and queue it to send in the next tick
-    this->clientSalt = GenerateSalt();
+    this->clientSalt = holistic::GenerateSalt();
     auto msg = std::make_unique<ClientConnectionRequestMessage>(this->clientSalt);
     this->packetManager.SendMessage(std::move(msg));
     DEBUG("Sending handshake");
@@ -42,7 +42,7 @@ void NetworkManagerClient::StartServerHandshake()
 
 // read the packet according to the state the client is in into the packet
 // manager
-void NetworkManagerClient::dataRecievedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
+void NetworkManagerClient::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     // De serialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
@@ -174,7 +174,7 @@ bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> m
 
 // queue up any messages it needs to send out. This could be the actual
 // logging in message or any of the game state input packets
-void NetworkManagerClient::Update()
+void NetworkManagerClient::Tick(uint32_t timeStep)
 {
     if (connectionState != CurrentConnectionState::AUTHENTICATED)
     {

@@ -3,6 +3,7 @@ list(APPEND holistic_src
     SetupNetworking.cpp
     SetupManagers.cpp
     SetupWorld.cpp
+    HNetworkManager.cpp
 )
 
 add_library(holistic STATIC ${holistic_src})

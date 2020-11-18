@@ -21,11 +21,11 @@ void NetworkManagerServer::StaticInit(uint16_t port, std::shared_ptr<PacketSeria
 }
 
 NetworkManagerServer::NetworkManagerServer(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer)
-    : NetworkManager(port, packetSerializer)
+    : HNetworkManager(port, packetSerializer)
 {
 }
 
-void NetworkManagerServer::dataRecievedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
+void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     // Deserialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
@@ -186,7 +186,7 @@ bool NetworkManagerServer::ReadLoginMessage(ClientData& client, const std::share
 
     // successfully got the response, move to authenticated client
     client.userName = castMsg->userName;
-    uint32_t id = GenerateSalt();
+    uint32_t id = holistic::GenerateSalt();
     client.gameId = id;
     client.state = ClientConnectionState::LOGGED_IN;
     INFO("Logging in {} with id {}", client.userName, client.gameId);
@@ -244,7 +244,7 @@ bool NetworkManagerServer::ReadConnectionRequestMessage(ClientData& client, cons
     client.clientSalt = castMsg->salt;
 
     // Tell it our salt
-    client.serverSalt = GenerateSalt();
+    client.serverSalt = holistic::GenerateSalt();
     client.xOrSalt = client.clientSalt ^ client.serverSalt;
 
     // It has been challenged

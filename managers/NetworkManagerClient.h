@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "NetworkManager.h"
 #include "PacketManager.h"
+#include "holistic/HNetworkManagerClient.h"
 
 // This is all very similar to client data. How should it be consolidated?
 enum CurrentConnectionState
@@ -17,10 +17,13 @@ enum CurrentConnectionState
     LOGGED_IN,     // Assigned a game Id
 };
 
-class NetworkManagerClient : public NetworkManager
+class NetworkManagerClient : public holistic::HNetworkManagerClient
 {
   public:
     static inline std::unique_ptr<NetworkManagerClient> sInstance;
+    // TODO: This presents a weird problem for us now that we are holistic
+    static uint32_t GetClientId() { return sInstance->clientId; }
+
     NetworkManagerClient(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                          std::string userName);
 
@@ -29,19 +32,18 @@ class NetworkManagerClient : public NetworkManager
     static void StaticInit(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                            std::string userName);
 
-    virtual void dataRecievedCallback(SocketAddress fromAddressKey,
+    virtual void DataReceivedCallback(SocketAddress fromAddressKey,
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
 
-    void StartServerHandshake();
-    static uint32_t GetClientId() { return sInstance->clientId; }
-    void Update();
+    virtual void StartServerHandshake() override;
+    void Tick(uint32_t timeStep) override;
     bool HandleUnauthenticatedPacket(const std::shared_ptr<Packet> packet);
     bool HandleAuthenticatedPacket(const std::shared_ptr<Packet> packet);
     // message reading functions
     bool ReadChallengeMessage(const std::shared_ptr<Message> message);
     bool ReadLoginMessage(const std::shared_ptr<Message> message);
 
-    void QueueMessage(std::shared_ptr<Message> messageToQueue);
+    void QueueMessage(std::shared_ptr<Message> messageToQueue) override;
     PacketManager packetManager;
 
   protected:
