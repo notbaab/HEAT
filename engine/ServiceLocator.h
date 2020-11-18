@@ -1,3 +1,4 @@
+#pragma once
 
 #include "holistic/HNetworkManager.h"
 

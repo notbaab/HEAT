@@ -29,7 +29,6 @@
 #include "graphics/TiledAnimatedSpriteSheetData.h"
 #include "graphics/TiledTileLoader.h"
 #include "graphics/WindowManager.h"
-#include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
 #include "managers/NetworkManagerClient.h"
 #include "managers/PacketManager.h"
