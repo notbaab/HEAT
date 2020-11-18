@@ -10,13 +10,31 @@
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
 #include "engine/Engine.h"
+#include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
+#include "events/EventRouter.h"
+#include "events/PhysicsComponentUpdate.h"
+#include "events/PlayerInputEvent.h"
+#include "gameobjects/PlayerServer.h"
+#include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
-#include "holistic/SetupFuncs.h"
 #include "logger/Logger.h"
 #include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
+#include "messages/ClientConnectionChallengeResponseMessage.h"
+#include "messages/ClientConnectionRequestMessage.h"
+#include "messages/ClientLoginMessage.h"
+#include "messages/ClientLoginResponse.h"
+#include "messages/ClientWelcomeMessage.h"
 #include "messages/PlayerMessage.h"
+#include "packets/AuthenticatedPacket.h"
+#include "packets/Message.h"
+#include "packets/MessageSerializer.h"
+#include "packets/Packet.h"
+#include "packets/PacketSerializer.h"
+#include "packets/ReliableOrderedPacket.h"
+#include "packets/UnauthenticatedPacket.h"
+
 #include "networking/SocketManager.h"
 
 #define EXIT "exit"
@@ -106,10 +124,71 @@ void SetupDebugTools()
     add_command("tick", DebugSetEngineTick);
 }
 
+void SetupNetworking()
+{
+    std::string destination = "127.0.0.1:4500";
+
+    auto messageSerializer = std::make_shared<MessageSerializer>();
+
+    // Message constructors
+    AddMessageCtor(messageSerializer, PlayerMessage);
+    AddMessageCtor(messageSerializer, ClientWelcomeMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionChallengeResponseMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionRequestMessage);
+    AddMessageCtor(messageSerializer, ClientLoginMessage);
+    AddMessageCtor(messageSerializer, ClientLoginResponse);
+
+    // Event constructors. Also messages
+    AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
+    AddMessageCtor(messageSerializer, PlayerInputEvent);
+
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+
+    // TODO: Do we ever want a raw ROP?
+    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
+    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
+    AddPacketCtor(packetSerializer, AuthenticatedPacket);
+    // TODO: So this is really what we want. I vote to rename packetManager to
+    // something that's more clear like, reliablePacketManager or something. Basically we will
+    // need a packet manager for every client/server pair. So the network manager should take
+    // a already setup serializer and spawn new managers for each connection that comes in.
+    // packetManager = std::make_shared<PacketManager>(packetSerializer);
+
+    // Init our singleton
+    NetworkManagerServer::StaticInit(4500, packetSerializer);
+}
+
+// Function that is called to create the registry with all the
+// create functions
+void SetupWorld()
+{
+    EventManager::StaticInit();
+
+    gameobjects::World::StaticInit();
+
+    // create registry and add all the creation functions we know about
+    gameobjects::Registry::StaticInit(gameobjects::World::StaticAddGameObject);
+    gameobjects::Registry::sInstance->RegisterCreationFunction(gameobjects::PLAYER_ID,
+                                                               gameobjects::PlayerServer::StaticCreate);
+
+    // Event forwarder takes events and pushes them to clients
+    auto evtForwarder = CREATE_DELEGATE(&NetworkManagerServer::EventForwarder, NetworkManagerServer::sInstance);
+    EventManager::sInstance->AddListener(evtForwarder, CreatePlayerOwnedObject::EVENT_TYPE);
+    EventManager::sInstance->AddListener(evtForwarder, PhysicsComponentUpdate::EVENT_TYPE);
+
+    // World listens for requests to add objects
+    auto addObject = CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
+    EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
+
+    EventRouter<PlayerInputEvent>::StaticInit();
+    auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
+    EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
+}
+
 void initStuffs()
 {
-    holistic::SetupNetworking();
-    holistic::SetupWorld();
+    SetupNetworking();
+    SetupWorld();
     SetupDebugTools();
 }
 

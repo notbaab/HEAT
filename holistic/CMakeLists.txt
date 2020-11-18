@@ -1,8 +1,5 @@
 
 list(APPEND holistic_src
-    SetupNetworking.cpp
-    SetupManagers.cpp
-    SetupWorld.cpp
     HNetworkManager.cpp
 )
 
@@ -15,4 +12,4 @@ target_include_directories(holistic
 )
 
 # not linking with anything since
-target_link_libraries(holistic gameobjects packets)
+target_link_libraries(holistic packets)
