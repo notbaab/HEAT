@@ -25,6 +25,7 @@ class HNetworkManager
     virtual void SendOutgoingPackets() = 0;
     virtual void Tick(uint32_t timeStep) = 0;
     virtual void DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data) = 0;
+    virtual void SetupConfigVars(){};
 
   protected:
     SocketManager socketManager;

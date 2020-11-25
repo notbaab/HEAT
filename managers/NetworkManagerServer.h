@@ -25,6 +25,7 @@ class NetworkManagerServer : public holistic::HNetworkManager
     virtual void Tick(uint32_t timeStep) override;
     virtual void DataReceivedCallback(SocketAddress fromAddressKey,
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
+    virtual void SetupConfigVars() override;
 
     void EventForwarder(std::shared_ptr<Event> evt);
     void BroadcastMessage(std::shared_ptr<Message> msg);
@@ -42,4 +43,7 @@ class NetworkManagerServer : public holistic::HNetworkManager
     // manages the reliability of each message
     std::unordered_map<uint64_t, ClientData> cData;
     uint32_t currentTime;
+
+    // time that we log out a client if they haven't been heard from in this time
+    uint32_t logoutTimeMs = 1000;
 };

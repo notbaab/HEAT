@@ -4,6 +4,7 @@
 #include "events/EventManager.h"
 #include "gameobjects/Player.h"
 #include "gameobjects/World.h"
+#include "holistic/Configurator.h"
 #include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
@@ -23,6 +24,7 @@ void NetworkManagerServer::StaticInit(uint16_t port, std::shared_ptr<PacketSeria
 NetworkManagerServer::NetworkManagerServer(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer)
     : HNetworkManager(port, packetSerializer)
 {
+    SetupConfigVars();
 }
 
 void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
@@ -299,6 +301,14 @@ void NetworkManagerServer::EventForwarder(std::shared_ptr<Event> evt)
     BroadcastMessage(evt);
 }
 
+void NetworkManagerServer::SetupConfigVars()
+{
+    Configurator::sInstance->CreateConfigVar("logoutTime", logoutTimeMs);
+    Configurator::sInstance->CreateConfigVar("running", logoutTimeMs);
+
+    Configurator::sInstance->SetConfigVar("logoutTime", 10000);
+}
+
 void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
 {
     // For now, create a copy for every client. Oh well.
@@ -321,7 +331,7 @@ void NetworkManagerServer::Tick(uint32_t currentTime)
     for (auto it = cData.begin(); it != cData.end() /* not hoisted */; /* no increment */)
     {
         auto& client = it->second;
-        if (currentTime - client.lastHeardFrom > 1000)
+        if (currentTime - client.lastHeardFrom > logoutTimeMs)
         {
             INFO("Client {}:{} not heard from since {}, it's now {}, logging out", client.userName,
                  client.socketAddress.ToString(), client.lastHeardFrom, currentTime);

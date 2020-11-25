@@ -18,6 +18,7 @@
 #include "gameobjects/PlayerServer.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
+#include "holistic/Configurator.h"
 #include "logger/Logger.h"
 #include "managers/NetworkManagerServer.h"
 #include "managers/PacketManager.h"
@@ -65,11 +66,11 @@ std::string DebugSetEngineTick(std::vector<std::string> args)
     return s.str();
 }
 
-void SplitCommandString(uint8_t* data, std::string* outCommand, std::vector<std::string>* outArgs)
+void SplitCommandString(std::string data, std::string* outCommand, std::vector<std::string>* outArgs)
 {
     std::string tmp;
-    std::stringstream stringStream;
-    stringStream << (char*)data;
+    std::stringstream stringStream(data);
+    // stringStream << (char*)data;
 
     getline(stringStream, tmp, ' ');
     *outCommand = tmp;
@@ -79,13 +80,38 @@ void SplitCommandString(uint8_t* data, std::string* outCommand, std::vector<std:
     }
 }
 
+std::string SetConfigVar(std::vector<std::string> args)
+{
+    if (args.size() != 2)
+    {
+        throw std::runtime_error("Must supply 2 arguments, a varible and a value");
+    }
+
+    std::string varibleName = args[0];
+    std::string value = args[1];
+    bool success = Configurator::sInstance->SetConfigVar(varibleName, value);
+
+    std::stringstream s;
+    if (success)
+    {
+        s << "Success, set to " << value;
+        return s.str();
+    }
+    else
+    {
+        return "Failed ";
+    }
+}
+
 std::string DebugCommandHandler(uint8_t* data, size_t size)
 {
     // Accepting commands of the form <action> <args>
+    std::string nullTerminatedString(reinterpret_cast<char*>(data), size);
     std::string command;
     std::string out;
     std::vector<std::string> args;
-    SplitCommandString(data, &command, &args);
+    // Terminate it
+    SplitCommandString(nullTerminatedString, &command, &args);
 
     if (!tryExecuteCommand(command, args, &out))
     {
@@ -118,10 +144,15 @@ bool tick(uint32_t currentTime)
     return true;
 }
 
+void VariableAdded(std::string variable) { add_hint("set-var", variable); }
+
 void SetupDebugTools()
 {
     InitDebugingTools();
+    Configurator::StaticInit(VariableAdded);
+
     add_command("tick", DebugSetEngineTick);
+    add_command("set-var", SetConfigVar);
 }
 
 void SetupNetworking()
@@ -148,11 +179,6 @@ void SetupNetworking()
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddPacketCtor(packetSerializer, UnauthenticatedPacket);
     AddPacketCtor(packetSerializer, AuthenticatedPacket);
-    // TODO: So this is really what we want. I vote to rename packetManager to
-    // something that's more clear like, reliablePacketManager or something. Basically we will
-    // need a packet manager for every client/server pair. So the network manager should take
-    // a already setup serializer and spawn new managers for each connection that comes in.
-    // packetManager = std::make_shared<PacketManager>(packetSerializer);
 
     // Init our singleton
     NetworkManagerServer::StaticInit(4500, packetSerializer);
@@ -187,9 +213,9 @@ void SetupWorld()
 
 void initStuffs()
 {
+    SetupDebugTools();
     SetupNetworking();
     SetupWorld();
-    SetupDebugTools();
 }
 
 const char** __argv;
