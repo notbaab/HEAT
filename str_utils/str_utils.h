@@ -6,22 +6,21 @@
 
 namespace str_utils
 {
-std::unique_ptr<std::vector<std::string>> SplitString(std::string str, std::string delimiter)
+
+std::vector<std::string> SplitString(std::string text, std::string delims)
 {
-    auto strings = std::make_unique<std::vector<std::string>>();
+    std::vector<std::string> tokens;
+    std::size_t start = text.find_first_not_of(delims), end = 0;
 
-    std::string::size_type pos = 0;
-    std::string::size_type prev = 0;
-    size_t strSize = delimiter.size();
-
-    while ((pos = str.find(delimiter, prev)) != std::string::npos)
+    while ((end = text.find_first_of(delims, start)) != std::string::npos)
     {
-        auto splitStr = str.substr(prev, pos - prev);
-        strings->emplace_back(splitStr);
-        prev = pos + strSize;
+        tokens.push_back(text.substr(start, end - start));
+        start = text.find_first_not_of(delims, end);
     }
+    if (start != std::string::npos)
+        tokens.push_back(text.substr(start));
 
-    return strings;
+    return tokens;
 }
 
 template <typename... Args>
