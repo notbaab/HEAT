@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,12 @@
 
 static std::unordered_set<std::string> commands;
 static std::unordered_map<std::string, ConsoleCallback> exitCommands;
-static std::unordered_map<std::string, std::vector<std::string>> hints_map;
+
+// The hint map is a mapping of <command> <potential-values>
+// TODO: I should add a way to traverse the trie with no key, so we don't need to
+// have the flat map as well.
+static std::unordered_map<std::string, DictionaryTrie> hints_map;
+static std::unordered_map<std::string, std::vector<std::string>> flatHintMap;
 static DictionaryTrie hintTrie = DictionaryTrie();
 
 void add_command(std::string full_command)
@@ -36,23 +42,68 @@ void add_exit_command(std::string full_command, ConsoleCallback callback)
 // I want to use a ternary search tree for this
 void completion(const char* buf, linenoiseCompletions* lc)
 {
-    std::string s(buf);
-    std::vector<std::string> completions = hintTrie.predictCompletions(s, 5);
+    std::istringstream iss(buf);
+
+    // Predicts the first command completion
+    std::vector<std::string> completions = hintTrie.predictCompletions(iss.str(), 5);
 
     for (std::string completion : completions)
     {
         linenoiseAddCompletion(lc, completion.c_str());
     }
+
+    auto stringParts = str_utils::SplitString(buf, " ");
+
+    if (stringParts.size() >= 1)
+    {
+        if (hints_map.count(stringParts[0]) == 0)
+        {
+            return;
+        }
+
+        if (stringParts.size() == 1)
+        {
+            for (std::string completion : flatHintMap.at(stringParts[0]))
+            {
+                std::string fullCompletion(stringParts[0]);
+                fullCompletion += " " + completion;
+                linenoiseAddCompletion(lc, fullCompletion.c_str());
+            }
+        }
+        else
+        {
+            auto hintCompletions = hints_map.at(stringParts[0]).predictCompletions(stringParts[1], 100);
+            for (std::string completion : hintCompletions)
+            {
+                std::string fullCompletion(stringParts[0]);
+                fullCompletion += " " + completion;
+                linenoiseAddCompletion(lc, fullCompletion.c_str());
+            }
+        }
+    }
+}
+
+void add_hint(std::string commandToHint, std::string valueToHint)
+{
+    if (hints_map.count(commandToHint) == 0)
+    {
+        hints_map.emplace(commandToHint, DictionaryTrie());
+        flatHintMap.emplace(commandToHint, 1);
+    }
+
+    hints_map.at(commandToHint).insert(valueToHint, 1);
+    flatHintMap.at(commandToHint).emplace_back(valueToHint);
 }
 
 char* hints(const char* buf, int* color, int* bold)
 {
-    if (!strcasecmp(buf, "hello"))
-    {
-        *color = 35;
-        *bold = 0;
-        return (char*)" World";
-    }
+    // TODO: Add actual hints
+    // if (!strcasecmp(buf, "set-var"))
+    // {
+    //     *color = 35;
+    //     *bold = 0;
+    //     return (char*)" stuff";
+    // }
     return NULL;
 }
 
@@ -94,17 +145,38 @@ void interactive_console(const char* socketPath)
     linenoiseSetHintsCallback(hints);
     linenoiseHistoryLoad("history.txt"); /* Load the history at startup */
 
-    std::vector<std::string> strings;
     auto commandStrs = str_utils::SplitString(str, "\n");
-    for (const auto& command : *commandStrs)
+    for (const auto& command : commandStrs)
     {
-        std::cout << "Adding " << command << std::endl;
         add_command(command);
+    }
+
+    std::string getCompletions("get-command-hints\0");
+
+    sent = send(fd, getCompletions.c_str(), getCompletions.size(), 0);
+    if (sent == -1)
+    {
+        exit(-1);
+    }
+    recv(fd, buf, 100, 0);
+    std::string completions(buf);
+
+    auto hintStrs = str_utils::SplitString(completions, "\n");
+    for (const auto& command : hintStrs)
+    {
+        auto hints = str_utils::SplitString(command, " ");
+        if (hints.size() > 1)
+        {
+            for (unsigned i = 1; i < hints.size(); ++i)
+            {
+                add_hint(hints.at(0), hints.at(i));
+            }
+        }
     }
 
     while ((line = linenoise("cmd> ")) != NULL)
     {
-        /* Do something with the string. */
+        // Do something with the string.
         if (line[0] != '\0' && line[0] != '/')
         {
             sent = send(fd, line, strlen(line) + 1, 0);

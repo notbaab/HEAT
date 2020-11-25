@@ -6,4 +6,5 @@ void InitDebugingTools()
 {
     DEBUG("Initing debugging tools");
     addGetAllCommands();
+    addGetAllHints();
 }
