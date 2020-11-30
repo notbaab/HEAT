@@ -16,6 +16,8 @@
 #include "events/LoggedIn.h"
 #include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
+#include "events/RemoveClientOwnedGameObjectsEvent.h"
+#include "events/RemoveGameObjectEvent.h"
 #include "gameobjects/PlayerClient.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/SetupGameObjects.h"
@@ -29,8 +31,10 @@
 #include "graphics/TiledAnimatedSpriteSheetData.h"
 #include "graphics/TiledTileLoader.h"
 #include "graphics/WindowManager.h"
+#include "holistic/Configurator.h"
 #include "logger/Logger.h"
 #include "managers/NetworkManagerClient.h"
+#include "managers/NullNetworkManagerClient.h"
 #include "managers/PacketManager.h"
 #include "math/Vector3.h"
 #include "messages/ClientConnectionChallengeMessage.h"
@@ -47,8 +51,6 @@
 #include "packets/PacketSerializer.h"
 #include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
-
-#include "managers/NullNetworkManagerClient.h"
 
 const char** __argv;
 int __argc;
@@ -86,12 +88,10 @@ class InputButtonState
         {
             // Skip 0
             sendMove();
-            INFO("Sending input mover");
             sentStopInput = false;
         }
         else if (!sentStopInput)
         {
-            INFO("Sending stop move");
             sentStopInput = true;
             sendMove();
         }
@@ -106,7 +106,6 @@ class InputButtonState
 
         auto clientId = gameobjects::PlayerClient::localPlayerClientId;
         auto playerObjId = gameobjects::PlayerClient::localPlayerId;
-        INFO("Sending move for id {}", playerObjId);
 
         auto inputState =
             std::make_shared<PlayerInputEvent>(GetHorizontalDirection(), GetVerticalDirection(), moveSeq, playerObjId);
@@ -199,8 +198,6 @@ bool DoFrame(uint32_t currentTime)
     return true;
 }
 
-void AddGameObjectToWorld(GameObjectPtr ptr) {}
-
 void SetupNetworking(std::string serverDestination)
 {
     if (noServer)
@@ -223,6 +220,8 @@ void SetupNetworking(std::string serverDestination)
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
     AddMessageCtor(messageSerializer, PhysicsComponentUpdate);
     AddMessageCtor(messageSerializer, PlayerInputEvent);
+    AddMessageCtor(messageSerializer, RemoveGameObjectEvent);
+    AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
 
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
@@ -253,18 +252,21 @@ void SetupWorld()
 
     // World listens for requests to add objects
     auto addObject = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnAddObject);
+    EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
+
     auto stateUpdate = CREATE_DELEGATE_LAMBDA(gameobjects::WorldClient::sInstance->OnStateUpdateMessage);
+    EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
 
     auto loggedIn = CREATE_DELEGATE_LAMBDA(gameobjects::PlayerClient::UserLoggedIn);
-
-    // TODO: This means we cannot change it while running. We should find a way to signal that
-    auto eventForwarder = CREATE_DELEGATE_LAMBDA_CAPTURE_BY_VALUE(networkManager, QueueMessage);
-
-    EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
-    EventManager::sInstance->AddListener(stateUpdate, PhysicsComponentUpdate::EVENT_TYPE);
-    EventManager::sInstance->AddListener(eventForwarder, PlayerInputEvent::EVENT_TYPE);
-
     EventManager::sInstance->AddListener(loggedIn, LoggedIn::EVENT_TYPE);
+
+    auto removeClientObjects =
+        CREATE_DELEGATE(&gameobjects::World::OnRemoveClientOwnedObjects, gameobjects::WorldClient::sInstance);
+    EventManager::sInstance->AddListener(removeClientObjects, RemoveClientOwnedGameObjectsEvent::EVENT_TYPE);
+
+    // TODO: This means we cannot change the network manager while running. We should find a way to signal that
+    auto eventForwarder = CREATE_DELEGATE_LAMBDA_CAPTURE_BY_VALUE(networkManager, QueueMessage);
+    EventManager::sInstance->AddListener(eventForwarder, PlayerInputEvent::EVENT_TYPE);
 
     // Router for player events
     EventRouter<PlayerInputEvent>::StaticInit();

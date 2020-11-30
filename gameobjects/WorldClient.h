@@ -11,6 +11,7 @@ class WorldClient : public World
     static std::unique_ptr<WorldClient> sInstance;
 
     void OnStateUpdateMessage(std::shared_ptr<Event> objectStateEvent);
+    virtual void OnRemoveClientOwnedObjects(std::shared_ptr<Event> removeClientObject) override;
 
   private:
     WorldClient();

@@ -2,6 +2,8 @@
 #include "Player.h"
 #include "Registry.h"
 #include "events/CreatePlayerOwnedObject.h"
+#include "events/RemoveClientOwnedGameObjectsEvent.h"
+#include "events/RemoveGameObjectEvent.h"
 #include "logger/Logger.h"
 
 namespace gameobjects
@@ -49,10 +51,27 @@ void World::OnAddObject(std::shared_ptr<Event> addGameObjEvent)
 {
     auto castAddObj = std::static_pointer_cast<CreatePlayerOwnedObject>(addGameObjEvent);
 
-    INFO("Adding game object {} with id {}", castAddObj->objType, castAddObj->worldId);
+    INFO("Adding game object type {} with id {}", castAddObj->objType, castAddObj->worldId);
     auto obj = Registry::sInstance->CreateGameObject(castAddObj->objType);
     obj->clientOwnerId = castAddObj->playerId;
     AddGameObject(obj, castAddObj->worldId);
+}
+
+void World::OnRemoveClientOwnedObjects(std::shared_ptr<Event> removeClientObject)
+{
+    auto castRemoveObj = std::static_pointer_cast<RemoveClientOwnedGameObjectsEvent>(removeClientObject);
+
+    INFO("Removing game object with client id {}", castRemoveObj->clientGameId);
+    RemoveClientOwnedGameObjects(castRemoveObj->clientGameId);
+}
+
+// Adds the object with the given id
+void World::OnRemoveObject(std::shared_ptr<Event> removeGameObject)
+{
+    auto castRemoveObj = std::static_pointer_cast<RemoveGameObjectEvent>(removeGameObject);
+
+    INFO("Removing game object with id {}", castRemoveObj->worldId);
+    RemoveGameObject(castRemoveObj->worldId);
 }
 
 // TODO: This is only ever called on the server which is correct, but maybe factor out world server into it's own thing
@@ -113,12 +132,47 @@ GameObjectPtr World::GetGameObject(uint32_t gameObjectId)
     return nullptr;
 }
 
-void World::RemoveGameObject(GameObjectPtr obj)
+void World::RemoveClientOwnedGameObjects(uint32_t clientId)
 {
-    for (auto go : mGameObjects)
+    INFO("Removing Client {} Objects", clientId);
+    for (auto gameObj = mGameObjects.begin(); gameObj != mGameObjects.end();)
     {
+        if (gameObj->get()->clientOwnerId == clientId)
+        {
+            gameObjById.erase(gameObj->get()->GetWorldId());
+            gameObj = mGameObjects.erase(gameObj); // reseat iterator to a valid value post-erase
+        }
+        else
+        {
+            ++gameObj;
+        }
     }
 }
+
+bool World::RemoveGameObject(uint32_t gameObjId)
+{
+    if (gameObjById.count(gameObjId) == 0)
+    {
+        ERROR("No game object found with id {}", gameObjId);
+        return false;
+    }
+
+    for (auto gameObj = mGameObjects.begin(); gameObj != mGameObjects.end();)
+    {
+        if (gameObj->get()->GetWorldId() == gameObjId)
+        {
+            gameObj = mGameObjects.erase(gameObj); // reseat iterator to a valid value post-erase
+        }
+        else
+        {
+            ++gameObj;
+        }
+    }
+    gameObjById.erase(gameObjId);
+    return true;
+}
+
+bool World::RemoveGameObject(GameObjectPtr obj) { return RemoveGameObject(obj->GetWorldId()); }
 
 void World::Update(uint32_t currentTime)
 {

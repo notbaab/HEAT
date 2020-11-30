@@ -28,4 +28,8 @@ void WorldClient::OnStateUpdateMessage(std::shared_ptr<Event> objectStateEvent)
     gameObjById[worldId]->HandleStateMessage(castMsg);
 }
 
+void WorldClient::OnRemoveClientOwnedObjects(std::shared_ptr<Event> removeClientObject)
+{
+    World::OnRemoveClientOwnedObjects(removeClientObject);
+}
 } // namespace gameobjects

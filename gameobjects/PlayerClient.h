@@ -18,6 +18,8 @@ class PlayerClient : public Player
     MovementOrientation GetCurrentOrientation();
     MovementType GetCurrentMovementType();
 
+    ~PlayerClient() { RenderManager::sInstance->RemoveComponent(drawable.get()); }
+
     void Update() override;
     virtual void HandleStateMessage(std::shared_ptr<PhysicsComponentUpdate> stateEvent) override;
 

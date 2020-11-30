@@ -25,8 +25,12 @@ class World
     static void PrintInfo();
 
     virtual void OnAddObject(std::shared_ptr<Event> addGameObjEvent);
+    virtual void OnRemoveObject(std::shared_ptr<Event> removeGameObject);
+    virtual void OnRemoveClientOwnedObjects(std::shared_ptr<Event> removeClientObject);
 
-    void RemoveGameObject(GameObjectPtr inGameObject);
+    bool RemoveGameObject(GameObjectPtr inGameObject);
+    bool RemoveGameObject(uint32_t gameObjId);
+    void RemoveClientOwnedGameObjects(uint32_t clientId);
     void Update(uint32_t currentTime);
     GameObjectPtr GetGameObject(uint32_t gameObjectId);
     std::shared_ptr<CreatePlayerOwnedObject> CreatePlayerCreationEvent(uint32_t playerId);

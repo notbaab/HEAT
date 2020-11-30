@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 // Linux socket stuff
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -15,6 +14,8 @@
 #include "events/EventRouter.h"
 #include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
+#include "events/RemoveClientOwnedGameObjectsEvent.h"
+#include "events/RemoveGameObjectEvent.h"
 #include "gameobjects/PlayerServer.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
@@ -27,7 +28,9 @@
 #include "messages/ClientLoginMessage.h"
 #include "messages/ClientLoginResponse.h"
 #include "messages/ClientWelcomeMessage.h"
+#include "messages/LogoutMessage.h"
 #include "messages/PlayerMessage.h"
+#include "networking/SocketManager.h"
 #include "packets/AuthenticatedPacket.h"
 #include "packets/Message.h"
 #include "packets/MessageSerializer.h"
@@ -35,8 +38,6 @@
 #include "packets/PacketSerializer.h"
 #include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
-
-#include "networking/SocketManager.h"
 
 #define EXIT "exit"
 
@@ -168,9 +169,12 @@ void SetupNetworking()
     AddMessageCtor(messageSerializer, ClientConnectionRequestMessage);
     AddMessageCtor(messageSerializer, ClientLoginMessage);
     AddMessageCtor(messageSerializer, ClientLoginResponse);
+    AddMessageCtor(messageSerializer, LogoutMessage);
 
     // Event constructors. Also messages
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
+    AddMessageCtor(messageSerializer, RemoveGameObjectEvent);
+    AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
     AddMessageCtor(messageSerializer, PlayerInputEvent);
 
     auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
@@ -199,12 +203,21 @@ void SetupWorld()
 
     // Event forwarder takes events and pushes them to clients
     auto evtForwarder = CREATE_DELEGATE(&NetworkManagerServer::EventForwarder, NetworkManagerServer::sInstance);
-    EventManager::sInstance->AddListener(evtForwarder, CreatePlayerOwnedObject::EVENT_TYPE);
     EventManager::sInstance->AddListener(evtForwarder, PhysicsComponentUpdate::EVENT_TYPE);
 
     // World listens for requests to add objects
     auto addObject = CREATE_DELEGATE(&gameobjects::World::OnAddObject, gameobjects::World::sInstance);
     EventManager::sInstance->AddListener(addObject, CreatePlayerOwnedObject::EVENT_TYPE);
+    EventManager::sInstance->AddListener(evtForwarder, CreatePlayerOwnedObject::EVENT_TYPE);
+
+    auto removeObject = CREATE_DELEGATE(&gameobjects::World::OnRemoveObject, gameobjects::World::sInstance);
+    EventManager::sInstance->AddListener(removeObject, RemoveGameObjectEvent::EVENT_TYPE);
+    EventManager::sInstance->AddListener(evtForwarder, RemoveGameObjectEvent::EVENT_TYPE);
+
+    auto removeClientObjects =
+        CREATE_DELEGATE(&gameobjects::World::OnRemoveClientOwnedObjects, gameobjects::World::sInstance);
+    EventManager::sInstance->AddListener(removeClientObjects, RemoveClientOwnedGameObjectsEvent::EVENT_TYPE);
+    EventManager::sInstance->AddListener(evtForwarder, RemoveClientOwnedGameObjectsEvent::EVENT_TYPE);
 
     EventRouter<PlayerInputEvent>::StaticInit();
     auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
