@@ -2,6 +2,7 @@
 #include "PacketManager.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
+#include "events/RemoveClientOwnedGameObjectsEvent.h"
 #include "gameobjects/Player.h"
 #include "gameobjects/World.h"
 #include "holistic/Configurator.h"
@@ -293,7 +294,7 @@ void NetworkManagerServer::SendOutgoingPackets()
     }
 }
 
-// Callback that can be attatched to events that need to be sent out to the connected
+// Callback that can be attached to events that need to be sent out to the connected
 // clients as messages
 void NetworkManagerServer::EventForwarder(std::shared_ptr<Event> evt)
 {
@@ -306,7 +307,7 @@ void NetworkManagerServer::SetupConfigVars()
     Configurator::sInstance->CreateConfigVar("logoutTime", logoutTimeMs);
     Configurator::sInstance->CreateConfigVar("running", logoutTimeMs);
 
-    Configurator::sInstance->SetConfigVar("logoutTime", 10000);
+    // Configurator::sInstance->SetConfigVar("logoutTime", 10000);
 }
 
 void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
@@ -324,22 +325,48 @@ void NetworkManagerServer::BroadcastMessage(std::shared_ptr<Message> msg)
     }
 }
 
+bool NetworkManagerServer::LogoutClient(uint64_t clientKey)
+{
+    INFO("Logging out client {}", clientKey);
+    if (cData.count(clientKey) == 0)
+    {
+        ERROR("No client found at {}", clientKey);
+        return false;
+    }
+
+    auto& c = cData.at(clientKey);
+
+    cData.erase(clientKey);
+
+    auto evt = std::make_shared<RemoveClientOwnedGameObjectsEvent>(c.gameId);
+    EventManager::sInstance->QueueEvent(evt);
+
+    return true;
+}
+
 void NetworkManagerServer::Tick(uint32_t currentTime)
 {
     this->currentTime = currentTime;
 
-    for (auto it = cData.begin(); it != cData.end() /* not hoisted */; /* no increment */)
+    uint64_t removeClient = 0;
+
+    for (auto it = cData.begin(); it != cData.end(); it++ /* not hoisted */ /* no increment */)
     {
         auto& client = it->second;
         if (currentTime - client.lastHeardFrom > logoutTimeMs)
         {
             INFO("Client {}:{} not heard from since {}, it's now {}, logging out", client.userName,
                  client.socketAddress.ToString(), client.lastHeardFrom, currentTime);
-            it = cData.erase(it);
+            // We could remove it with the iterator...
+            removeClient = it->first;
             continue;
         }
 
         client.packetManager.SetTime(currentTime);
-        it++;
+    }
+
+    if (removeClient != 0)
+    {
+        LogoutClient(removeClient);
     }
 }

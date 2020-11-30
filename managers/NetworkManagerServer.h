@@ -38,6 +38,8 @@ class NetworkManagerServer : public holistic::HNetworkManager
     bool ReadChallengeResponseMessage(ClientData& client, const std::shared_ptr<Message> message);
     bool ReadLoginMessage(ClientData& client, const std::shared_ptr<Message> message);
 
+    bool LogoutClient(uint64_t clientKey);
+
   protected:
     // Each client gets a packet manager as the manager is the thing that
     // manages the reliability of each message
