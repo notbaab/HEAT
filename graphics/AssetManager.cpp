@@ -9,6 +9,15 @@
 
 std::unique_ptr<AssetManager> AssetManager::sInstance;
 
+AssetManager::~AssetManager()
+{
+    // Clean up yo shit
+    for (auto textureEntry : textureRegistry)
+    {
+        SDL_DestroyTexture(textureEntry.second);
+    }
+}
+
 // TODO: Single asset map file? Maybe
 bool AssetManager::StaticInit(std::string assetMap)
 {

@@ -31,7 +31,7 @@ class StaticSpriteComponent : public DrawableComponent
         mTexture = IMG_LoadTexture(GraphicsDriver::sInstance->GetRenderer(), spriteSheetLoc.c_str());
     }
 
-    ~StaticSpriteComponent() { SDL_DestroyTexture(mTexture); }
+    ~StaticSpriteComponent() {}
 
     void Draw(const SDL_Rect& inViewTransform)
     {

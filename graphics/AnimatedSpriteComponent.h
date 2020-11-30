@@ -37,7 +37,7 @@ class AnimatedSpriteComponent : public DrawableComponent
         : AnimatedSpriteComponent(inGameObject, sheetData, false)
     {
     }
-    ~AnimatedSpriteComponent() { SDL_DestroyTexture(mTexture); }
+    ~AnimatedSpriteComponent() {}
 
     SDL_Rect getCurrentAnimationFrame()
     {

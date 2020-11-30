@@ -17,6 +17,7 @@ class AssetManager
 {
   public:
     static bool StaticInit(std::string assetMap);
+    ~AssetManager();
 
     static std::unique_ptr<AssetManager> sInstance;
     bool LoadAssetMap(std::string assetMap);
