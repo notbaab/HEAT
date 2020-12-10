@@ -1,18 +1,14 @@
 #include "NetworkManagerClient.h"
-#include "PacketManager.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
 #include "events/LoggedIn.h"
-#include "logger/Logger.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
 #include "messages/ClientLoginMessage.h"
 #include "messages/ClientLoginResponse.h"
-#include "messages/ClientWelcomeMessage.h"
 #include "networking/SocketAddressFactory.h"
 #include "packets/AuthenticatedPacket.h"
-#include "packets/Message.h"
 #include "packets/UnauthenticatedPacket.h"
 
 void NetworkManagerClient::StaticInit(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,

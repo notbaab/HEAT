@@ -1,5 +1,4 @@
 #include "PacketManager.h"
-#include "logger/Logger.h"
 
 PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory) : m_packetFactory(packetFactory)
 {

@@ -1,7 +1,7 @@
 #include "MessageSerializer.h"
-#include "InputMemoryBitStream.h"
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
 #include "Message.h"
-#include "OutputMemoryBitStream.h"
 
 // TODO: This and Packet serializer could probably be a templated class since they
 // do the exact same thing. If they don't diverge any further do that.

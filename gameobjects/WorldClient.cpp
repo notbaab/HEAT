@@ -1,6 +1,4 @@
 #include "WorldClient.h"
-#include "Registry.h"
-#include "events/CreatePlayerOwnedObject.h"
 #include "logger/Logger.h"
 
 namespace gameobjects

@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "iostream"
 #include <thread>
 
 Engine::Engine(IntializerFunc initFunc, TickFunc tickFunc) : Engine(initFunc, tickFunc, []() {}) {}

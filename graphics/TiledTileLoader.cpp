@@ -69,7 +69,6 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
     // janky but theses are the properties we care about
     std::string animationName;
     MovementOrientation orientation = MovementOrientation::NONE;
-    MovementOrientation flipedOrientation = MovementOrientation::NONE;
     bool flippable;
 
     for (auto& p : tile["properties"].GetArray())
@@ -126,7 +125,7 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
 
     if (flippable)
     {
-        flipedOrientation = FlippedOrientation(orientation);
+        MovementOrientation flipedOrientation = FlippedOrientation(orientation);
 
         SpriteAnimationData flippedAnimation(animationData);
         flippedAnimation.orientation = flipedOrientation;
@@ -200,7 +199,6 @@ std::unique_ptr<TiledAnimatedSpriteSheetData> TiledTileLoader::LoadAnimationShee
         auto tile = v.GetObject();
 
         assert(tile["id"].IsUint());
-        unsigned int id = tile["id"].GetUint();
 
         if (tile.HasMember("animation"))
         {

@@ -3,12 +3,6 @@
 #include "catch.hpp"
 #include "managers/PacketManager.h"
 #include "messages/PlayerMessage.h"
-#include "packets/MessageSerializer.h"
-#include "packets/Packet.h"
-#include "packets/PacketSerializer.h"
-#include "packets/ReliableOrderedPacket.h"
-#include <iostream>
-#include <vector>
 using namespace Catch::literals;
 
 // Round about way to see if the packet written contains all the expected

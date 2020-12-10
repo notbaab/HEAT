@@ -14,9 +14,9 @@ class Vector3
 
     void Set(float x, float y, float z)
     {
-        x = x;
-        y = y;
-        z = z;
+        this->x = x;
+        this->y = y;
+        this->z = z;
     }
 
     friend Vector3 operator+(const Vector3& inLeft, const Vector3& inRight)

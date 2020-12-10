@@ -4,7 +4,6 @@
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/RemoveClientOwnedGameObjectsEvent.h"
 #include "events/RemoveGameObjectEvent.h"
-#include "logger/Logger.h"
 
 namespace gameobjects
 {

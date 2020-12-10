@@ -104,7 +104,7 @@ class AnimatedSpriteComponent : public DrawableComponent
     // TODO: Should it be a string still?
     void ChangeAnimation(std::string animation)
     {
-        currentAnimationData = &(*animationFrameData)[animation];
+        currentAnimationData = (*animationFrameData)[animation].get();
         currentAnimation = &currentAnimationData->animations;
         framesInAnimation = currentAnimationData->NumAnimations();
         currentFrameStart = SDL_GetTicks();

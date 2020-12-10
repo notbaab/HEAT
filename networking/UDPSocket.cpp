@@ -1,7 +1,6 @@
 #include <sys/select.h>
 
 #include "SocketUtil.h"
-#include "UDPSocket.h"
 
 UDPSocket::UDPSocket() { FD_ZERO(&read_fds); }
 
@@ -48,7 +47,7 @@ int UDPSocket::ReceiveFrom(void* inToReceive, int inMaxLength, SocketAddress& ou
 {
     socklen_t fromLength = outFromAddress.GetSize();
 
-    int activity = select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
+    select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
     if (FD_ISSET(mSocket, &read_fds))
     {

@@ -1,16 +1,12 @@
-#include <fstream>
-#include <iostream>
-#include <random>
-#include <string>
-#include <thread>
 #include <unordered_map>
 
 // Yeah this is too many includes
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
 #include "engine/ServiceLocatorClient.h"
 #include "events/CreatePlayerOwnedObject.h"
-#include "events/Event.h"
 #include "events/EventManager.h"
 #include "events/EventRouter.h"
 #include "events/LoggedIn.h"
@@ -21,39 +17,18 @@
 #include "gameobjects/PlayerClient.h"
 #include "gameobjects/Registry.h"
 #include "gameobjects/SetupGameObjects.h"
-#include "gameobjects/SimpleGameObject.h"
 #include "gameobjects/WorldClient.h"
-#include "graphics/AnimatedSpriteComponent.h"
-#include "graphics/AssetManager.h"
-#include "graphics/GraphicsDriver.h"
-#include "graphics/RenderManager.h"
-#include "graphics/StaticSpriteComponent.h"
-#include "graphics/TiledAnimatedSpriteSheetData.h"
 #include "graphics/TiledTileLoader.h"
 #include "graphics/WindowManager.h"
-#include "holistic/Configurator.h"
-#include "logger/Logger.h"
 #include "managers/NetworkManagerClient.h"
 #include "managers/NullNetworkManagerClient.h"
-#include "managers/PacketManager.h"
-#include "math/Vector3.h"
 #include "messages/ClientConnectionChallengeMessage.h"
 #include "messages/ClientLoginMessage.h"
 #include "messages/ClientLoginResponse.h"
-#include "messages/ClientWelcomeMessage.h"
 #include "messages/PlayerMessage.h"
-#include "networking/SocketAddressFactory.h"
-#include "networking/SocketManager.h"
 #include "packets/AuthenticatedPacket.h"
-#include "packets/Message.h"
-#include "packets/MessageSerializer.h"
-#include "packets/Packet.h"
-#include "packets/PacketSerializer.h"
-#include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
 
-const char** __argv;
-int __argc;
 static bool noServer = false;
 
 #define ASSET_MAP "images/asset-map.json"
@@ -134,7 +109,7 @@ static auto sInputButtonState = InputButtonState();
 
 void LoadTextures()
 {
-    auto loaded = AssetManager::StaticInit(ASSET_MAP);
+    AssetManager::StaticInit();
 
     TiledTileLoader t = TiledTileLoader();
     auto sheetData = t.LoadAnimationSheetInfo("images/player.json");
@@ -307,8 +282,6 @@ void initStuffs()
 
 int main(int argc, const char* argv[])
 {
-    __argc = argc;
-    __argv = argv;
 
     Engine engine = Engine(initStuffs, DoFrame);
     engine.Run();
