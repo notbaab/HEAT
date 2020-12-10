@@ -1,6 +1,5 @@
 #include "OutputMemoryBitStream.h"
 #include "shared.h"
-#include <bitset>
 
 void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
 {
@@ -38,7 +37,7 @@ void OutputMemoryBitStream::WriteBits(uint8_t inData, uint32_t inBitCount)
 
 void OutputMemoryBitStream::WriteBits(const void* inData, uint32_t inBitCount)
 {
-    const char* srcByte = static_cast<const char*>(inData);
+    const auto* srcByte = static_cast<const uint8_t*>(inData);
     // write all the bytes
     while (inBitCount > 8)
     {
@@ -60,10 +59,10 @@ void OutputMemoryBitStream::PrintByteArray()
 
     for (int i = 0; i < bytesToWrite; i++)
     {
-        cout << std::hex << unsigned((*buffer)[i]) << '|';
+        std::cout << std::hex << unsigned((*buffer)[i]) << '|';
     }
 
-    cout << endl;
+    std::cout << std::endl;
 }
 
 void OutputMemoryBitStream::printStream() const

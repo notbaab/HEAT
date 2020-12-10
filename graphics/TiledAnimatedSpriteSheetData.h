@@ -46,14 +46,6 @@ struct SpriteAnimationFrameData
     // hitbox info here?
 };
 
-struct TileData
-{
-};
-
-struct Properties
-{
-};
-
 struct SpriteAnimationData
 {
     SpriteAnimationData(std::string name, MovementType type, MovementOrientation orientation,

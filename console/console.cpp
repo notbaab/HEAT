@@ -1,8 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unordered_map>
@@ -113,7 +110,7 @@ void interactive_console(const char* socketPath)
 
     struct sockaddr_un addr;
     char buf[100];
-    int fd, rc;
+    int fd;
 
     if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
     {

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <sstream>
-#include <string>
 // Linux socket stuff
 #include <sys/socket.h>
-#include <sys/un.h>
 
+#include "IO/InputMemoryBitStream.h"
+#include "IO/OutputMemoryBitStream.h"
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
@@ -20,9 +20,7 @@
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
 #include "holistic/Configurator.h"
-#include "logger/Logger.h"
 #include "managers/NetworkManagerServer.h"
-#include "managers/PacketManager.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
 #include "messages/ClientLoginMessage.h"
@@ -32,11 +30,6 @@
 #include "messages/PlayerMessage.h"
 #include "networking/SocketManager.h"
 #include "packets/AuthenticatedPacket.h"
-#include "packets/Message.h"
-#include "packets/MessageSerializer.h"
-#include "packets/Packet.h"
-#include "packets/PacketSerializer.h"
-#include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
 
 #define EXIT "exit"
@@ -231,8 +224,6 @@ void initStuffs()
     SetupWorld();
 }
 
-const char** __argv;
-int __argc;
 int main(int argc, const char* argv[])
 {
     logger::InitLog(logger::DEBUG, "Main");

@@ -6,8 +6,6 @@
 #include "packets/PacketSerializer.h"
 #include "packets/ReliableOrderedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
-#include <iostream>
-#include <vector>
 using namespace Catch::literals;
 
 TEST_CASE("Packet Serialize Test", "[packet]")

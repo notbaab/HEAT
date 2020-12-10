@@ -19,39 +19,9 @@ AssetManager::~AssetManager()
 }
 
 // TODO: Single asset map file? Maybe
-bool AssetManager::StaticInit(std::string assetMap)
+bool AssetManager::StaticInit()
 {
-    // sInstance.reset(new AssetManager(assetMap));
     sInstance.reset(new AssetManager());
-    return true;
-}
-
-bool AssetManager::LoadAssetMap(std::string assetMap)
-{
-    std::ifstream ifs(assetMap);
-    rapidjson::IStreamWrapper isw(ifs);
-    rapidjson::Document d;
-
-    d.ParseStream(isw);
-    if (d.HasParseError())
-    {
-        ERROR("Rapid Json parse error {} while loading asset {}", assetMap);
-        return false;
-    }
-
-    assert(d.IsArray());
-
-    auto entries = d.GetArray();
-
-    for (auto& entry : entries)
-    {
-        assert(entry.IsObject());
-        auto data = entry.GetObject();
-        auto sheetLocation = data["sheet-location"].GetString();
-        auto sheetData = data["sheet-data"].GetString();
-        // TODO: Load with the tiled loader? Probabaly
-    }
-
     return true;
 }
 

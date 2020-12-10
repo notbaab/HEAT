@@ -2,13 +2,11 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
 
-#include "TextureManager.h"
-
-class SpriteSheetData;
 class SDL_Texture;
 class TiledAnimatedSpriteSheetData;
 
@@ -16,11 +14,10 @@ class TiledAnimatedSpriteSheetData;
 class AssetManager
 {
   public:
-    static bool StaticInit(std::string assetMap);
+    static bool StaticInit();
     ~AssetManager();
 
     static std::unique_ptr<AssetManager> sInstance;
-    bool LoadAssetMap(std::string assetMap);
 
     bool PushAnimatedTiledSheet(std::unique_ptr<TiledAnimatedSpriteSheetData> sheetData, std::string sheetLoc);
 
@@ -33,7 +30,6 @@ class AssetManager
 
   private:
     AssetManager() {}
-    AssetManager(std::string assetMap) { LoadAssetMap(assetMap); }
 
     std::unordered_map<std::string, std::shared_ptr<TiledAnimatedSpriteSheetData>> animatedSheetDataRegistry;
 

@@ -1,6 +1,5 @@
 #include "InputMemoryBitStream.h"
 #include "shared.h"
-#include <bitset>
 
 // basic bit Read. Reads from mBuffer the number of bits into the single byte
 // outData

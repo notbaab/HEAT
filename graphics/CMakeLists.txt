@@ -5,7 +5,6 @@ find_package(SDL2_image REQUIRED)
 
 list(APPEND graphics_src
     GraphicsDriver.cpp
-    TextureManager.cpp
     WindowManager.cpp
     AssetManager.cpp
     TiledTileLoader.cpp

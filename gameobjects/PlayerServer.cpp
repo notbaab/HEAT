@@ -1,7 +1,5 @@
 #include "PlayerServer.h"
-#include "events/PhysicsComponentUpdate.h"
 #include "events/PlayerInputEvent.h"
-#include "logger/Logger.h"
 
 namespace gameobjects
 {

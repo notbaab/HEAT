@@ -82,9 +82,4 @@ typedef std::shared_ptr<SocketAddress> SocketAddressPtr;
 
 namespace std
 {
-template <>
-struct hash<SocketAddress>
-{
-    size_t operator()(const SocketAddress& inAddress) const { return inAddress.GetHash(); }
-};
 } // namespace std

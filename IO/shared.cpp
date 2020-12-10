@@ -1,5 +1,4 @@
 #include "shared.h"
-#include <bitset>
 
 void printStream(uint32_t bufferSize, const std::shared_ptr<std::vector<uint8_t>> streamBuffer)
 {
