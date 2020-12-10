@@ -16,13 +16,15 @@ using namespace Catch::literals;
 void checkMessageId(std::shared_ptr<Packet> packet, std::shared_ptr<PacketSerializer> packetSerializer,
                     int messageIdStart, int numMessages)
 {
-    auto out = OutputMemoryBitStream();
-    packetSerializer->WritePacket(packet, out);
+    const uint8_t* outPtr;
+    uint32_t outSize;
+    packetSerializer->WritePacket(packet, &outPtr, &outSize);
     int messageId = messageIdStart;
 
-    auto rawChar = out.GetBufferPtr();
-    auto in = InputMemoryBitStream(rawChar, out.GetBitLength());
-    auto packets = packetSerializer->ReadPackets(in);
+    auto copyOfData = std::make_unique<std::vector<uint8_t>>(outSize);
+    memcpy(copyOfData->data(), outPtr, outSize);
+
+    auto packets = packetSerializer->ReadPackets(std::move(copyOfData));
 
     for (int i = 0; i < packets.size(); ++i)
     {
@@ -72,7 +74,14 @@ TEST_CASE("Packet Manager", "[manger]")
 
     auto messageSerializer = std::make_shared<MessageSerializer>();
     AddMessageCtor(messageSerializer, PlayerMessage);
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+
+    auto bitReader = std::make_unique<InputMemoryBitStream>();
+    auto bitWriter = std::make_unique<OutputMemoryBitStream>();
+    auto packetReader = std::make_unique<StructuredDataReader>(std::move(bitReader));
+    auto packetWriter = std::make_unique<StructuredDataWriter>(std::move(bitWriter));
+
+    auto packetSerializer =
+        std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
 
     SECTION("Basic packet and message ack")

@@ -56,8 +56,8 @@ void InputMemoryBitStream::ReadBits(void* outData, uint32_t inBitCount)
 
 void InputMemoryBitStream::printStream() const
 {
-    auto streamBuffer = GetBufferPtr();
+    auto streamBuffer = GetRawBuffer();
     uint32_t bufferSize = GetByteCapacity();
 
-    ::printStream(bufferSize, streamBuffer);
+//    ::printStream(bufferSize, streamBuffer);
 }

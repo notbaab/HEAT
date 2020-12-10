@@ -196,6 +196,7 @@ void NetworkManagerClient::QueueMessage(std::shared_ptr<Message> messageToQueue)
 // Create an output stream and write out our outgoing packet
 void NetworkManagerClient::SendOutgoingPackets()
 {
+    TRACE("Sending Outgoing packets");
     std::shared_ptr<ReliableOrderedPacket> packet;
     if (connectionState == CurrentConnectionState::AUTHENTICATED ||
         connectionState == CurrentConnectionState::LOGGED_IN)
@@ -211,8 +212,10 @@ void NetworkManagerClient::SendOutgoingPackets()
         packet = packetManager.WritePacket(UnauthenticatedPacket::CLASS_ID);
     }
 
-    auto stream = OutputMemoryBitStream();
-    auto good = packetSerializer->WritePacket(packet, stream);
+    // auto stream = OutputMemoryBitStream();
+    const uint8_t* outData;
+    uint32_t outSize;
+    auto good = packetSerializer->WritePacket(packet, &outData, &outSize);
 
     if (!good)
     {
@@ -222,7 +225,7 @@ void NetworkManagerClient::SendOutgoingPackets()
     TRACE("Packet with messages {} sent", packet->messages->size());
 
     // ship it into the ether
-    socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(), *serverAddress);
+    socketManager.SendTo(outData, outSize, *serverAddress);
 
     // TODO: send it to the debug port as well. From there it can be recorded or discarded
 }

@@ -8,9 +8,13 @@
 #include <string.h>
 #include <vector>
 
-class InputMemoryBitStream
+#include "InputStream.h"
+
+class InputMemoryBitStream : public InputStream
 {
   public:
+    InputMemoryBitStream() : InputMemoryBitStream(std::make_shared<std::vector<uint8_t>>()) {}
+
     InputMemoryBitStream(std::shared_ptr<std::vector<uint8_t>> inBuffer)
         : InputMemoryBitStream(inBuffer, inBuffer->size() * 8.0)
     {
@@ -31,7 +35,10 @@ class InputMemoryBitStream
 
     InputMemoryBitStream(const InputMemoryBitStream& inOther) { mBuffer = inOther.mBuffer; }
 
-    const std::shared_ptr<std::vector<uint8_t>> GetBufferPtr() const { return mBuffer; }
+    virtual const uint8_t* GetRawBuffer() const override { return mBuffer->data(); }
+    virtual const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const override { return mBuffer; }
+    virtual bool HasMoreData() override { return GetRemainingBitCount() > 0; }
+
     uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
     uint32_t GetByteCapacity() const { return mBitCapacity >> 3; }
 
@@ -40,71 +47,44 @@ class InputMemoryBitStream
 
     void ReadBytes(void* outData, uint32_t inByteCount) { ReadBits(outData, inByteCount << 3); }
 
-    bool serialize_bits(uint32_t& outData, uint32_t inBitCount = 32);
-
     template <typename T>
-    void Read(T& inData, uint32_t inBitCount = sizeof(T) * 8)
+    void t_Read(T& inData, uint32_t inBitCount = sizeof(T) * 8)
     {
         static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value,
                       "Generic Read only supports primitive data types");
         ReadBits(&inData, inBitCount);
     }
 
-    template <typename T>
-    void serialize(T& inData)
-    {
-        Read(inData);
-    }
+    virtual void Read(void* outData, uint32_t byteCount, const char* name) override { ReadBytes(outData, byteCount); }
+    virtual void Read(uint64_t& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(uint32_t& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(int& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(float& outData, const char* name) override { t_Read(outData); }
 
-    template <typename T>
-    void serialize(std::vector<T>& inData, uint32_t byteCount)
-    {
-        Read(inData, byteCount);
-    }
+    virtual void Read(uint16_t& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(int16_t& outData, const char* name) override { t_Read(outData); }
 
-    template <typename T>
-    void serialize(T& inData, int bitCount)
-    {
-        Read(inData, bitCount);
-    }
-
-    void Read(uint32_t& outData, uint32_t inBitCount = 32) { ReadBits(&outData, inBitCount); }
-    void Read(int& outData, uint32_t inBitCount = 32) { ReadBits(&outData, inBitCount); }
-    void Read(float& outData) { ReadBits(&outData, 32); }
-
-    void Read(uint16_t& outData, uint32_t inBitCount = 16) { ReadBits(&outData, inBitCount); }
-    void Read(int16_t& outData, uint32_t inBitCount = 16) { ReadBits(&outData, inBitCount); }
-
-    void Read(uint8_t& outData, uint32_t inBitCount = 8) { ReadBits(&outData, inBitCount); }
-    void Read(bool& outData) { ReadBits(&outData, 1); }
-
-    template <typename T>
-    void Read(std::vector<T>& inData, uint32_t byteCount)
-    {
-        // reserver to the correct amount
-        inData.reserve(byteCount);
-        ReadBytes(static_cast<void*>(inData.data()), byteCount);
-    }
-
-    void ResetToCapacity(uint32_t inByteCapacity)
-    {
-        mBitCapacity = inByteCapacity << 3;
-        mBitHead = 0;
-    }
+    virtual void Read(uint8_t& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(int8_t& outData, const char* name) override { t_Read(outData); }
+    virtual void Read(bool& outData, const char* name) override { t_Read(outData, 1); }
 
     // This seems...dumb
-    void Read(std::string& inString)
+    virtual void Read(std::string& inString, const char* name) override
     {
         uint32_t elementCount;
-        Read(elementCount);
+        t_Read(elementCount);
         inString.resize(elementCount);
-        for (auto& element : inString)
-        {
-            Read(element);
-        }
+        ReadBytes(inString.data(), elementCount);
     }
 
     void printStream() const;
+
+    virtual void SetInputBuffer(std::shared_ptr<std::vector<uint8_t>> buf) override
+    {
+        mBuffer = buf;
+        mBitCapacity = mBuffer->size() * 8.0;
+        mBitHead = 0;
+    }
 
   private:
     std::shared_ptr<std::vector<uint8_t>> mBuffer;

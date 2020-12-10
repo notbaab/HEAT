@@ -33,10 +33,10 @@ class ReliableOrderedPacket : public Packet
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(sequenceNumber);
-        stream.serialize(ack);
-        stream.serialize(ackBits);
-        // Write the number of messages
+        stream.serialize(sequenceNumber, "sequenceNumber");
+        stream.serialize(ack, "ack");
+        stream.serialize(ackBits, "ackBits");
+
         SerializeMessages(stream);
 
         // check if reading. If so read messages use factory to read the
@@ -45,21 +45,29 @@ class ReliableOrderedPacket : public Packet
         return true;
     }
 
-    bool SerializeMessages(InputMemoryBitStream& stream)
+  private:
+    bool SerializeMessages(StructuredDataReader& stream)
     {
-        stream.serialize(numMessages);
+        stream.serialize(numMessages, "numMessages");
         if (numMessages > 64)
         {
             ERROR("FUCKING SHIT BALLS");
         }
 
+        // THIS NEEDS A KEY
+        stream.StartArray("messageId");
+        // stream.startArray(numMessages, "messages");
         // read the message ids of the messages included in this packet
         for (int i = 0; i < numMessages; i++)
         {
             stream.serialize(messageIds[i]);
         }
 
+        stream.EndArray("messageId");
+
+        stream.StartArray("messages");
         messages = messageFactory->ReadMessages(stream, numMessages);
+        stream.EndArray("messages");
 
         // go into the messages and assign their ids.
         // Why aren't these in the messages them selves you may ask? Well the
@@ -72,19 +80,23 @@ class ReliableOrderedPacket : public Packet
         return true;
     }
 
-    bool SerializeMessages(OutputMemoryBitStream& stream)
+    bool SerializeMessages(StructuredDataWriter& stream)
     {
         numMessages = messages->size();
-        stream.serialize(numMessages);
+        stream.serialize(numMessages, "numMessages");
 
+        stream.StartArray("messageIds");
         // PIMP There should be some sort of way to tell if the messageIds were
         // initialized. We are doing this based on trust now which makes me queasy
         for (int i = 0; i < numMessages; i++)
         {
             stream.serialize(messageIds[i]);
         }
+        stream.EndArray();
 
+        stream.StartArray("messages");
         messageFactory->WriteMessages(messages, stream);
+        stream.EndArray();
         return true;
     }
 };

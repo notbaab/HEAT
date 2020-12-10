@@ -223,7 +223,12 @@ void SetupNetworking(std::string serverDestination)
     AddMessageCtor(messageSerializer, RemoveGameObjectEvent);
     AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
 
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+    auto bitReader = std::make_unique<InputMemoryBitStream>();
+    auto bitWriter = std::make_unique<OutputMemoryBitStream>();
+    auto packetReader = std::make_unique<StructuredDataReader>(std::move(bitReader));
+    auto packetWriter = std::make_unique<StructuredDataWriter>(std::move(bitWriter));
+
+    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddPacketCtor(packetSerializer, UnauthenticatedPacket);
     AddPacketCtor(packetSerializer, AuthenticatedPacket);

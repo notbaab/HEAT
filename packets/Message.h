@@ -1,15 +1,14 @@
 #pragma once
 
+#include "IO/StructuredDataReader.h"
+#include "IO/StructuredDataWriter.h"
 #include <assert.h>
 #include <cstdint>
 #include <functional>
 
-#include "IO/InputMemoryBitStream.h"
-#include "IO/OutputMemoryBitStream.h"
-
 #define SERIALIZER                                                                                                     \
-    bool Read(InputMemoryBitStream& stream) override { return Serialize(stream); }                                     \
-    bool Write(OutputMemoryBitStream& stream) override { return Serialize(stream); }
+    bool Read(StructuredDataReader& reader) override { return Serialize(reader); }                                     \
+    bool Write(StructuredDataWriter& stream) override { return Serialize(stream); }
 
 #define CLASS_IDENTIFIER(cls, class_id)                                                                                \
     uint32_t GetClassIdentifier() const override { return cls::CLASS_ID; }                                             \
@@ -29,8 +28,8 @@ class Message
     Message() { this->idAssigned = false; }
     virtual ~Message() {}
 
-    virtual bool Read(InputMemoryBitStream& stream) = 0;
-    virtual bool Write(OutputMemoryBitStream& stream) = 0;
+    virtual bool Write(StructuredDataWriter& stream) = 0;
+    virtual bool Read(StructuredDataReader& reader) = 0;
     virtual uint32_t GetClassIdentifier() const = 0;
 
     // Can't use the #define cause it doesn't override anything since it's the base class

@@ -3,6 +3,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "IO/StructuredDataReader.h"
 #include "Message.h"
 
 class InputMemoryBitStream;
@@ -27,8 +28,7 @@ class MessageSerializer
     bool AddConstructor(uint32_t id, MessageConstructor constructor);
     std::unique_ptr<Message> CreateMessage(uint32_t id);
 
-    template <typename T>
-    std::shared_ptr<std::vector<std::shared_ptr<Message>>> ReadMessages(T& in, uint8_t numMessages)
+    std::shared_ptr<std::vector<std::shared_ptr<Message>>> ReadMessages(StructuredDataReader& reader, uint8_t numMessages)
     {
         uint32_t id;
 
@@ -37,7 +37,9 @@ class MessageSerializer
 
         while (remainingMessages > 0)
         {
-            in.serialize(id);
+            reader.StartObject();
+
+            reader.serialize(id, "id");
 
             auto identifier = Message::StringFromId(id);
             if (messageConstructors.find(id) == messageConstructors.end())
@@ -49,7 +51,10 @@ class MessageSerializer
             }
 
             std::shared_ptr<Message> message = messageConstructors[id]();
-            message->Read(in);
+            message->Read(reader);
+            reader.EndObject();
+
+            // stream.endObject()
             messages->push_back(std::move(message));
             remainingMessages--;
         }
@@ -64,7 +69,7 @@ class MessageSerializer
         {
             uint32_t id = message->GetClassIdentifier();
             auto identifier = Message::StringFromId(id);
-            out.Write(id);
+            out.serialize(id);
             message->Write(out);
         }
 

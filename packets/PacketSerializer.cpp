@@ -1,6 +1,6 @@
 #include "PacketSerializer.h"
-#include "InputMemoryBitStream.h"
-#include "OutputMemoryBitStream.h"
+#include "IO/StructuredDataReader.h"
+#include "IO/StructuredDataWriter.h"
 #include "Packet.h"
 
 bool PacketSerializer::AddConstructor(uint32_t id, PacketConstructor constructor)
@@ -26,19 +26,16 @@ std::shared_ptr<Packet> PacketSerializer::CreatePacket(uint32_t id)
 
 std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(std::unique_ptr<std::vector<uint8_t>> data)
 {
-    auto in = InputMemoryBitStream(std::move(data));
-    return ReadPackets(in);
-}
-
-std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBitStream& in)
-{
     uint32_t id;
-
     std::vector<std::shared_ptr<Packet>> packets;
 
-    while (in.GetRemainingBitCount() > 0)
+    reader->SetStreamBuffer(std::move(data));
+    while (reader->HasMoreData())
     {
-        in.serialize(id);
+        reader->StartObject();
+
+        reader->serialize(id, "packet-id");
+
         if (packetConstructors.find(id) == packetConstructors.end())
         {
             std::cout << "bad data for id " << id << std::endl;
@@ -46,28 +43,40 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(InputMemoryBi
         }
 
         std::shared_ptr<Packet> packet = packetConstructors[id](messageFactory);
-        packet->Read(in);
+        packet->Read(*reader);
         packets.push_back(std::move(packet));
+
+        reader->EndObject();
     }
 
     return packets;
 }
 
-bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packets, OutputMemoryBitStream& out)
-{
-    for (auto const& packet : packets)
-    {
-        WritePacket(packet, out);
-    }
+// bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packets, uint8_t* outBuff, uint32_t*
+// outSize)
+// {
+//     for (auto const& packet : packets)
+//     {
+//         WritePacket(packet);
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
-bool PacketSerializer::WritePacket(std::shared_ptr<Packet> packet, OutputMemoryBitStream& out)
+// Give back a pointer to the underlying buffer where the packet was written to
+bool PacketSerializer::WritePacket(std::shared_ptr<Packet> packet, const uint8_t** outBuff, uint32_t* outSize)
 {
+    // Clear the writer output buffer, we're filling it from the top
+    writer->ResetBuffer();
     uint32_t id = packet->GetClassIdentifier();
-    out.Write(id);
-    packet->Write(out);
+
+    writer->StartObject();
+    writer->serialize(id, "id");
+    packet->Write(*writer);
+    writer->EndObject();
+
+    *outBuff = writer->GetRawBuffer();
+    *outSize = writer->GetByteLength();
 
     return true;
 }
