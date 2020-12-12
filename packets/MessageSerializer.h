@@ -28,7 +28,8 @@ class MessageSerializer
     bool AddConstructor(uint32_t id, MessageConstructor constructor);
     std::unique_ptr<Message> CreateMessage(uint32_t id);
 
-    std::shared_ptr<std::vector<std::shared_ptr<Message>>> ReadMessages(StructuredDataReader& reader, uint8_t numMessages)
+    std::shared_ptr<std::vector<std::shared_ptr<Message>>> ReadMessages(StructuredDataReader& reader,
+                                                                        uint8_t numMessages)
     {
         uint32_t id;
 
@@ -69,8 +70,10 @@ class MessageSerializer
         {
             uint32_t id = message->GetClassIdentifier();
             auto identifier = Message::StringFromId(id);
-            out.serialize(id);
+            out.StartObject();
+            out.serialize(id, "id");
             message->Write(out);
+            out.EndObject();
         }
 
         return true;

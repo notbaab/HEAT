@@ -22,6 +22,7 @@ class StructuredDataWriter
     uint32_t GetByteLength() const { return underlyingStream->BytesInBuffer(); }
     // uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
 
+    // I don't think this needs to be a reference
     template <typename T>
     void serialize(T& inData, const char* fieldName)
     {
@@ -29,9 +30,9 @@ class StructuredDataWriter
     }
 
     template <typename T>
-    void serialize(T& inData)
+    void serialize(T inData)
     {
-        underlyingStream->Write(inData, "TEMP");
+        underlyingStream->Write(inData, "");
     }
 
     template <typename T>

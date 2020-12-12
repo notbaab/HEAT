@@ -66,7 +66,7 @@ class OutputMemoryBitStream : public OutputStream
     virtual void Write(int8_t inData, const char* name) override { t_Write(inData); }
     virtual void Write(bool inData, const char* name) override { t_Write(inData, 1); }
 
-    // Generic templatized write for primative values
+    // Generic templatized write for primitive values
     template <typename T>
     void t_Write(T inData, uint32_t inBitCount = sizeof(T) * 8)
     {
