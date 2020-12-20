@@ -105,7 +105,9 @@ class JsonOutputMemoryStream : public OutputStream
         const char* output = buf.GetString();
         return (const uint8_t*)(output);
     }
-    const uint32_t BytesInBuffer() const override { return 0; };
+    const uint32_t BytesInBuffer() const override {
+        return buf.GetSize();
+    }
 
   private:
     rapidjson::StringBuffer buf;

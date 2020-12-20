@@ -36,9 +36,9 @@ class StructuredDataWriter
     }
 
     template <typename T>
-    void serialize(std::vector<T>& inData, uint32_t byteCount)
+    void serialize(std::vector<T>& inData, uint32_t byteCount, const char* name)
     {
-        underlyingStream->Write(static_cast<void*>(inData.data()), byteCount, "TEMP");
+        underlyingStream->Write(static_cast<void*>(inData.data()), byteCount, name);
     }
 
     void ResetBuffer()

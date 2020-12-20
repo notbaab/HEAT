@@ -32,10 +32,6 @@ class InputStream
     virtual void Read(std::string& inString, const char* name) = 0;
 
     virtual void SetInputBuffer(std::shared_ptr<std::vector<uint8_t>> buf) = 0;
-    virtual const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const = 0;
-    // Method to get the raw buffer pointer. Must be careful to not set a new pointer
-    // while someone has this.
-    virtual const uint8_t* GetRawBuffer() const = 0;
     virtual bool HasMoreData() = 0;
 
     // Don't need to support object reads and array reads

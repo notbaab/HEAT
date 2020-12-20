@@ -17,11 +17,6 @@ class StructuredDataReader
     {
     }
 
-    const uint8_t* GetRawBuffer() const { return underlyingStream->GetRawBuffer(); }
-    const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const { return underlyingStream->GetSharedBuffer(); }
-    uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
-    uint32_t GetByteCapacity() const { return mBitCapacity >> 3; }
-
     template <typename T>
     void serialize(T& inData, const char* fieldName)
     {
@@ -31,16 +26,16 @@ class StructuredDataReader
     template <typename T>
     void serialize(T& inData)
     {
-        underlyingStream->Read(inData, "TEMP");
+        underlyingStream->Read(inData, "");
     }
 
     // PIMP: Not byte count but element count and calculate the byte count
     template <typename T>
-    void serialize(std::vector<T>& inData, uint32_t byteCount)
+    void serialize(std::vector<T>& inData, uint32_t byteCount, const char* name)
     {
-        // reserver to the correct amount
+        // reserve to the correct amount
         inData.reserve(byteCount);
-        underlyingStream->Read(static_cast<void*>(inData.data()), byteCount, "TEMP");
+        underlyingStream->Read(static_cast<void*>(inData.data()), byteCount, name);
     }
 
     void SetStreamBuffer(std::shared_ptr<std::vector<uint8_t>> buf)
