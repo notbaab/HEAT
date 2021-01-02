@@ -31,7 +31,7 @@ class JsonOutputMemoryStream : public OutputStream
     void Write(int16_t inData, const char* name) override
     {
         writeKey(name);
-        writer.Uint(inData);
+        writer.Int(inData);
     }
 
     void Write(uint8_t inData, const char* name) override
@@ -43,7 +43,7 @@ class JsonOutputMemoryStream : public OutputStream
     void Write(int8_t inData, const char* name) override
     {
         writeKey(name);
-        writer.Uint(inData);
+        writer.Int(inData);
     }
 
     void Write(int inData, const char* name) override
@@ -93,9 +93,9 @@ class JsonOutputMemoryStream : public OutputStream
         writer.StartArray();
     }
     void EndArray(std::string key) override { writer.EndArray(); }
-    void ResetBuffer() override {
+    void ResetBuffer() override
+    {
         buf = StringBuffer();
-//        buf.Clear();
         writer.Reset(buf);
     }
 
@@ -109,9 +109,7 @@ class JsonOutputMemoryStream : public OutputStream
         const char* output = buf.GetString();
         return (const uint8_t*)(output);
     }
-    const uint32_t BytesInBuffer() const override {
-        return buf.GetSize();
-    }
+    const uint32_t BytesInBuffer() const override { return buf.GetSize(); }
 
   private:
     rapidjson::StringBuffer buf;
