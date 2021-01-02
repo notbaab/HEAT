@@ -51,23 +51,3 @@ void OutputMemoryBitStream::WriteBits(const void* inData, uint32_t inBitCount)
         WriteBits(*srcByte, inBitCount);
     }
 }
-
-//void OutputMemoryBitStream::PrintByteArray()
-//{
-//    uint32_t bytesToWrite = GetByteLength();
-//    auto buffer = GetBufferPtr();
-//
-//    for (int i = 0; i < bytesToWrite; i++)
-//    {
-//        cout << std::hex << unsigned((*buffer)[i]) << '|';
-//    }
-//
-//    cout << endl;
-//}
-//
-//void OutputMemoryBitStream::printStream() const
-//{
-//    auto streamBuffer = GetBufferPtr();
-//    uint32_t bufferSize = GetByteLength();
-//    ::printStream(bufferSize, streamBuffer);
-//}

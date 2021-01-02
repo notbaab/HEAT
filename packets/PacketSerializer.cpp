@@ -52,17 +52,6 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(std::unique_p
     return packets;
 }
 
-// bool PacketSerializer::WritePackets(std::vector<std::shared_ptr<Packet>>& packets, uint8_t* outBuff, uint32_t*
-// outSize)
-// {
-//     for (auto const& packet : packets)
-//     {
-//         WritePacket(packet);
-//     }
-
-//     return true;
-// }
-
 // Give back a pointer to the underlying buffer where the packet was written to
 bool PacketSerializer::WritePacket(std::shared_ptr<Packet> packet, const uint8_t** outBuff, uint32_t* outSize)
 {

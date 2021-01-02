@@ -9,9 +9,6 @@
 
 #include "OutputStream.h"
 
-/**
- * Class for writing data to a buffer stream
- */
 class OutputMemoryBitStream : public OutputStream
 {
   public:
@@ -29,7 +26,6 @@ class OutputMemoryBitStream : public OutputStream
     // Get read only pointer into buffer
     const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const override { return mBuffer; }
     const uint8_t* GetRawBuffer() const override { return mBuffer->data(); }
-    // const std::shared_ptr<std::vector<uint8_t>> GetBufferPtr() const { return mBuffer; }
 
     // Get number of bits written to the buffer
     uint32_t GetBitLength() const { return mBitHead; }
@@ -40,18 +36,6 @@ class OutputMemoryBitStream : public OutputStream
     virtual const uint32_t BytesInBuffer() const override { return GetByteLength(); }
     // Convenient wrapper around write bits for byte aligned data
     void WriteBytes(const void* inData, uint32_t inByteCount) { WriteBits(inData, inByteCount << 3); }
-
-    // TODO: Why is this done differently than the input memory bit stream
-    // template <typename T>
-    // void Write(std::vector<T>& inData)
-    // {
-    //     // The bits of each element.
-    //     uint32_t inBitCount = sizeof(T) * 8;
-    //     for (auto t : inData)
-    //     {
-    //         WriteBits(&t, inBitCount);
-    //     }
-    // }
 
     virtual void Write(void* inData, uint32_t byteCount, const char* name) override { WriteBytes(inData, byteCount); }
     virtual void Write(uint64_t inData, const char* name) override { t_Write(inData); }
@@ -83,29 +67,6 @@ class OutputMemoryBitStream : public OutputStream
         t_Write(elementCount);
         WriteBytes(inString.data(), elementCount);
     }
-
-    // template <typename T>
-    // void serialize(std::vector<T>& inData, int byteCount)
-    // {
-    //     // we don't use byteCount at all. Make the
-    //     // unused variable warning happy but look into removing it more better.
-    //     // Need to do some weird ness to keep the same interface with the
-    //     // input stream
-    //     (void)byteCount;
-    //     Write(inData);
-    // }
-
-    // template <typename T>
-    // void serialize(T inData)
-    // {
-    //     Write(inData);
-    // }
-
-    // template <typename T>
-    // void serialize(T inData, int bitCount)
-    // {
-    //     Write(inData, bitCount);
-    // }
 
     void PrintByteArray();
 

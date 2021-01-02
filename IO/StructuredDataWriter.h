@@ -20,7 +20,6 @@ class StructuredDataWriter
     const uint8_t* GetRawBuffer() const { return underlyingStream->GetRawBuffer(); }
     const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const { return underlyingStream->GetSharedBuffer(); }
     uint32_t GetByteLength() const { return underlyingStream->BytesInBuffer(); }
-    // uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }
 
     // I don't think this needs to be a reference
     template <typename T>

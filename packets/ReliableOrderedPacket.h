@@ -19,7 +19,6 @@ class ReliableOrderedPacket : public Packet
         messages = std::make_shared<std::vector<std::shared_ptr<Message>>>();
     }
 
-    // TODO: Should this be a pointer to a vector? And just unique ptrs?
     std::shared_ptr<std::vector<std::shared_ptr<Message>>> messages;
 
     // Sequence number of this packet
@@ -54,9 +53,8 @@ class ReliableOrderedPacket : public Packet
             ERROR("FUCKING SHIT BALLS");
         }
 
-        // THIS NEEDS A KEY
         stream.StartArray("messageIds");
-        // stream.startArray(numMessages, "messages");
+
         // read the message ids of the messages included in this packet
         for (int i = 0; i < numMessages; i++)
         {
