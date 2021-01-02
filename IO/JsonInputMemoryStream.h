@@ -33,7 +33,7 @@ class JsonInputMemoryStream : public InputStream
         else
         {
             // AHAHA
-            ERROR("Can't read {}, current value isn't an object or an array", name);
+            ERROR("Can't reauud {}, current value isn't an object or an array", name);
         }
     }
 
@@ -45,7 +45,8 @@ class JsonInputMemoryStream : public InputStream
     void Read(int8_t& inData, const char* name) override { t_ReadInt(inData, name); }
     void Read(int& inData, const char* name) override { t_ReadInt(inData, name); }
 
-    void Read(float& inData, const char* name) override {
+    void Read(float& inData, const char* name) override
+    {
 
         rapidjson::Value* cu = &currentValueStack.back();
         if (inObject())
@@ -65,7 +66,8 @@ class JsonInputMemoryStream : public InputStream
         }
     }
 
-    void Read(void* inData, uint32_t byteCount, const char* name) override {
+    void Read(void* inData, uint32_t byteCount, const char* name) override
+    {
         rapidjson::Value* cu = &currentValueStack.back();
         std::string baseEncodedString;
 
@@ -91,7 +93,8 @@ class JsonInputMemoryStream : public InputStream
         memcpy(inData, asBytes.c_str(), byteCount);
     }
 
-    void Read(bool& inData, const char* name) override {
+    void Read(bool& inData, const char* name) override
+    {
         rapidjson::Value* cu = &currentValueStack.back();
         if (inObject())
         {
@@ -110,7 +113,8 @@ class JsonInputMemoryStream : public InputStream
         }
     }
 
-    void Read(std::string& inString, const char* name) override{
+    void Read(std::string& inString, const char* name) override
+    {
         rapidjson::Value* cu = &currentValueStack.back();
         if (inObject())
         {
@@ -232,9 +236,7 @@ class JsonInputMemoryStream : public InputStream
         currentArrayIndex.pop_back();
     }
 
-     bool HasMoreData() override {
-        return !currentValueStack.empty() || newData;
-    }
+    bool HasMoreData() override { return !currentValueStack.empty() || newData; }
 
     void SetInputBuffer(std::shared_ptr<std::vector<uint8_t>> buf) override
     {

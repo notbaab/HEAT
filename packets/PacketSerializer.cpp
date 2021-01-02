@@ -34,7 +34,7 @@ std::vector<std::shared_ptr<Packet>> PacketSerializer::ReadPackets(std::unique_p
     {
         reader->StartObject();
 
-        reader->serialize(id, "packet-id");
+        reader->serialize(id, "id");
 
         if (packetConstructors.find(id) == packetConstructors.end())
         {

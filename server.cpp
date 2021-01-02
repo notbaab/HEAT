@@ -4,6 +4,8 @@
 #include <sys/socket.h>
 
 #include "IO/InputMemoryBitStream.h"
+#include "IO/JsonInputMemoryStream.h"
+#include "IO/JsonOutputMemoryStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
@@ -30,8 +32,6 @@
 #include "messages/PlayerMessage.h"
 #include "packets/AuthenticatedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
-#include "IO/InputMemoryBitStream.h"
-#include "IO/OutputMemoryBitStream.h"
 
 #define EXIT "exit"
 
@@ -176,7 +176,8 @@ void SetupNetworking()
     auto packetReader = std::make_unique<StructuredDataReader>(std::move(bitReader));
     auto packetWriter = std::make_unique<StructuredDataWriter>(std::move(bitWriter));
 
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
+    auto packetSerializer =
+        std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
 
     // TODO: Do we ever want a raw ROP?
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);

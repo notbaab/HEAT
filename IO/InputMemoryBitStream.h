@@ -35,7 +35,6 @@ class InputMemoryBitStream : public InputStream
 
     InputMemoryBitStream(const InputMemoryBitStream& inOther) { mBuffer = inOther.mBuffer; }
 
-    virtual const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const override { return mBuffer; }
     virtual bool HasMoreData() override { return GetRemainingBitCount() > 0; }
 
     uint32_t GetRemainingBitCount() const { return mBitCapacity - mBitHead; }

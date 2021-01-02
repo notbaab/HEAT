@@ -18,7 +18,6 @@ PacketManager::PacketManager(std::shared_ptr<PacketSerializer> packetFactory) : 
 
 PacketManager::~PacketManager()
 {
-    INFO("Deleting manager");
     Reset();
 
     assert(m_sentPackets);
@@ -74,10 +73,7 @@ void PacketManager::SendMessage(std::shared_ptr<Message> message)
 
     assert(entry);
 
-    // Move the unique ptr to a shared one. Rational behind it is once it's in
-    // packet manager land, we can do stuff but we want a unique pointer as a
-    // parameter so no one messes with it once it's on our system
-    entry->message = std::move(message);
+    entry->message = message;
     entry->measuredBits = 0;
     entry->timeLastSent = -1.0;
 

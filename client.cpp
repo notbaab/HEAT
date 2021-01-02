@@ -2,6 +2,8 @@
 
 // Yeah this is too many includes
 #include "IO/InputMemoryBitStream.h"
+#include "IO/JsonInputMemoryStream.h"
+#include "IO/JsonOutputMemoryStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
 #include "engine/Engine.h"
@@ -203,7 +205,8 @@ void SetupNetworking(std::string serverDestination)
     auto packetReader = std::make_unique<StructuredDataReader>(std::move(bitReader));
     auto packetWriter = std::make_unique<StructuredDataWriter>(std::move(bitWriter));
 
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
+    auto packetSerializer =
+        std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);
     AddPacketCtor(packetSerializer, UnauthenticatedPacket);
     AddPacketCtor(packetSerializer, AuthenticatedPacket);

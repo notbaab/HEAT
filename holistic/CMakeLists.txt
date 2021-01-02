@@ -1,6 +1,7 @@
 
 list(APPEND holistic_src
     HNetworkManager.cpp
+    SetupSerializers.cpp
 )
 
 add_library(holistic STATIC ${holistic_src})
@@ -11,5 +12,4 @@ target_include_directories(holistic
         ${CMAKE_SOURCE_DIR}
 )
 
-# not linking with anything since
 target_link_libraries(holistic packets)

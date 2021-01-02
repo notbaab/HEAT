@@ -55,7 +55,7 @@ class ReliableOrderedPacket : public Packet
         }
 
         // THIS NEEDS A KEY
-        stream.StartArray("messageId");
+        stream.StartArray("messageIds");
         // stream.startArray(numMessages, "messages");
         // read the message ids of the messages included in this packet
         for (int i = 0; i < numMessages; i++)
@@ -63,7 +63,7 @@ class ReliableOrderedPacket : public Packet
             stream.serialize(messageIds[i]);
         }
 
-        stream.EndArray("messageId");
+        stream.EndArray("messageIds");
 
         stream.StartArray("messages");
         messages = messageFactory->ReadMessages(stream, numMessages);

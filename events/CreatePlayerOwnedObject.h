@@ -18,9 +18,9 @@ class CreatePlayerOwnedObject : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(playerId);
-        stream.serialize(objType);
-        stream.serialize(worldId);
+        stream.serialize(playerId, "playerId");
+        stream.serialize(objType, "objType");
+        stream.serialize(worldId, "worldId");
 
         return true;
     }

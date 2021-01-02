@@ -18,7 +18,7 @@ class LoggedIn : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(clientId);
+        stream.serialize(clientId, "clientId");
         return true;
     }
 

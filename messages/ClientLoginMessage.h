@@ -10,7 +10,7 @@ class ClientLoginMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(userName);
+        stream.serialize(userName, "username");
         return true;
     }
 

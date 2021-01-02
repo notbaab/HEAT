@@ -13,7 +13,7 @@ class AuthenticatedPacket : public ReliableOrderedPacket
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(expectedSalt);
+        stream.serialize(expectedSalt, "expectedSalt");
         ReliableOrderedPacket::Serialize(stream);
         return true;
     }

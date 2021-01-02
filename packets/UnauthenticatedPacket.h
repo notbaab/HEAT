@@ -9,18 +9,19 @@ class UnauthenticatedPacket : public ReliableOrderedPacket
 
     UnauthenticatedPacket(std::shared_ptr<MessageSerializer> factory) : ReliableOrderedPacket(factory)
     {
-        ddosMinPadding.reserve(1000);
-        ddosMinPadding.assign(1000, 0);
+        ddosMinPadding.reserve(ddosPaddingSize);
+        ddosMinPadding.assign(ddosPaddingSize, 0);
     };
 
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
         ReliableOrderedPacket::Serialize(stream);
-        stream.serialize(ddosMinPadding, 1000);
+        stream.serialize(ddosMinPadding, ddosPaddingSize, "ddosPadding");
         return true;
     }
 
   private:
     std::vector<uint8_t> ddosMinPadding;
+    static const uint16_t ddosPaddingSize = 100;
 };

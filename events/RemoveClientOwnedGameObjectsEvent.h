@@ -15,7 +15,7 @@ class RemoveClientOwnedGameObjectsEvent : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(clientGameId);
+        stream.serialize(clientGameId, "clientGameId");
         return true;
     }
 

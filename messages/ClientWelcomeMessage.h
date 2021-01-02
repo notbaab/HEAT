@@ -15,7 +15,7 @@ class ClientWelcomeMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(name);
+        stream.serialize(name, "name");
         return true;
     }
 };

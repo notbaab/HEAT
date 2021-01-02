@@ -33,22 +33,22 @@ class PlayerMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(id);
-        stream.serialize(stateAsInt);
+        stream.serialize(id, "id");
+        stream.serialize(stateAsInt, "stateAsInt");
         hasId = stateAsInt & ReplicationState::PRS_PID;
         hasPosition = stateAsInt & ReplicationState::PRS_POSI;
 
         if (hasId)
         {
-            stream.serialize(id);
+            stream.serialize(id, "id");
         }
 
         if (hasPosition)
         {
-            stream.serialize(xVel);
-            stream.serialize(yVel);
-            stream.serialize(xLoc);
-            stream.serialize(yLoc);
+            stream.serialize(xVel, "xVel");
+            stream.serialize(yVel, "yVel");
+            stream.serialize(xLoc, "xLoc");
+            stream.serialize(yLoc, "yLoc");
         }
 
         state = static_cast<ReplicationState>(stateAsInt);

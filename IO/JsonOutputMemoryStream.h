@@ -93,7 +93,11 @@ class JsonOutputMemoryStream : public OutputStream
         writer.StartArray();
     }
     void EndArray(std::string key) override { writer.EndArray(); }
-    void ResetBuffer() override {}
+    void ResetBuffer() override {
+        buf = StringBuffer();
+//        buf.Clear();
+        writer.Reset(buf);
+    }
 
     const std::shared_ptr<std::vector<uint8_t>> GetSharedBuffer() const override
     {

@@ -27,21 +27,21 @@ class PhysicsComponentUpdate : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(worldId);
-        stream.serialize(moveSeq);
+        stream.serialize(worldId, "worldId");
+        stream.serialize(moveSeq, "moveSeq");
 
         // where is it at
-        stream.serialize(x);
-        stream.serialize(y);
-        stream.serialize(z);
+        stream.serialize(x, "x");
+        stream.serialize(y, "y");
+        stream.serialize(z, "z");
 
         // how fast is it going
-        stream.serialize(dX);
-        stream.serialize(dY);
-        stream.serialize(dZ);
+        stream.serialize(dX, "dX");
+        stream.serialize(dY, "dY");
+        stream.serialize(dZ, "dZ");
 
         // where is it looking?
-        stream.serialize(rotation);
+        stream.serialize(rotation, "rotation");
 
         return true;
     }

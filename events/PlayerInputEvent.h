@@ -19,10 +19,10 @@ class PlayerInputEvent : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(worldId);
-        stream.serialize(xDelta);
-        stream.serialize(yDelta);
-        stream.serialize(moveSeq);
+        stream.serialize(worldId, "worldId");
+        stream.serialize(xDelta, "xDelta");
+        stream.serialize(yDelta, "yDelta");
+        stream.serialize(moveSeq, "moveSeq");
         return true;
     }
 
