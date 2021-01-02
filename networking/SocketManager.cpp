@@ -78,7 +78,7 @@ void SocketManager::Stop()
 }
 
 // TODO: Does this need to wrap the socket send to method?
-int SocketManager::SendTo(const void* data, int length, const SocketAddress& toAddress)
+int SocketManager::SendTo(const void* data, uint32_t length, const SocketAddress& toAddress)
 {
     int sentByteCount = mSocket->SendTo(data, length, toAddress);
     return sentByteCount;

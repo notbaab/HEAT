@@ -9,7 +9,7 @@ class ClientConnectionChallengeMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(serverSalt);
+        stream.serialize(serverSalt, "serverSalt");
         return true;
     }
 

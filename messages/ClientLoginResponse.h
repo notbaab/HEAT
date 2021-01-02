@@ -11,17 +11,19 @@ class ClientLoginResponse : public Message
     bool Serialize(Stream& stream)
     {
         // The id assigned to the client that logged in.
-        stream.serialize(clientId);
-        stream.serialize(sizeOfClientMap);
+        stream.serialize(clientId, "clientId");
+        stream.serialize(sizeOfClientMap, "sizeOfClientMap");
 
         // Redundant if we are writing. We could check if we are writing to avoid
         // this but it's not as clean looking
         currentClients.resize(sizeOfClientMap);
+        stream.StartArray("currentClientMaps");
         for (uint16_t i = 0; i < sizeOfClientMap; ++i)
         {
             stream.serialize(std::get<0>(currentClients[i]));
             stream.serialize(std::get<1>(currentClients[i]));
         }
+        stream.EndArray();
 
         return true;
     }

@@ -4,6 +4,8 @@
 #include <sys/socket.h>
 
 #include "IO/InputMemoryBitStream.h"
+#include "IO/JsonInputMemoryStream.h"
+#include "IO/JsonOutputMemoryStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
@@ -28,7 +30,6 @@
 #include "messages/ClientWelcomeMessage.h"
 #include "messages/LogoutMessage.h"
 #include "messages/PlayerMessage.h"
-#include "networking/SocketManager.h"
 #include "packets/AuthenticatedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
 
@@ -170,7 +171,13 @@ void SetupNetworking()
     AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
     AddMessageCtor(messageSerializer, PlayerInputEvent);
 
-    auto packetSerializer = std::make_shared<PacketSerializer>(messageSerializer);
+    auto bitReader = std::make_unique<InputMemoryBitStream>();
+    auto bitWriter = std::make_unique<OutputMemoryBitStream>();
+    auto packetReader = std::make_unique<StructuredDataReader>(std::move(bitReader));
+    auto packetWriter = std::make_unique<StructuredDataWriter>(std::move(bitWriter));
+
+    auto packetSerializer =
+        std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
 
     // TODO: Do we ever want a raw ROP?
     AddPacketCtor(packetSerializer, ReliableOrderedPacket);

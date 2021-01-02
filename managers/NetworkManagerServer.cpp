@@ -277,15 +277,16 @@ void NetworkManagerServer::SendOutgoingPackets()
             TRACE("Sending unauthed packet with {} messages", packet->messages->size());
         }
 
-        auto stream = OutputMemoryBitStream();
-        auto good = packetSerializer->WritePacket(packet, stream);
+        const uint8_t* outData;
+        uint32_t outSize;
+        auto good = packetSerializer->WritePacket(packet, &outData, &outSize);
         if (!good)
         {
             ERROR("AHAHAHAH");
             return;
         }
         // ship it into the ether
-        socketManager.SendTo(stream.GetBufferPtr()->data(), stream.GetByteLength(), client.socketAddress);
+        socketManager.SendTo(outData, outSize, client.socketAddress);
     }
 }
 

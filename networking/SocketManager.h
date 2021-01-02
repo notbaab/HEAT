@@ -22,7 +22,7 @@ class SocketManager
     SocketManager(ReceiveCallback receiveCallback);
     SocketManager(uint16_t port, ReceiveCallback receiveCallback);
     ~SocketManager();
-    int SendTo(const void* data, int length, const SocketAddress& toAddress);
+    int SendTo(const void* data, uint32_t length, const SocketAddress& toAddress);
     void Stop();
 
   private:

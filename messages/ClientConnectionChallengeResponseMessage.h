@@ -10,20 +10,26 @@ class ClientConnectionChallengeResponseMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(xorSalt);
-        stream.serialize(ddosMinPadding, 1000);
+        stream.serialize(xorSalt, "xorSalt");
+        stream.serialize(ddosMinPadding, ddosPaddingSize, "ddosPadding");
         return true;
     }
 
-    ClientConnectionChallengeResponseMessage(){};
-    ClientConnectionChallengeResponseMessage(uint64_t xorSalt) : xorSalt(xorSalt)
+    ClientConnectionChallengeResponseMessage()
     {
         // sent over an authenticated packet
-        ddosMinPadding.reserve(1000);
-        ddosMinPadding.assign(1000, 0);
-    };
+        ddosMinPadding.reserve(ddosPaddingSize);
+        ddosMinPadding.assign(ddosPaddingSize, 0);
+    }
+
+    ClientConnectionChallengeResponseMessage(uint64_t xorSalt) : ClientConnectionChallengeResponseMessage()
+    {
+        this->xorSalt = xorSalt;
+    }
+
     uint64_t xorSalt;
 
   private:
     std::vector<uint8_t> ddosMinPadding;
+    static const uint16_t ddosPaddingSize = 100;
 };

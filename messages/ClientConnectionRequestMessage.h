@@ -14,7 +14,7 @@ class ClientConnectionRequestMessage : public Message
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(salt);
+        stream.serialize(salt, "salt");
         return true;
     }
 

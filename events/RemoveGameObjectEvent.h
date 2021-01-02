@@ -15,7 +15,7 @@ class RemoveGameObjectEvent : public Event
     template <typename Stream>
     bool Serialize(Stream& stream)
     {
-        stream.serialize(worldId);
+        stream.serialize(worldId, "worldId");
         return true;
     }
 

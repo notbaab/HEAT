@@ -26,7 +26,7 @@ int UDPSocket::Bind(const SocketAddress& inBindAddress)
     return NO_ERROR;
 }
 
-int UDPSocket::SendTo(const void* inToSend, int inLength, const SocketAddress& inToAddress)
+int UDPSocket::SendTo(const void* inToSend, uint32_t inLength, const SocketAddress& inToAddress)
 {
     int byteSentCount = (int)sendto(mSocket, static_cast<const char*>(inToSend), inLength, 0, &inToAddress.mSockAddr,
                                     inToAddress.GetSize());
