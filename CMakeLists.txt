@@ -14,7 +14,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(str_utils)
 add_subdirectory(logger)
 add_subdirectory(datastructures)
-add_subdirectory(networking)
+add_subdirectory(sockets)
 add_subdirectory(IO)
 add_subdirectory(packets)
 add_subdirectory(events)
@@ -56,7 +56,7 @@ set(shared_link_libs
         managers
         math
         # messages
-        networking
+        sockets
         packets
         events
         debugging_tools

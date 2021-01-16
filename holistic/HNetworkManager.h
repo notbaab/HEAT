@@ -1,6 +1,6 @@
 #pragma once
 
-#include "networking/SocketManager.h"
+#include "sockets/SocketManager.h"
 #include <cstdint>
 #include <memory>
 #include <vector>

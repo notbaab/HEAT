@@ -5,7 +5,6 @@ list(APPEND holistic_src
 )
 
 add_library(holistic STATIC ${holistic_src})
-# add_library(holistic SHARED ${holistic_src})
 
 target_include_directories(holistic
         PUBLIC

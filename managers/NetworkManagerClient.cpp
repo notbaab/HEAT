@@ -7,9 +7,9 @@
 #include "messages/ClientConnectionRequestMessage.h"
 #include "messages/ClientLoginMessage.h"
 #include "messages/ClientLoginResponse.h"
-#include "networking/SocketAddressFactory.h"
 #include "packets/AuthenticatedPacket.h"
 #include "packets/UnauthenticatedPacket.h"
+#include "sockets/SocketAddressFactory.h"
 
 void NetworkManagerClient::StaticInit(std::string serverAddress, std::shared_ptr<PacketSerializer> packetSerializer,
                                       std::string userName)
