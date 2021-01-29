@@ -1,4 +1,5 @@
 #include "NetworkManagerClient.h"
+#include "dvr/PacketReceivedEvent.h"
 #include "events/Event.h"
 #include "events/EventManager.h"
 #include "events/LoggedIn.h"
@@ -19,9 +20,10 @@ void NetworkManagerClient::StaticInit(std::string serverAddress, std::shared_ptr
 
 NetworkManagerClient::NetworkManagerClient(std::string serverAddressString,
                                            std::shared_ptr<PacketSerializer> packetSerializer, std::string userName)
-    : packetManager(PacketManager(packetSerializer)), HNetworkManagerClient(packetSerializer), userName(userName)
+    : packetManager(PacketManager(packetSerializer)), HNetworkManagerClient(packetSerializer), userName(userName),
+      playingBack(false), currentTime(0)
 {
-    logger::InitLog(logger::level::DEBUG, "Network Manager Client");
+    logger::InitLog(logger::level::TRACE, "Network Manager Client");
     DEBUG("Made NetworkManagerClient");
     this->serverAddress = SocketAddressFactory::CreateIPv4FromString(serverAddressString);
     this->connectionState = CurrentConnectionState::CREATED;
@@ -35,34 +37,69 @@ void NetworkManagerClient::StartServerHandshake()
     auto msg = std::make_unique<ClientConnectionRequestMessage>(this->clientSalt);
     this->packetManager.SendMessage(std::move(msg));
     this->connectionState = CurrentConnectionState::CONNECTING;
+    INFO("Sent handshake");
 }
 
-// read the packet according to the state the client is in into the packet
-// manager
+void NetworkManagerClient::AddPacketToQueue(ReceivedPacket& packet)
+{
+    TRACE("Pushing packet to queue");
+    packetQueue.push(packet);
+}
+
 void NetworkManagerClient::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
-    // De serialize raw byte data
+    // If playing back something right now, drop packet
+    // TODO: Make a "head" to the server for playback maybe?
+    if (playingBack)
+    {
+        TRACE("Playing back, don't listen to packet");
+        return;
+    }
+
+    // Deserialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
+    TRACE("Read {} packets", packets.size());
+
+    // Loop over packets and depending on the state of the client, determine
+    // if they are allowed to be sending those types of packets
     for (auto const& packet : packets)
     {
-        bool handled;
-        switch (connectionState)
-        {
-        case CurrentConnectionState::CREATED:
-        case CurrentConnectionState::CONNECTING:
-        case CurrentConnectionState::CHALLENGED:
-            handled = HandleUnauthenticatedPacket(packet);
-            break;
-        case CurrentConnectionState::AUTHENTICATED:
-        case CurrentConnectionState::LOGGED_IN:
-            handled = HandleAuthenticatedPacket(packet);
-            break;
-        }
+        auto receivedPacket = ReceivedPacket();
+        receivedPacket.timeRecieved = currentTime;
+        // TODO: Need a frame
+        receivedPacket.frameRecieved = 0;
+        receivedPacket.fromAddress = fromAddress;
+        receivedPacket.packet = packet;
+        AddPacketToQueue(receivedPacket);
 
-        if (!handled)
-        {
-            ERROR("Couldn't read packet");
-        }
+        // Also queue up an event for anything that cares
+
+        auto packetReceived = std::make_shared<PacketReceivedEvent>();
+        packetReceived->packet = receivedPacket;
+        EventManager::sInstance->QueueEvent(packetReceived);
+    }
+}
+
+void NetworkManagerClient::HandleReceivedPacket(ReceivedPacket& packet)
+{
+    bool handled = false;
+    TRACE("Handling packet")
+    switch (connectionState)
+    {
+    case CurrentConnectionState::CREATED:
+    case CurrentConnectionState::CONNECTING:
+    case CurrentConnectionState::CHALLENGED:
+        handled = HandleUnauthenticatedPacket(packet.packet);
+        break;
+    case CurrentConnectionState::AUTHENTICATED:
+    case CurrentConnectionState::LOGGED_IN:
+        handled = HandleAuthenticatedPacket(packet.packet);
+        break;
+    }
+
+    if (!handled)
+    {
+        ERROR("Couldn't read packet");
     }
 }
 
@@ -98,6 +135,33 @@ bool NetworkManagerClient::HandleAuthenticatedPacket(const std::shared_ptr<Packe
     return packetManager.ReadPacket(cast);
 }
 
+void NetworkManagerClient::HandleMessage(std::shared_ptr<Message> message)
+{
+    // If a game event, feed into the event manager cause we don't
+    // need to do anything
+    if (message->GetTypeIdentifier() == Event::TYPE_ID)
+    {
+        auto evt = std::static_pointer_cast<Event>(message);
+        TRACE("Queuing event {}", message->IdentifierToString());
+        EventManager::sInstance->QueueEvent(evt);
+        return;
+    }
+
+    // Not an event, maybe we handle it?
+    switch (message->GetClassIdentifier())
+    {
+    case ClientConnectionChallengeMessage::CLASS_ID:
+        ReadChallengeMessage(message);
+        break;
+    case ClientLoginResponse::CLASS_ID:
+        ReadLoginMessage(message);
+        break;
+    default:
+        ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
+              message->GetClassIdentifier());
+    }
+}
+
 void NetworkManagerClient::ProcessMessages()
 {
     messageBuf.clear();
@@ -106,29 +170,7 @@ void NetworkManagerClient::ProcessMessages()
 
     for (auto const& message : messageBuf)
     {
-        // If a game event, feed into the event manager cause we don't
-        // need to do anything
-        if (message->GetTypeIdentifier() == Event::TYPE_ID)
-        {
-            auto evt = std::static_pointer_cast<Event>(message);
-            TRACE("Queuing event {}", message->IdentifierToString());
-            EventManager::sInstance->QueueEvent(evt);
-            continue;
-        }
-
-        // Not an event, maybe we handle it?
-        switch (message->GetClassIdentifier())
-        {
-        case ClientConnectionChallengeMessage::CLASS_ID:
-            ReadChallengeMessage(message);
-            break;
-        case ClientLoginResponse::CLASS_ID:
-            ReadLoginMessage(message);
-            break;
-        default:
-            ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
-                  message->GetClassIdentifier());
-        }
+        HandleMessage(message);
     }
 }
 
@@ -173,15 +215,23 @@ bool NetworkManagerClient::ReadChallengeMessage(const std::shared_ptr<Message> m
     return true;
 }
 
-// queue up any messages it needs to send out. This could be the actual
-// logging in message or any of the game state input packets
-void NetworkManagerClient::Tick(uint32_t timeStep)
+void NetworkManagerClient::Tick(uint32_t timeStamp)
 {
-    if (connectionState != CurrentConnectionState::AUTHENTICATED)
+    this->currentTime = timeStamp;
+
+    // Read all the queued packets and do stuff with them
+    std::shared_ptr<ReceivedPacket> packet = std::make_shared<ReceivedPacket>();
+    bool hasMore = this->packetQueue.peek(*packet);
+    TRACE("Current time {}, hasMore {}, packetTime {}", currentTime, hasMore, packet->timeRecieved);
+    while (hasMore && packet->timeRecieved <= currentTime)
     {
-        TRACE("Not authenticated yet, don't do anything");
-        return;
+        TRACE("Handling ")
+        HandleReceivedPacket(*packet);
+        this->packetQueue.pop();
+        hasMore = this->packetQueue.peek(*packet);
     }
+
+    packetManager.SetTime(currentTime);
 }
 
 void NetworkManagerClient::QueueMessage(std::shared_ptr<Message> messageToQueue)

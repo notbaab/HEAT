@@ -10,6 +10,7 @@
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
+#include "dvr/DVR.h"
 #include "engine/Engine.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
@@ -22,6 +23,7 @@
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
 #include "holistic/Configurator.h"
+#include "holistic/SetupSerializers.h"
 #include "managers/NetworkManagerServer.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
@@ -84,22 +86,88 @@ std::string SetConfigVar(std::vector<std::string> args)
     }
 }
 
-std::string DebugCommandHandler(uint8_t* data, size_t size)
+std::string SetTime(std::vector<std::string> args)
 {
-    // Accepting commands of the form <action> <args>
-    std::string nullTerminatedString(reinterpret_cast<char*>(data), size);
-    std::string command;
-    std::string out;
-    std::vector<std::string> args;
-    // Terminate it
-    SplitCommandString(nullTerminatedString, &command, &args);
-
-    if (!tryExecuteCommand(command, args, &out))
+    if (args.size() != 1)
     {
-        ERROR("failed executing command {}", command);
-        return "error\n\0";
+        return "Must give one argument";
     }
-    return out;
+
+    int timeStamp = stoi(args[0]);
+
+    INFO("Setting server to {} timeStamp", timeStamp);
+    serverInstance->SetCurrentTime(timeStamp);
+
+    std::stringstream s;
+    s << "Set engine timestamp to  to " << timeStamp;
+
+    return s.str();
+}
+
+std::string DVRReplayPackets(std::vector<std::string> args)
+{
+    if (args.size() != 1)
+    {
+        return "Must give one argument";
+    }
+
+    int timeStamp = stoi(args[0]);
+
+    INFO("Setting server to {} timeStamp", timeStamp);
+    serverInstance->SetCurrentTime(timeStamp);
+
+    auto& nms = NetworkManagerServer::sInstance;
+    nms->playingBack = true;
+
+    const uint32_t max = 2400;
+    ReceivedPacket outPackets[max];
+    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+
+    for (int i = 0; i < count; ++i)
+    {
+        NetworkManagerServer::sInstance->AddPacketToQueue(outPackets[i]);
+    }
+    return "Did something";
+}
+
+std::string DVRWriteMessages(std::vector<std::string> args)
+{
+    if (args.size() != 1)
+    {
+        throw std::runtime_error("Must supply 1 arguments, a file location ");
+    }
+
+    std::string fileLoc = args[0];
+
+    DVR::sInstance->WriteReceivedPacketsToFile(fileLoc);
+    DVR::sInstance->ReadReceivedPacketsFromFile(fileLoc);
+    return "\n\0";
+}
+
+std::string DVRGetMessages(std::vector<std::string> args)
+{
+    auto receivedMessages = DVR::sInstance->GetMessages(0, 4000);
+
+    for (auto& message : receivedMessages)
+    {
+        INFO("message id {}, got at {}", message.message->GetId(), message.timeRecieved);
+    }
+
+    return "\n\0";
+}
+
+std::string DVRGetPackets(std::vector<std::string> args)
+{
+    const uint32_t max = 2400;
+    ReceivedPacket outPackets[max];
+    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+
+    for (int i = 0; i < count; ++i)
+    {
+        outPackets[i].packet->GetClassIdentifier();
+    }
+
+    return "\n\0";
 }
 
 bool tick(uint32_t currentTime)
@@ -134,6 +202,11 @@ void SetupDebugTools()
 
     add_command("tick", DebugSetEngineTick);
     add_command("set-var", SetConfigVar);
+    add_command("dvr-get-packets", DVRGetPackets);
+    add_command("dvr-get-messages", DVRGetMessages);
+    add_command("dvr-write-messages", DVRWriteMessages);
+    add_command("dvr-replay-packets", DVRReplayPackets);
+    add_command("set-engine-time", SetTime);
 }
 
 void SetupNetworking()
@@ -155,6 +228,7 @@ void SetupNetworking()
 
     // Init our singleton
     NetworkManagerServer::StaticInit(4500, packetSerializer);
+    DVR::StaticInit();
 }
 
 // Function that is called to create the registry with all the
@@ -191,6 +265,10 @@ void SetupWorld()
     EventRouter<PlayerInputEvent>::StaticInit();
     auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketRecieved, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
 }
 
 void initStuffs()
@@ -202,7 +280,7 @@ void initStuffs()
 
 int main(int argc, const char* argv[])
 {
-    logger::InitLog(logger::DEBUG, "Main");
+    logger::InitLog(logger::TRACE, "Main");
     while (argc > 1)
     {
         argc--;
@@ -220,7 +298,7 @@ int main(int argc, const char* argv[])
     messagesToProcess.reserve(30);
     DEBUG("Starting")
 
-    // Use a promise to not spool.
+    // PIMP: Use a promise to not spool.
     serverInstance.reset(new Engine(initStuffs, tick));
     serverInstance->Run();
 }

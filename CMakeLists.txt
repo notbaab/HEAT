@@ -28,6 +28,7 @@ add_subdirectory(engine)
 add_subdirectory(holistic)
 add_subdirectory(debugging_tools)
 add_subdirectory(console)
+add_subdirectory(dvr)
 
 # Testing
 add_subdirectory(lib/catch)
@@ -60,6 +61,7 @@ set(shared_link_libs
         packets
         events
         debugging_tools
+        dvr
 )
 
 set(client_link_libs

@@ -6,6 +6,10 @@
 #include "IO/JsonOutputMemoryStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
+#include "debugging_tools/debug_commands.h"
+#include "debugging_tools/debug_socket.h"
+#include "debugging_tools/debug_tools.h"
+#include "dvr/DVR.h"
 #include "engine/Engine.h"
 #include "engine/ServiceLocatorClient.h"
 #include "events/CreatePlayerOwnedObject.h"
@@ -32,8 +36,63 @@
 #include "packets/UnauthenticatedPacket.h"
 
 static bool noServer = false;
+static bool playingBackMessages = false;
 
 #define ASSET_MAP "images/asset-map.json"
+
+static std::shared_ptr<Engine> clientInstance;
+
+std::string DVRReplayPackets(std::vector<std::string> args)
+{
+    if (args.size() != 1)
+    {
+        return "Must give one argument";
+    }
+
+    int timeStamp = stoi(args[0]);
+
+    INFO("Setting server to {} timeStamp", timeStamp);
+    clientInstance->SetCurrentTime(timeStamp);
+    gameobjects::WorldClient::sInstance->ResetTime(timeStamp);
+
+    auto& nmc = NetworkManagerClient::sInstance;
+    nmc->playingBack = true;
+
+    const uint32_t max = 2400;
+    ReceivedPacket outPackets[max];
+    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+
+    INFO("Adding {} packets to playback", count);
+    for (int i = 0; i < count; ++i)
+    {
+        NetworkManagerClient::sInstance->AddPacketToQueue(outPackets[i]);
+    }
+    return "Did something";
+}
+
+std::string DVRReplayReceivedMessages(std::vector<std::string> args)
+{
+    if (args.size() != 1)
+    {
+        return "Must give one argument";
+    }
+
+    return "Did something";
+}
+
+std::string DVRGetPackets(std::vector<std::string> args)
+{
+    const uint32_t max = 2400;
+    ReceivedPacket outPackets[max];
+    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+
+    for (int i = 0; i < count; ++i)
+    {
+        outPackets[i].packet->GetClassIdentifier();
+    }
+
+    return "\n\0";
+}
 
 class InputButtonState
 {
@@ -140,7 +199,14 @@ bool SetupRenderer()
 bool DoFrame(uint32_t currentTime)
 {
     auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto dvr = DVR::sInstance.get();
+
     networkManager->ProcessMessages();
+
+    // If we are playing messages, grab them here and feed them in the networkManager
+    // if (dvr->playingBack)
+    // {
+    // }
 
     SDL_Event event;
 
@@ -226,7 +292,7 @@ void SetupWorld()
     EventManager::StaticInit();
 
     gameobjects::WorldClient::StaticInit();
-    gameobjects::SetupLogger(logger::level::DEBUG);
+    gameobjects::SetupLogger(logger::level::TRACE);
 
     // create registry and add all the creation functions we know about
     gameobjects::Registry::StaticInit(gameobjects::WorldClient::StaticAddGameObject);
@@ -257,6 +323,14 @@ void SetupWorld()
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 
+static void SetupDebugTools()
+{
+    InitDebugingTools();
+
+    add_command("dvr-get-packets", DVRGetPackets);
+    add_command("dvr-replay-packets", DVRReplayPackets);
+}
+
 void initStuffs()
 {
     logger::InitLog(logger::DEBUG, "Main Logger");
@@ -269,9 +343,16 @@ void initStuffs()
     INFO("Starting Client");
 
     std::string destination = "127.0.0.1:4500";
+    SetupDebugTools();
 
     SetupNetworking(destination);
     SetupWorld();
+
+    // DVR Recording
+    DVR::StaticInit();
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketRecieved, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+
     auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
 
     // Start the handshake asap and force the packets to be sent
@@ -285,7 +366,20 @@ void initStuffs()
 
 int main(int argc, const char* argv[])
 {
+    while (argc > 1)
+    {
+        argc--;
+        argv++;
+        if (!strcmp(*argv, "--debug-socket"))
+        {
+            argv++;
+            argc--;
+            const char* socketPath = *argv;
+            INFO("Starting a debug socket at {}", socketPath);
+            SpawnSocket(socketPath, DebugCommandHandler);
+        }
+    }
 
-    Engine engine = Engine(initStuffs, DoFrame);
-    engine.Run();
+    clientInstance.reset(new Engine(initStuffs, DoFrame));
+    clientInstance->Run();
 }

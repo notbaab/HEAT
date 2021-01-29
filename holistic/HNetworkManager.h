@@ -7,6 +7,7 @@
 
 class PacketSerializer;
 class Message;
+class Packet;
 
 namespace holistic
 {
