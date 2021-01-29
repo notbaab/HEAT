@@ -61,20 +61,6 @@ std::string DebugSetEngineTick(std::vector<std::string> args)
     return s.str();
 }
 
-void SplitCommandString(std::string data, std::string* outCommand, std::vector<std::string>* outArgs)
-{
-    std::string tmp;
-    std::stringstream stringStream(data);
-    // stringStream << (char*)data;
-
-    getline(stringStream, tmp, ' ');
-    *outCommand = tmp;
-    while (getline(stringStream, tmp, ' '))
-    {
-        outArgs->push_back(tmp);
-    }
-}
-
 std::string SetConfigVar(std::vector<std::string> args)
 {
     if (args.size() != 2)
