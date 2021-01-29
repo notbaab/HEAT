@@ -20,6 +20,7 @@ void World::StaticInit() { sInstance.reset(new World()); };
 std::vector<std::shared_ptr<Event>> World::CreateWelcomeStateEvents()
 {
     std::vector<std::shared_ptr<Event>> events;
+
     for (auto go : mGameObjects)
     {
         // Get all player control objects
@@ -30,6 +31,7 @@ std::vector<std::shared_ptr<Event>> World::CreateWelcomeStateEvents()
             events.push_back(createPlayerEvent);
         }
     }
+
     return events;
 }
 
