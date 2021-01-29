@@ -23,5 +23,5 @@ class UnauthenticatedPacket : public ReliableOrderedPacket
 
   private:
     std::vector<uint8_t> ddosMinPadding;
-    static const uint16_t ddosPaddingSize = 100;
+    static const uint16_t ddosPaddingSize = 1000;
 };
