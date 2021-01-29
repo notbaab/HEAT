@@ -54,6 +54,9 @@ class SocketAddress
 
     uint16_t port;
 
+    const uint16_t GetPort() const { return ntohs(GetAsSockAddrIn()->sin_port); }
+    const uint32_t GetIP4() const { return ntohl(GetAsSockAddrIn()->sin_addr.s_addr); }
+
   private:
     friend class UDPSocket;
     friend class TCPSocket;
@@ -68,9 +71,6 @@ class SocketAddress
 #else
     uint32_t& GetIP4Ref() { return GetAsSockAddrIn()->sin_addr.s_addr; }
     const uint32_t& GetIP4Ref() const { return GetAsSockAddrIn()->sin_addr.s_addr; }
-
-    const uint16_t GetPort() const { return ntohs(GetAsSockAddrIn()->sin_port); }
-    const uint32_t GetIP4() const { return ntohl(GetAsSockAddrIn()->sin_addr.s_addr); }
 
 #endif
 
