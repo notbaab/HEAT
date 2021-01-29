@@ -11,6 +11,26 @@ namespace gameobjects
 
 const std::string PlayerSheetKey = "player";
 
+class PlayerServerGhost
+{
+  public:
+    PlayerServerGhost(std::shared_ptr<PhysicsComponent> location) : location(location)
+    {
+        auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
+        this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerServerGhost>>(this, playerSheet, true);
+    };
+
+    ~PlayerServerGhost() { RenderManager::sInstance->RemoveComponent(drawable.get()); }
+
+    Vector3 GetLocation() { return location->centerLocation; }
+
+    std::shared_ptr<PhysicsComponent> location;
+    std::shared_ptr<AnimatedSpriteComponent<PlayerServerGhost>> drawable;
+
+    MovementOrientation GetCurrentOrientation() { return MovementOrientation::NONE; };
+    MovementType GetCurrentMovementType() { return MovementType::NONE; };
+};
+
 class PlayerClient : public Player
 {
   public:
@@ -36,7 +56,7 @@ class PlayerClient : public Player
     {
         auto instance = std::make_unique<PlayerClient>();
         RenderManager::sInstance->AddComponent(instance->drawable.get());
-        // RenderManager::sInstance->AddComponent(instance->serverLocation.get());
+        RenderManager::sInstance->AddComponent(instance->serverGhost->drawable.get());
 
         return std::move(instance);
     }
@@ -60,6 +80,7 @@ class PlayerClient : public Player
         auto playerSheet = AssetManager::sInstance->GetAnimatedSheetData(PlayerSheetKey);
 
         this->drawable = std::make_shared<AnimatedSpriteComponent<PlayerClient>>(this, playerSheet);
+        this->serverGhost = std::make_unique<PlayerServerGhost>(this->physicsComponent);
     }
 
     // Use the predicted state
@@ -87,7 +108,8 @@ class PlayerClient : public Player
     // moves have been applied.
     std::shared_ptr<PhysicsComponent> predictedState;
     std::shared_ptr<AnimatedSpriteComponent<PlayerClient>> drawable;
-    // std::shared_ptr<AnimatedSpriteComponent<PhysicsComponent>> serverLocation;
+
+    std::unique_ptr<PlayerServerGhost> serverGhost;
 
     // The last move we predicted to last frame. If it matches where we
     // ended the prediction, we are no longer moving
