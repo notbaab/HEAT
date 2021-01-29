@@ -142,20 +142,7 @@ void SetupNetworking()
 
     auto messageSerializer = std::make_shared<MessageSerializer>();
 
-    // Message constructors
-    AddMessageCtor(messageSerializer, PlayerMessage);
-    AddMessageCtor(messageSerializer, ClientWelcomeMessage);
-    AddMessageCtor(messageSerializer, ClientConnectionChallengeResponseMessage);
-    AddMessageCtor(messageSerializer, ClientConnectionRequestMessage);
-    AddMessageCtor(messageSerializer, ClientLoginMessage);
-    AddMessageCtor(messageSerializer, ClientLoginResponse);
-    AddMessageCtor(messageSerializer, LogoutMessage);
-
-    // Event constructors. Also messages
-    AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
-    AddMessageCtor(messageSerializer, RemoveGameObjectEvent);
-    AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
-    AddMessageCtor(messageSerializer, PlayerInputEvent);
+    holistic::SetupMessageSerializer(messageSerializer);
 
     auto bitReader = std::make_unique<InputMemoryBitStream>();
     auto bitWriter = std::make_unique<OutputMemoryBitStream>();
@@ -164,11 +151,7 @@ void SetupNetworking()
 
     auto packetSerializer =
         std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
-
-    // TODO: Do we ever want a raw ROP?
-    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
-    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
-    AddPacketCtor(packetSerializer, AuthenticatedPacket);
+    holistic::SetupPacketSerializer(packetSerializer);
 
     // Init our singleton
     NetworkManagerServer::StaticInit(4500, packetSerializer);
