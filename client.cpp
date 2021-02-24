@@ -11,7 +11,7 @@
 #include "debugging_tools/debug_tools.h"
 #include "dvr/DVR.h"
 #include "engine/Engine.h"
-#include "engine/ServiceLocatorClient.h"
+#include "engine/ServiceLocator.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
 #include "events/EventRouter.h"
@@ -136,7 +136,7 @@ class InputButtonState
   private:
     void sendMove()
     {
-        auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+        auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
 
         moveSeq++;
 
@@ -198,7 +198,7 @@ bool SetupRenderer()
 
 bool DoFrame(uint32_t currentTime)
 {
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
     auto dvr = DVR::sInstance.get();
 
     networkManager->ProcessMessages();
@@ -248,7 +248,7 @@ void SetupNetworking(std::string serverDestination)
         NullNetworkManagerClient::StaticInit();
 
         // Well. Alright then, so much for unique ptr providing some safety
-        ServiceLocatorClient::Provide(NullNetworkManagerClient::sInstance.get());
+        ServiceLocator::Provide(NullNetworkManagerClient::sInstance.get());
         return;
     }
 
@@ -280,19 +280,19 @@ void SetupNetworking(std::string serverDestination)
     NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
 
     // Well. Alright then, so much for unique ptr providing some safety
-    ServiceLocatorClient::Provide(NetworkManagerClient::sInstance.get());
+    ServiceLocator::Provide(NetworkManagerClient::sInstance.get());
 }
 
 void SetupWorld()
 {
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
     // Need to be called after the service locater has provided a network manager client
     assert(networkManager);
 
     EventManager::StaticInit();
 
     gameobjects::WorldClient::StaticInit();
-    gameobjects::SetupLogger(logger::level::TRACE);
+    gameobjects::SetupLogger(logger::level::DEBUG);
 
     // create registry and add all the creation functions we know about
     gameobjects::Registry::StaticInit(gameobjects::WorldClient::StaticAddGameObject);
@@ -353,7 +353,7 @@ void initStuffs()
     auto recievedPacket = CREATE_DELEGATE(&DVR::PacketRecieved, DVR::sInstance);
     EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
 
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
 
     // Start the handshake asap and force the packets to be sent
     networkManager->StartServerHandshake();
