@@ -1,0 +1,277 @@
+[
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/scratch.dir/scratch.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/scratch.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/scratch.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT/math -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/client.dir/client.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/client.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/client.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/viewer.dir/viewer.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/viewer.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/viewer.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/server.dir/server.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/server.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/server.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/str_utils",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++    -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/str_utils.dir/str_utils.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/str_utils/str_utils.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/str_utils/str_utils.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/str_utils",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++    -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/str_utils.dir/base64.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/str_utils/base64.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/str_utils/base64.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dlogger_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -o CMakeFiles/logger.dir/Logger.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/Logger.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/Logger.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/spdlog.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/spdlog.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/spdlog.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/stdout_sinks.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/stdout_sinks.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/stdout_sinks.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/color_sinks.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/color_sinks.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/color_sinks.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/file_sinks.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/file_sinks.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/file_sinks.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/async.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/async.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/async.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/logger/lib/spdlog",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -Wall -Wextra -Wconversion -pedantic -Wfatal-errors -std=c++11 -o CMakeFiles/spdlog.dir/src/fmt.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/fmt.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/src/fmt.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/datastructures",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++    -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/datastructures.dir/Trie.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/datastructures/Trie.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/datastructures/Trie.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/sockets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dsockets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/sockets.dir/SocketAddress.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketAddress.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketAddress.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/sockets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dsockets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/sockets.dir/SocketAddressFactory.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketAddressFactory.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketAddressFactory.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/sockets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dsockets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/sockets.dir/SocketUtil.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketUtil.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketUtil.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/sockets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dsockets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/sockets.dir/UDPSocket.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/sockets/UDPSocket.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/sockets/UDPSocket.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/sockets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dsockets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/sockets.dir/SocketManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/sockets/SocketManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/IO",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dio_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/io.dir/OutputMemoryBitStream.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/IO/OutputMemoryBitStream.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/IO/OutputMemoryBitStream.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/IO",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dio_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/io.dir/InputMemoryBitStream.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/IO/InputMemoryBitStream.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/IO/InputMemoryBitStream.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/IO",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dio_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/io.dir/shared.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/IO/shared.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/IO/shared.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/packets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dpackets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/packets.dir/PacketSerializer.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/packets/PacketSerializer.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/packets/PacketSerializer.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/packets",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dpackets_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/packets.dir/MessageSerializer.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/packets/MessageSerializer.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/packets/MessageSerializer.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/events",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Devents_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/events.dir/EventManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/events/EventManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/events/EventManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/managers",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dmanagers_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/managers.dir/PacketManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/managers/PacketManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/managers/PacketManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/managers",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dmanagers_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/managers.dir/NetworkManagerServer.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/managers/NetworkManagerServer.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/managers/NetworkManagerServer.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/managers",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dmanagers_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/managers.dir/NetworkManagerClient.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/managers/NetworkManagerClient.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/managers/NetworkManagerClient.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/math",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dmath_EXPORTS   -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/math.dir/Vector3.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/math/Vector3.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/math/Vector3.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/graphics",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgraphics_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/graphics.dir/GraphicsDriver.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/graphics/GraphicsDriver.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/graphics/GraphicsDriver.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/graphics",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgraphics_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/graphics.dir/WindowManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/graphics/WindowManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/graphics/WindowManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/graphics",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgraphics_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/graphics.dir/AssetManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/graphics/AssetManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/graphics/AssetManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/graphics",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgraphics_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/graphics.dir/TiledTileLoader.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/graphics/TiledTileLoader.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/graphics/TiledTileLoader.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/graphics",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgraphics_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/graphics.dir/TiledAnimatedSpriteSheetData.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/graphics/TiledAnimatedSpriteSheetData.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/graphics/TiledAnimatedSpriteSheetData.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/controls",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dcontrols_EXPORTS -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/controls.dir/InputManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/controls/InputManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/controls/InputManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/SimpleGameObject.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/SimpleGameObject.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/SimpleGameObject.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/Player.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/Player.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/Player.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/PlayerClient.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/PlayerClient.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/PlayerClient.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/PlayerServer.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/PlayerServer.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/PlayerServer.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/Registry.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/Registry.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/Registry.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/World.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/World.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/World.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/gameobjects",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Dgameobjects_EXPORTS -I/usr/local/include/SDL2 -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/gameobjects.dir/WorldClient.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/gameobjects/WorldClient.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/gameobjects/WorldClient.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/engine",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Dengine_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/engine.dir/Engine.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/engine/Engine.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/engine/Engine.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/holistic",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/holistic.dir/HNetworkManager.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/holistic/HNetworkManager.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/holistic/HNetworkManager.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/holistic",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/Users/notbaab/Dropbox/Programming/HEAT/lib  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/holistic.dir/SetupSerializers.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/holistic/SetupSerializers.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/holistic/SetupSerializers.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/debugging_tools",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Ddebugging_tools_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/debugging_tools.dir/debug_socket.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_socket.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_socket.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/debugging_tools",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Ddebugging_tools_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/debugging_tools.dir/debug_commands.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_commands.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_commands.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/debugging_tools",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -Ddebugging_tools_EXPORTS -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -fPIC -o CMakeFiles/debugging_tools.dir/debug_tools.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_tools.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/debugging_tools/debug_tools.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/console",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/notbaab/Dropbox/Programming/HEAT  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/console.dir/console.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/console/console.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/console/console.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/console",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc  -I/Users/notbaab/Dropbox/Programming/HEAT -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/console.dir/linenoise/linenoise.c.o -c /Users/notbaab/Dropbox/Programming/HEAT/console/linenoise/linenoise.c",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/console/linenoise/linenoise.c"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/dvr",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/dvr.dir/DVR.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/dvr/DVR.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/dvr/DVR.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/tests",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib/catch -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/tests.dir/main.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/tests/main.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/tests/main.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/tests",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib/catch -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/tests.dir/bit-packets.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/tests/bit-packets.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/tests/bit-packets.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/tests",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib/catch -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/tests.dir/managers.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/tests/managers.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/tests/managers.cpp"
+},
+{
+  "directory": "/Users/notbaab/cmake-builds/HEAT/tests",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DSPDLOG_COMPILED_LIB -I/Users/notbaab/Dropbox/Programming/HEAT -I/Users/notbaab/Dropbox/Programming/HEAT/lib/catch -I/Users/notbaab/Dropbox/Programming/HEAT/lib -I/Users/notbaab/Dropbox/Programming/HEAT/IO -I/Users/notbaab/Dropbox/Programming/HEAT/logger/lib/spdlog/include -I/usr/local/include/SDL2  -std=c++17 -pthread -Wno-multichar -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -o CMakeFiles/tests.dir/json-packets.cpp.o -c /Users/notbaab/Dropbox/Programming/HEAT/tests/json-packets.cpp",
+  "file": "/Users/notbaab/Dropbox/Programming/HEAT/tests/json-packets.cpp"
+}
+]
