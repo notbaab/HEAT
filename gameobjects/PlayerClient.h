@@ -49,10 +49,6 @@ class PlayerClient : public Player
         {
             localPlayerId = GetWorldId();
         }
-        else
-        {
-            ERROR("NOPE");
-        }
     }
 
     PlayerClient() : stateDirty(true), predictedState(std::make_shared<PhysicsComponent>())
