@@ -267,7 +267,7 @@ void SetupWorld()
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 
     // DVR Recording
-    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketRecieved, DVR::sInstance);
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
     EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
 }
 

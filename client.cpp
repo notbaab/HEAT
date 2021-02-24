@@ -10,6 +10,7 @@
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
 #include "dvr/DVR.h"
+#include "dvr/DVRConsoleCommands.cpp"
 #include "engine/Engine.h"
 #include "engine/ServiceLocator.h"
 #include "events/CreatePlayerOwnedObject.h"
@@ -41,58 +42,6 @@ static bool playingBackMessages = false;
 #define ASSET_MAP "images/asset-map.json"
 
 static std::shared_ptr<Engine> clientInstance;
-
-std::string DVRReplayPackets(std::vector<std::string> args)
-{
-    if (args.size() != 1)
-    {
-        return "Must give one argument";
-    }
-
-    int timeStamp = stoi(args[0]);
-
-    INFO("Setting server to {} timeStamp", timeStamp);
-    clientInstance->SetCurrentTime(timeStamp);
-    gameobjects::WorldClient::sInstance->ResetTime(timeStamp);
-
-    auto& nmc = NetworkManagerClient::sInstance;
-    nmc->playingBack = true;
-
-    const uint32_t max = 2400;
-    ReceivedPacket outPackets[max];
-    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
-
-    INFO("Adding {} packets to playback", count);
-    for (int i = 0; i < count; ++i)
-    {
-        NetworkManagerClient::sInstance->AddPacketToQueue(outPackets[i]);
-    }
-    return "Did something";
-}
-
-std::string DVRReplayReceivedMessages(std::vector<std::string> args)
-{
-    if (args.size() != 1)
-    {
-        return "Must give one argument";
-    }
-
-    return "Did something";
-}
-
-std::string DVRGetPackets(std::vector<std::string> args)
-{
-    const uint32_t max = 2400;
-    ReceivedPacket outPackets[max];
-    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
-
-    for (int i = 0; i < count; ++i)
-    {
-        outPackets[i].packet->GetClassIdentifier();
-    }
-
-    return "\n\0";
-}
 
 class InputButtonState
 {
@@ -328,6 +277,8 @@ static void SetupDebugTools()
     InitDebugingTools();
 
     add_command("dvr-get-packets", DVRGetPackets);
+    add_command("dvr-get-messages", DVRGetMessages);
+    add_command("dvr-write-messages", DVRWriteMessages);
     add_command("dvr-replay-packets", DVRReplayPackets);
 }
 
@@ -350,7 +301,7 @@ void initStuffs()
 
     // DVR Recording
     DVR::StaticInit();
-    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketRecieved, DVR::sInstance);
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
     EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
 
     auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();

@@ -77,12 +77,17 @@ std::vector<ReceivedMessage> DVR::PopMessages(uint32_t currentTime)
     std::vector<ReceivedMessage> msgs;
     msgs.reserve(10);
 
-    ReceivedMessage* message;
+    ReceivedMessage message;
     bool hasMore = this->messageFirstReceivedQueue.peek(message);
+    if(message.timeRecieved == 0) {
+        INFO("AHAH");
+    }
 
-    while (hasMore && message->timeRecieved <= currentTime)
+    int i = 0;
+    while (hasMore && message.timeRecieved <= currentTime)
     {
-        msgs.push_back(*message);
+        INFO("Poping {} at {}", message.timeRecieved, i);
+        msgs.push_back(message);
         this->messageFirstReceivedQueue.pop();
         hasMore = this->messageFirstReceivedQueue.peek(message);
     }
@@ -90,7 +95,16 @@ std::vector<ReceivedMessage> DVR::PopMessages(uint32_t currentTime)
     return msgs;
 }
 
-void DVR::PacketRecieved(std::shared_ptr<Event> packetReceivedEvent)
+void DVR::PopulateMessageQueue()
+{
+    auto messages = GetMessages(0, evtIndex);
+    for (auto& msg : messages)
+    {
+        this->messageFirstReceivedQueue.push(msg);
+    }
+}
+
+void DVR::PacketReceived(std::shared_ptr<Event> packetReceivedEvent)
 {
     auto castEvt = std::static_pointer_cast<PacketReceivedEvent>(packetReceivedEvent);
     evts[evtIndex] = castEvt;
@@ -150,8 +164,6 @@ bool DVR::ReadReceivedPacketsFromFile(std::string fileLoc)
     {
         ReceivedPacket receivedPacket;
 
-        // write the meta data to the file first
-
         uint32_t ip4;
         uint16_t port;
 
@@ -204,11 +216,11 @@ bool DVR::ReadReceivedPacketsFromFile(std::string fileLoc)
 
             auto receivedEvent = std::make_shared<PacketReceivedEvent>();
             receivedEvent->packet = receivedPacket;
-            PacketRecieved(receivedEvent);
+            PacketReceived(receivedEvent);
         }
     }
     infile.close();
-
+    PopulateMessageQueue();
     return true;
 }
 

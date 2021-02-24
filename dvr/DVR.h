@@ -16,10 +16,9 @@ class DVR
     DVR();
 
     bool WriteReceivedPacketsToFile(std::string fileLoc);
-    bool ReadRecording(std::string fileLoc);
     bool ReadReceivedPacketsFromFile(std::string fileLoc);
 
-    void PacketRecieved(std::shared_ptr<Event> packetReceivedEvent);
+    void PacketReceived(std::shared_ptr<Event> packetReceivedEvent);
 
     // PIMP: These are going to be incredibly slow since it's mem copying all of them
     // individually.
@@ -32,13 +31,17 @@ class DVR
     std::vector<ReceivedMessage> PopMessages(uint32_t time);
 
   protected:
+    void PopulateMessageQueue();
+
+    ThreadSafeQueue<ReceivedMessage> messageFirstReceivedQueue;
+
     std::shared_ptr<PacketReceivedEvent> evts[packetBufferSize];
     std::shared_ptr<PacketSerializer> packetSerializer;
     std::shared_ptr<MessageSerializer> messageSerializer;
 
     // keep the messages we get in a neat order of when they were first
     // received in a packet. That will correspond to when they are handled
-    ThreadSafeQueue<ReceivedMessage*> messageFirstReceivedQueue;
+    // ThreadSafeQueue<ReceivedMessage*> messageFirstReceivedQueue;
 
     uint32_t evtIndex;
 };
