@@ -69,7 +69,7 @@ static bool HandleAnimationData(rapidjson::Value::Object& tile, TiledAnimatedSpr
     // janky but theses are the properties we care about
     std::string animationName;
     MovementOrientation orientation = MovementOrientation::NONE;
-    bool flippable;
+    bool flippable = false;
 
     for (auto& p : tile["properties"].GetArray())
     {
