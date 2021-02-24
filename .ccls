@@ -1,0 +1,12 @@
+clang
+
+# add this to support `.h` files as C++ headers
+%cpp -std=c++17
+%h -std=c++17
+%h -x
+%h c++-header
+-I/usr/include
+-I.
+-I./lib
+-I./logger/lib/spdlog/include/
+
