@@ -8,6 +8,8 @@ if(NOT APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
@@ -68,5 +70,4 @@ set(client_link_libs
 )
 
 target_link_libraries(client PUBLIC ${shared_link_libs} ${client_link_libs})
-
 target_link_libraries(server ${shared_link_libs})
