@@ -36,6 +36,7 @@ add_subdirectory(tests)
 
 add_executable(server server.cpp)
 add_executable(client client.cpp)
+add_executable(viewer viewer.cpp)
 
 # Copy the image assets
 file(COPY images DESTINATION ${CMAKE_BINARY_DIR})
@@ -72,3 +73,4 @@ set(client_link_libs
 target_link_libraries(client PUBLIC ${shared_link_libs} ${client_link_libs})
 
 target_link_libraries(server ${shared_link_libs})
+target_link_libraries(viewer PUBLIC ${shared_link_libs} ${client_link_libs})
