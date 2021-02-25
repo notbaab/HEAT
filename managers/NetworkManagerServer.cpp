@@ -24,7 +24,7 @@ NetworkManagerServer::NetworkManagerServer(uint16_t port, std::shared_ptr<Packet
     SetupConfigVars();
 }
 
-void NetworkManagerServer::AddPacketToQueue(ReceivedPacket& packet) { packetQueue.push(packet); }
+void NetworkManagerServer::AddPacketToQueue(PacketInfo& packet) { packetQueue.push(packet); }
 
 void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
@@ -35,12 +35,12 @@ void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::
     // if they are allowed to be sending those types of packets
     for (auto const& packet : packets)
     {
-        auto receivedPacket = ReceivedPacket();
-        // receivedPacket.timeRecieved = currentTime + 100;
-        receivedPacket.timeRecieved = currentTime;
+        auto receivedPacket = PacketInfo();
+        // receivedPacket.timed = currentTime + 100;
+        receivedPacket.time = currentTime;
         // TODO: Need a frame
-        receivedPacket.frameRecieved = 0;
-        receivedPacket.fromAddress = fromAddress;
+        receivedPacket.frame = 0;
+        receivedPacket.address = fromAddress;
         receivedPacket.packet = packet;
         AddPacketToQueue(receivedPacket);
 
@@ -332,9 +332,9 @@ bool NetworkManagerServer::LogoutClient(uint64_t clientKey)
     return true;
 }
 
-void NetworkManagerServer::HandleReceivedPacket(ReceivedPacket& receivedPacket)
+void NetworkManagerServer::HandleReceivedPacket(PacketInfo& receivedPacket)
 {
-    auto fromAddress = receivedPacket.fromAddress;
+    auto fromAddress = receivedPacket.address;
     uint64_t key = fromAddress.GetIPPortKey();
     auto cDataPair = cData.find(key);
     std::shared_ptr<Packet> packet = receivedPacket.packet;
@@ -373,9 +373,9 @@ void NetworkManagerServer::Tick(uint32_t currentTime)
     this->currentTime = currentTime;
 
     // Read all the queued packets and do stuff with them
-    std::shared_ptr<ReceivedPacket> packet = std::make_shared<ReceivedPacket>();
+    std::shared_ptr<PacketInfo> packet = std::make_shared<PacketInfo>();
     bool hasMore = this->packetQueue.peek(*packet);
-    while (hasMore && packet->timeRecieved <= currentTime)
+    while (hasMore && packet->time <= currentTime)
     {
         HandleReceivedPacket(*packet);
         this->packetQueue.pop();

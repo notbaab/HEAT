@@ -40,7 +40,7 @@ void NetworkManagerClient::StartServerHandshake()
     INFO("Sent handshake");
 }
 
-void NetworkManagerClient::AddPacketToQueue(ReceivedPacket& packet)
+void NetworkManagerClient::AddPacketToQueue(PacketInfo& packet)
 {
     TRACE("Pushing packet to queue");
     packetQueue.push(packet);
@@ -64,11 +64,11 @@ void NetworkManagerClient::DataReceivedCallback(SocketAddress fromAddress, std::
     // if they are allowed to be sending those types of packets
     for (auto const& packet : packets)
     {
-        auto receivedPacket = ReceivedPacket();
-        receivedPacket.timeRecieved = currentTime;
+        auto receivedPacket = PacketInfo();
+        receivedPacket.time = currentTime;
         // TODO: Need a frame
-        receivedPacket.frameRecieved = 0;
-        receivedPacket.fromAddress = fromAddress;
+        receivedPacket.frame = 0;
+        receivedPacket.address = fromAddress;
         receivedPacket.packet = packet;
         AddPacketToQueue(receivedPacket);
 
@@ -80,7 +80,7 @@ void NetworkManagerClient::DataReceivedCallback(SocketAddress fromAddress, std::
     }
 }
 
-void NetworkManagerClient::HandleReceivedPacket(ReceivedPacket& packet)
+void NetworkManagerClient::HandleReceivedPacket(PacketInfo& packet)
 {
     bool handled = false;
     TRACE("Handling packet")
@@ -220,10 +220,10 @@ void NetworkManagerClient::Tick(uint32_t timeStamp)
     this->currentTime = timeStamp;
 
     // Read all the queued packets and do stuff with them
-    std::shared_ptr<ReceivedPacket> packet = std::make_shared<ReceivedPacket>();
+    std::shared_ptr<PacketInfo> packet = std::make_shared<PacketInfo>();
     bool hasMore = this->packetQueue.peek(*packet);
-    TRACE("Current time {}, hasMore {}, packetTime {}", currentTime, hasMore, packet->timeRecieved);
-    while (hasMore && packet->timeRecieved <= currentTime)
+    TRACE("Current time {}, hasMore {}, packetTime {}", currentTime, hasMore, packet->time);
+    while (hasMore && packet->time <= currentTime)
     {
         TRACE("Handling ")
         HandleReceivedPacket(*packet);

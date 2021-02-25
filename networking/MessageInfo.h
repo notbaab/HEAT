@@ -4,11 +4,11 @@
 #include "packets/Message.h"
 #include "sockets/SocketAddress.h"
 
-struct ReceivedMessage
+struct MessageInfo
 {
     // Not sure which one we might want
-    uint32_t timeRecieved;
-    uint32_t frameRecieved;
-    SocketAddress fromAddress;
+    uint32_t time;
+    uint32_t frame;
+    SocketAddress address;
     std::shared_ptr<Message> message;
 };

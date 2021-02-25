@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "events/Event.h"
-#include "networking/ReceivedPacket.h"
+#include "networking/PacketInfo.h"
 
 class PacketReceivedEvent : public Event
 {
@@ -18,5 +18,5 @@ class PacketReceivedEvent : public Event
 
     // PIMP: Make a pointer? I'm not sure, the actual packet is a pointer and
     // that's technically the heavier object
-    ReceivedPacket packet;
+    PacketInfo packet;
 };

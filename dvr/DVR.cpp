@@ -31,13 +31,13 @@ DVR::DVR() : evtIndex(0)
 
 // Parse out any messages that are less that the passed in sequence id and update the
 // sequenceId to the last message received
-static void parseOutNewMessages(std::shared_ptr<PacketReceivedEvent> pre, std::vector<ReceivedMessage>* messages,
+static void parseOutNewMessages(std::shared_ptr<PacketReceivedEvent> pre, std::vector<MessageInfo>* messages,
                                 uint32_t* lastMessageSequenceId)
 {
     std::shared_ptr<ReliableOrderedPacket> rop;
 
     // packets on packets...Dumb names
-    ReceivedPacket* recPacket = &pre->packet;
+    PacketInfo* recPacket = &pre->packet;
     auto p = recPacket->packet;
     switch (p->GetClassIdentifier())
     {
@@ -60,10 +60,10 @@ static void parseOutNewMessages(std::shared_ptr<PacketReceivedEvent> pre, std::v
         }
 
         // First time we've received this message
-        ReceivedMessage msg;
-        msg.timeRecieved = recPacket->timeRecieved;
-        msg.frameRecieved = recPacket->frameRecieved;
-        msg.fromAddress = recPacket->fromAddress;
+        MessageInfo msg;
+        msg.time = recPacket->time;
+        msg.frame = recPacket->frame;
+        msg.address = recPacket->address;
         msg.message = message;
 
         messages->push_back(msg);
@@ -72,21 +72,21 @@ static void parseOutNewMessages(std::shared_ptr<PacketReceivedEvent> pre, std::v
 }
 
 // Read all the queued packets and do stuff with them
-std::vector<ReceivedMessage> DVR::PopMessages(uint32_t currentTime)
+std::vector<MessageInfo> DVR::PopMessages(uint32_t currentTime)
 {
-    std::vector<ReceivedMessage> msgs;
+    std::vector<MessageInfo> msgs;
     msgs.reserve(10);
 
-    ReceivedMessage message;
+    MessageInfo message;
     bool hasMore = this->messageFirstReceivedQueue.peek(message);
-    if(message.timeRecieved == 0) {
+    if(message.time == 0) {
         INFO("AHAH");
     }
 
     int i = 0;
-    while (hasMore && message.timeRecieved <= currentTime)
+    while (hasMore && message.time <= currentTime)
     {
-        INFO("Poping {} at {}", message.timeRecieved, i);
+        INFO("Poping {} at {}", message.time, i);
         msgs.push_back(message);
         this->messageFirstReceivedQueue.pop();
         hasMore = this->messageFirstReceivedQueue.peek(message);
@@ -112,7 +112,7 @@ void DVR::PacketReceived(std::shared_ptr<Event> packetReceivedEvent)
 }
 
 // Get the first count packets
-uint32_t DVR::GetPackets(uint32_t count, ReceivedPacket* outPackets)
+uint32_t DVR::GetPackets(uint32_t count, PacketInfo* outPackets)
 {
     int i;
     for (i = 0; i < count; ++i)
@@ -126,13 +126,13 @@ uint32_t DVR::GetPackets(uint32_t count, ReceivedPacket* outPackets)
     return i;
 }
 
-uint32_t DVR::GetPackets(uint32_t from, uint32_t to, uint32_t count, ReceivedPacket* outPackets) { return 0; }
+uint32_t DVR::GetPackets(uint32_t from, uint32_t to, uint32_t count, PacketInfo* outPackets) { return 0; }
 
-std::vector<ReceivedMessage> DVR::GetMessages(uint32_t from, uint32_t count)
+std::vector<MessageInfo> DVR::GetMessages(uint32_t from, uint32_t count)
 {
     // PIMP: Kind of weird but try to cache the to and from
     uint32_t upTo;
-    std::vector<ReceivedMessage> messages;
+    std::vector<MessageInfo> messages;
 
     if (count >= evtIndex)
     {
@@ -162,18 +162,18 @@ bool DVR::ReadReceivedPacketsFromFile(std::string fileLoc)
 
     while (!infile.eof())
     {
-        ReceivedPacket receivedPacket;
+        PacketInfo receivedPacket;
 
         uint32_t ip4;
         uint16_t port;
 
         // write the meta data to the file first
-        if (!infile.read(reinterpret_cast<char*>(&receivedPacket.timeRecieved), sizeof(receivedPacket.timeRecieved)))
+        if (!infile.read(reinterpret_cast<char*>(&receivedPacket.time), sizeof(receivedPacket.time)))
         {
             break;
         }
 
-        if (!infile.read(reinterpret_cast<char*>(&receivedPacket.frameRecieved), sizeof(receivedPacket.frameRecieved)))
+        if (!infile.read(reinterpret_cast<char*>(&receivedPacket.frame), sizeof(receivedPacket.frame)))
         {
             break;
         }
@@ -187,7 +187,7 @@ bool DVR::ReadReceivedPacketsFromFile(std::string fileLoc)
         {
             break;
         }
-        receivedPacket.fromAddress = SocketAddress(ip4, port);
+        receivedPacket.address = SocketAddress(ip4, port);
 
         uint32_t size;
 
@@ -233,11 +233,11 @@ bool DVR::WriteReceivedPacketsToFile(std::string fileLoc)
     {
         auto receivedPacket = &evts[i]->packet;
 
-        uint32_t ip4 = receivedPacket->fromAddress.GetIP4();
-        uint16_t port = receivedPacket->fromAddress.GetPort();
+        uint32_t ip4 = receivedPacket->address.GetIP4();
+        uint16_t port = receivedPacket->address.GetPort();
         // write the meta data to the file first
-        outfile.write(reinterpret_cast<char*>(&receivedPacket->timeRecieved), sizeof(receivedPacket->timeRecieved));
-        outfile.write(reinterpret_cast<char*>(&receivedPacket->frameRecieved), sizeof(receivedPacket->frameRecieved));
+        outfile.write(reinterpret_cast<char*>(&receivedPacket->time), sizeof(receivedPacket->time));
+        outfile.write(reinterpret_cast<char*>(&receivedPacket->frame), sizeof(receivedPacket->frame));
         outfile.write(reinterpret_cast<char*>(&ip4), sizeof(ip4));
         outfile.write(reinterpret_cast<char*>(&port), sizeof(port));
 

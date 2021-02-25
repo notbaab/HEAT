@@ -120,7 +120,7 @@ std::string DVRReplayPackets(std::vector<std::string> args)
     nms->playingBack = true;
 
     const uint32_t max = 2400;
-    ReceivedPacket outPackets[max];
+    PacketInfo outPackets[max];
     uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
 
     for (int i = 0; i < count; ++i)
@@ -150,7 +150,7 @@ std::string DVRGetMessages(std::vector<std::string> args)
 
     for (auto& message : receivedMessages)
     {
-        INFO("message id {}, got at {}", message.message->GetId(), message.timeRecieved);
+        INFO("message id {}, got at {}", message.message->GetId(), message.time);
     }
 
     return "\n\0";
@@ -159,7 +159,7 @@ std::string DVRGetMessages(std::vector<std::string> args)
 std::string DVRGetPackets(std::vector<std::string> args)
 {
     const uint32_t max = 2400;
-    ReceivedPacket outPackets[max];
+    PacketInfo outPackets[max];
     uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
 
     for (int i = 0; i < count; ++i)
