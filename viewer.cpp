@@ -79,8 +79,7 @@ bool SetupRenderer()
 
 bool DoFrame(uint32_t currentTime)
 {
-
-    auto frameMessages = DVR::sInstance->PopMessages(currentTime);
+    auto frameMessages = DVR::sInstance->PopRecvMessages(currentTime);
 
     TRACE("Frame Message Count {}", frameMessages.size());
     for (auto& msg : frameMessages)

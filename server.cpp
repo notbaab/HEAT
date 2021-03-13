@@ -121,7 +121,7 @@ std::string DVRReplayPackets(std::vector<std::string> args)
 
     const uint32_t max = 2400;
     PacketInfo outPackets[max];
-    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+    uint32_t count = DVR::sInstance->GetRecvPackets(max, outPackets);
 
     for (int i = 0; i < count; ++i)
     {
@@ -146,7 +146,7 @@ std::string DVRWriteMessages(std::vector<std::string> args)
 
 std::string DVRGetMessages(std::vector<std::string> args)
 {
-    auto receivedMessages = DVR::sInstance->GetMessages(0, 4000);
+    auto receivedMessages = DVR::sInstance->GetRecvMessages(0, 4000);
 
     for (auto& message : receivedMessages)
     {
@@ -160,7 +160,7 @@ std::string DVRGetPackets(std::vector<std::string> args)
 {
     const uint32_t max = 2400;
     PacketInfo outPackets[max];
-    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+    uint32_t count = DVR::sInstance->GetRecvPackets(max, outPackets);
 
     for (int i = 0; i < count; ++i)
     {

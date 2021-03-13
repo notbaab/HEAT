@@ -276,8 +276,8 @@ static void SetupDebugTools()
 {
     InitDebugingTools();
 
-    add_command("dvr-get-packets", DVRGetPackets);
-    add_command("dvr-get-messages", DVRGetMessages);
+    add_command("dvr-get-recv-packets", DVRGetRecvPackets);
+    add_command("dvr-get-recv-messages", DVRGetRecvMessages);
     add_command("dvr-write-messages", DVRWriteMessages);
     add_command("dvr-replay-packets", DVRReplayPackets);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PacketReceivedEvent.h"
+#include "PacketSentEvent.h"
 #include "datastructures/ThreadSafeQueue.h"
 #include "networking/MessageInfo.h"
 #include "packets/PacketSerializer.h"
@@ -23,20 +24,26 @@ class DVR
 
     // PIMP: These are going to be incredibly slow since it's mem copying all of them
     // individually.
-    uint32_t GetPackets(uint32_t count, PacketInfo* outPackets);
-    uint32_t GetPackets(uint32_t count, uint32_t start, PacketInfo* outPackets);
-    uint32_t GetPackets(uint32_t from, uint32_t to, uint32_t count, PacketInfo* outPackets);
+    uint32_t GetSentPackets(uint32_t count, PacketInfo* outPackets);
+    uint32_t GetRecvPackets(uint32_t count, PacketInfo* outPackets);
 
-    std::vector<MessageInfo> GetMessages(uint32_t from, uint32_t count);
+    std::vector<MessageInfo> GetRecvMessages(uint32_t from, uint32_t count);
+    std::vector<MessageInfo> GetSentMessages(uint32_t from, uint32_t count);
 
-    std::vector<MessageInfo> PopMessages(uint32_t time);
+    std::vector<MessageInfo> PopRecvMessages(uint32_t time);
+    std::vector<MessageInfo> PopSentMessages(uint32_t time);
 
   protected:
     void PopulateMessageQueue();
 
     ThreadSafeQueue<MessageInfo> messageFirstReceivedQueue;
+    ThreadSafeQueue<MessageInfo> messageFirstSentQueue;
 
-    std::shared_ptr<PacketReceivedEvent> evts[packetBufferSize];
+    std::shared_ptr<PacketReceivedEvent> recvEvts[packetBufferSize];
+    std::shared_ptr<PacketSentEvent> sentEvts[packetBufferSize];
+    uint32_t recvEvtsIndex;
+    uint32_t sentEvtsIndex;
+
     std::shared_ptr<PacketSerializer> packetSerializer;
     std::shared_ptr<MessageSerializer> messageSerializer;
 
@@ -44,5 +51,4 @@ class DVR
     // received in a packet. That will correspond to when they are handled
     // ThreadSafeQueue<MessageInfo*> messageFirstReceivedQueue;
 
-    uint32_t evtIndex;
 };

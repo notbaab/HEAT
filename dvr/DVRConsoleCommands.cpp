@@ -17,18 +17,18 @@ std::string DVRWriteMessages(std::vector<std::string> args)
     return "\n\0";
 }
 
-std::string DVRGetMessages(std::vector<std::string> args)
+std::string DVRGetRecvMessages(std::vector<std::string> args)
 {
-    auto receivedMessages = DVR::sInstance->GetMessages(0, 4000);
+    auto receivedMessages = DVR::sInstance->GetRecvMessages(0, 4000);
 
     return "\n\0";
 }
 
-std::string DVRGetPackets(std::vector<std::string> args)
+std::string DVRGetRecvPackets(std::vector<std::string> args)
 {
     const uint32_t max = 2400;
     PacketInfo outPackets[max];
-    uint32_t count = DVR::sInstance->GetPackets(max, outPackets);
+    uint32_t count = DVR::sInstance->GetRecvPackets(max, outPackets);
 
     for (int i = 0; i < count; ++i)
     {
