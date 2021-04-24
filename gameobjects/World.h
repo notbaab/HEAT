@@ -37,6 +37,10 @@ class World
     std::vector<std::shared_ptr<Event>> CreateWelcomeStateEvents();
     std::vector<std::shared_ptr<Event>> CreateWorldSnapshot();
 
+    // TODO: This should take a SnapShot of the world to set it to.
+    // For the first pass this is ok
+    void ResetTime(uint32_t time) { nextGameObjectId = 0; }
+
   protected:
     World();
 

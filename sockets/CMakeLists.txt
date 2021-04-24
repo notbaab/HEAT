@@ -6,9 +6,9 @@ list(APPEND network_src
    SocketManager.cpp
 )
 
-add_library(networking SHARED ${network_src})
-target_link_libraries(networking logger)
-target_include_directories(networking
+add_library(sockets SHARED ${network_src})
+target_link_libraries(sockets logger)
+target_include_directories(sockets
         PUBLIC
         ${CMAKE_SOURCE_DIR}
 )

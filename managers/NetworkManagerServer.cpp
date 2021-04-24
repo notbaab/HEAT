@@ -1,4 +1,6 @@
 #include "NetworkManagerServer.h"
+#include "dvr/PacketReceivedEvent.h"
+#include "dvr/PacketSentEvent.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
 #include "events/RemoveClientOwnedGameObjectsEvent.h"
@@ -18,58 +20,39 @@ void NetworkManagerServer::StaticInit(uint16_t port, std::shared_ptr<PacketSeria
 }
 
 NetworkManagerServer::NetworkManagerServer(uint16_t port, std::shared_ptr<PacketSerializer> packetSerializer)
-    : HNetworkManager(port, packetSerializer)
+    : HNetworkManager(port, packetSerializer), playingBack(false)
 {
     SetupConfigVars();
 }
+
+void NetworkManagerServer::AddPacketToQueue(PacketInfo& packet) { packetQueue.push(packet); }
 
 void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::unique_ptr<std::vector<uint8_t>> data)
 {
     // Deserialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
 
-    uint64_t key = fromAddress.GetIPPortKey();
-    auto cDataPair = cData.find(key);
-
-    if (cDataPair == cData.end())
-    {
-        // no packet manager found for this guy, create one and starting trying to
-        // get this guy in the game
-        DEBUG("Creating new manager for {} ", fromAddress.GetIPPortKey());
-        // Forward everything because our packet manager disallows copying
-        cData.emplace(std::piecewise_construct, std::forward_as_tuple(key),
-                      std::forward_as_tuple(packetSerializer, fromAddress));
-    }
-
-    ClientData& client = cData.at(key);
-    client.lastHeardFrom = this->currentTime;
-
-    // Loop over packets and depending on the state of the client, determine
-    // if they are allowed to be sending those types of packets
     for (auto const& packet : packets)
     {
-        switch (client.state)
-        {
-        case ClientConnectionState::CONNECTING:
-            // Client just connected, move to challenge and queue up sending a challenge
-            HandleNewClient(client, packet);
-            break;
-        case ClientConnectionState::CHALLENGED:
-        case ClientConnectionState::AUTHENTICATED:
-        case ClientConnectionState::LOGGED_IN:
-            HandleChallenedClient(client, packet);
-            break;
-        case ClientConnectionState::DISCONNECTED:
-            break;
-        }
-    }
+        auto receivedPacket = PacketInfo();
+        // receivedPacket.timed = currentTime + 100;
+        receivedPacket.time = currentTime;
+        // TODO: Need a frame
+        receivedPacket.frame = 0;
+        receivedPacket.address = fromAddress;
+        receivedPacket.packet = packet;
+        AddPacketToQueue(receivedPacket);
 
-    // Update last heard from time to now
+        // Also queue up an event for anything that cares
+        auto packetReceived = std::make_shared<PacketReceivedEvent>();
+        packetReceived->packet = receivedPacket;
+        EventManager::sInstance->QueueEvent(packetReceived);
+    }
 }
 
 // challenged clients will send authenticated packets but we only send it
 // unauthenticated packets since we don't know if it' got through yet
-bool NetworkManagerServer::HandleChallenedClient(ClientData& client, const std::shared_ptr<Packet> packet)
+bool NetworkManagerServer::HandleChallengedClient(ClientData& client, const std::shared_ptr<Packet> packet)
 {
     // A challenged client will send authed packets, if it's sending unauthed,
     // ignore. Maybe? That does seem kinda weird to enforce
@@ -80,7 +63,7 @@ bool NetworkManagerServer::HandleChallenedClient(ClientData& client, const std::
              "got to the client?");
         return false;
     }
-    if (cast->expectedSalt != client.xOrSalt)
+    if (!playingBack && cast->expectedSalt != client.xOrSalt)
     {
         WARN("xor'd salt doesn't match client, expecting {} got {} ignoring packet", cast->expectedSalt,
              client.xOrSalt);
@@ -118,6 +101,37 @@ bool NetworkManagerServer::HandleNewClient(ClientData& client, const std::shared
     return true;
 }
 
+// Handles the passed in message
+void NetworkManagerServer::HandleMessage(uint64_t clientKey, std::shared_ptr<Message> message)
+{
+    auto& client = cData.at(clientKey);
+
+    // Game events all handled via the event manager
+    if (message->GetTypeIdentifier() == Event::TYPE_ID)
+    {
+        auto evt = std::static_pointer_cast<Event>(message);
+        EventManager::sInstance->QueueEvent(evt);
+        return;
+    }
+
+    // The rest is for connection related messages
+    switch (message->GetClassIdentifier())
+    {
+    case ClientConnectionRequestMessage::CLASS_ID:
+        ReadConnectionRequestMessage(client, message);
+        break;
+    case ClientConnectionChallengeResponseMessage::CLASS_ID:
+        ReadChallengeResponseMessage(client, message);
+        break;
+    case ClientLoginMessage::CLASS_ID:
+        ReadLoginMessage(client, message);
+        break;
+    default:
+        ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
+              message->GetClassIdentifier());
+    }
+}
+
 void NetworkManagerServer::ProcessMessages()
 {
     // loop over all the packet managers, receive the messages then process them
@@ -133,31 +147,7 @@ void NetworkManagerServer::ProcessMessages()
 
         for (auto const& message : messageBuf)
         {
-            // If a game event, feed into the event manager cause we don't
-            // need to do anything
-            if (message->GetTypeIdentifier() == Event::TYPE_ID)
-            {
-                auto evt = std::static_pointer_cast<Event>(message);
-                EventManager::sInstance->QueueEvent(evt);
-                continue;
-            }
-
-            //
-            switch (message->GetClassIdentifier())
-            {
-            case ClientConnectionRequestMessage::CLASS_ID:
-                ReadConnectionRequestMessage(client, message);
-                break;
-            case ClientConnectionChallengeResponseMessage::CLASS_ID:
-                ReadChallengeResponseMessage(client, message);
-                break;
-            case ClientLoginMessage::CLASS_ID:
-                ReadLoginMessage(client, message);
-                break;
-            default:
-                ERROR("Didn't handle message of type {}, Raw id {}", message->IdentifierToString(),
-                      message->GetClassIdentifier());
-            }
+            HandleMessage(cDataElement.first, message);
         }
     }
 }
@@ -249,7 +239,7 @@ bool NetworkManagerServer::ReadConnectionRequestMessage(ClientData& client, cons
     client.state = ClientConnectionState::CHALLENGED;
     auto challenge = std::make_unique<ClientConnectionChallengeMessage>(client.serverSalt);
 
-    TRACE("Queuing challenge messages")
+    DEBUG("Queuing challenge messages")
     client.packetManager.SendMessage(std::move(challenge));
 
     return true;
@@ -287,6 +277,19 @@ void NetworkManagerServer::SendOutgoingPackets()
         }
         // ship it into the ether
         socketManager.SendTo(outData, outSize, client.socketAddress);
+
+        auto sentPacket = PacketInfo();
+        // sentPacket.timed = currentTime + 100;
+        sentPacket.time = currentTime;
+        // TODO: Need a frame
+        sentPacket.frame = 0;
+        sentPacket.address = client.socketAddress;
+        sentPacket.packet = packet;
+
+        // Also queue up an event for anything that cares
+        auto packetSent = std::make_shared<PacketSentEvent>();
+        packetSent->packet = sentPacket;
+        EventManager::sInstance->QueueEvent(packetSent);
     }
 }
 
@@ -340,10 +343,60 @@ bool NetworkManagerServer::LogoutClient(uint64_t clientKey)
     return true;
 }
 
+void NetworkManagerServer::HandleReceivedPacket(PacketInfo& receivedPacket)
+{
+    auto fromAddress = receivedPacket.address;
+    uint64_t key = fromAddress.GetIPPortKey();
+    auto cDataPair = cData.find(key);
+    std::shared_ptr<Packet> packet = receivedPacket.packet;
+
+    if (cDataPair == cData.end())
+    {
+        // no packet manager found for this guy, create one and starting trying to
+        // get this guy in the game
+        DEBUG("Creating new manager for {} ", fromAddress.GetIPPortKey());
+        // Forward everything because our packet manager disallows copying
+        cData.emplace(std::piecewise_construct, std::forward_as_tuple(key),
+                      std::forward_as_tuple(packetSerializer, fromAddress));
+    }
+
+    ClientData& client = cData.at(key);
+    client.lastHeardFrom = this->currentTime;
+
+    switch (client.state)
+    {
+    case ClientConnectionState::CONNECTING:
+        // Client just connected, move to challenge and queue up sending a challenge
+        HandleNewClient(client, packet);
+        break;
+    case ClientConnectionState::CHALLENGED:
+    case ClientConnectionState::AUTHENTICATED:
+    case ClientConnectionState::LOGGED_IN:
+        HandleChallengedClient(client, packet);
+        break;
+    case ClientConnectionState::DISCONNECTED:
+        break;
+    }
+}
+
 void NetworkManagerServer::Tick(uint32_t currentTime)
 {
     this->currentTime = currentTime;
 
+    // Read all the queued packets and do stuff with them
+    std::shared_ptr<PacketInfo> packet = std::make_shared<PacketInfo>();
+    bool hasMore = this->packetQueue.peek(*packet);
+    while (hasMore && packet->time <= currentTime)
+    {
+        HandleReceivedPacket(*packet);
+        this->packetQueue.pop();
+        hasMore = this->packetQueue.peek(*packet);
+    }
+
+    // Packets have been read, read the
+
+    // PIMP: Only removes removes one client once per tick.
+    // I'm not sure how much we actually care about that.
     uint64_t removeClient = 0;
 
     for (auto it = cData.begin(); it != cData.end(); it++ /* not hoisted */ /* no increment */)

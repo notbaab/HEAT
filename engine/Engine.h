@@ -19,6 +19,7 @@ class Engine
     void Run();
     void Stop();
     void SetTicksPerSecond(uint32_t tps);
+    void SetCurrentTime(uint32_t time);
 
   protected:
     bool running;

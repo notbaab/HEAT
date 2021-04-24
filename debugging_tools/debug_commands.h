@@ -9,3 +9,6 @@ bool tryExecuteCommand(std::string command, std::vector<std::string> args, std::
 void addGetAllCommands();
 void addGetAllHints();
 void add_hint(std::string commandToHint, std::string valueToHint);
+
+void SplitCommandString(std::string data, std::string* outCommand, std::vector<std::string>* outArgs);
+std::string DebugCommandHandler(uint8_t* data, size_t size);

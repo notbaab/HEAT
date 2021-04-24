@@ -3,7 +3,7 @@
 // packet manager, salt and challenge data. Just container class so everything
 // is public for easy access
 #include "PacketManager.h"
-#include "networking/SocketAddress.h"
+#include "sockets/SocketAddress.h"
 
 enum ClientConnectionState
 {

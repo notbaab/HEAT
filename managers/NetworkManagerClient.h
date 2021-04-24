@@ -5,7 +5,9 @@
 #include <vector>
 
 #include "PacketManager.h"
+#include "datastructures/ThreadSafeQueue.h"
 #include "holistic/HNetworkManagerClient.h"
+#include "networking/PacketInfo.h"
 
 // This is all very similar to client data. How should it be consolidated?
 enum CurrentConnectionState
@@ -35,6 +37,14 @@ class NetworkManagerClient : public holistic::HNetworkManagerClient
     virtual void DataReceivedCallback(SocketAddress fromAddressKey,
                                       std::unique_ptr<std::vector<uint8_t>> data) override;
 
+    void AddPacketToQueue(PacketInfo& packet);
+    void HandleReceivedPacket(PacketInfo& recievedPacket);
+    void HandleMessage(std::shared_ptr<Message> message);
+
+    // If we are playing back packets, some things need to be taken into account,
+    // like don't check the salt on the authed packets
+    bool playingBack;
+
     virtual void StartServerHandshake() override;
     void Tick(uint32_t timeStep) override;
     bool HandleUnauthenticatedPacket(const std::shared_ptr<Packet> packet);
@@ -51,8 +61,11 @@ class NetworkManagerClient : public holistic::HNetworkManagerClient
     uint32_t serverSalt;
     uint32_t xOrSalt;
     uint32_t clientId;
+    uint32_t currentTime;
     std::string userName;
 
     CurrentConnectionState connectionState;
     SocketAddressPtr serverAddress;
+
+    ThreadSafeQueue<PacketInfo> packetQueue;
 };

@@ -16,7 +16,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(str_utils)
 add_subdirectory(logger)
 add_subdirectory(datastructures)
-add_subdirectory(networking)
+add_subdirectory(sockets)
 add_subdirectory(IO)
 add_subdirectory(packets)
 add_subdirectory(events)
@@ -30,6 +30,7 @@ add_subdirectory(engine)
 add_subdirectory(holistic)
 add_subdirectory(debugging_tools)
 add_subdirectory(console)
+add_subdirectory(dvr)
 
 # Testing
 add_subdirectory(lib/catch)
@@ -37,6 +38,7 @@ add_subdirectory(tests)
 
 add_executable(server server.cpp)
 add_executable(client client.cpp)
+add_executable(viewer viewer.cpp)
 
 # Copy the image assets
 file(COPY images DESTINATION ${CMAKE_BINARY_DIR})
@@ -58,10 +60,11 @@ set(shared_link_libs
         managers
         math
         # messages
-        networking
+        sockets
         packets
         events
         debugging_tools
+        dvr
 )
 
 set(client_link_libs
@@ -71,3 +74,4 @@ set(client_link_libs
 
 target_link_libraries(client PUBLIC ${shared_link_libs} ${client_link_libs})
 target_link_libraries(server ${shared_link_libs})
+target_link_libraries(viewer PUBLIC ${shared_link_libs} ${client_link_libs})

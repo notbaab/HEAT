@@ -35,9 +35,13 @@ void SetupMessageSerializer(std::shared_ptr<MessageSerializer> messageSerializer
 {
 
     AddMessageCtor(messageSerializer, PlayerMessage);
+    AddMessageCtor(messageSerializer, ClientWelcomeMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionChallengeResponseMessage);
     AddMessageCtor(messageSerializer, ClientConnectionChallengeMessage);
-    AddMessageCtor(messageSerializer, ClientLoginMessage);
+    AddMessageCtor(messageSerializer, ClientConnectionRequestMessage);
     AddMessageCtor(messageSerializer, ClientLoginResponse);
+    AddMessageCtor(messageSerializer, ClientLoginMessage);
+    AddMessageCtor(messageSerializer, LogoutMessage);
 
     // Event constructors. Events are also messages
     AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);

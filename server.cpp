@@ -10,6 +10,8 @@
 #include "debugging_tools/debug_commands.h"
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
+#include "dvr/DVR.h"
+#include "dvr/DVRConsoleCommands.cpp"
 #include "engine/Engine.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
@@ -22,6 +24,7 @@
 #include "gameobjects/Registry.h"
 #include "gameobjects/World.h"
 #include "holistic/Configurator.h"
+#include "holistic/SetupSerializers.h"
 #include "managers/NetworkManagerServer.h"
 #include "messages/ClientConnectionChallengeResponseMessage.h"
 #include "messages/ClientConnectionRequestMessage.h"
@@ -61,20 +64,6 @@ std::string DebugSetEngineTick(std::vector<std::string> args)
     return s.str();
 }
 
-void SplitCommandString(std::string data, std::string* outCommand, std::vector<std::string>* outArgs)
-{
-    std::string tmp;
-    std::stringstream stringStream(data);
-    // stringStream << (char*)data;
-
-    getline(stringStream, tmp, ' ');
-    *outCommand = tmp;
-    while (getline(stringStream, tmp, ' '))
-    {
-        outArgs->push_back(tmp);
-    }
-}
-
 std::string SetConfigVar(std::vector<std::string> args)
 {
     if (args.size() != 2)
@@ -98,22 +87,75 @@ std::string SetConfigVar(std::vector<std::string> args)
     }
 }
 
-std::string DebugCommandHandler(uint8_t* data, size_t size)
+std::string SetTime(std::vector<std::string> args)
 {
-    // Accepting commands of the form <action> <args>
-    std::string nullTerminatedString(reinterpret_cast<char*>(data), size);
-    std::string command;
-    std::string out;
-    std::vector<std::string> args;
-    // Terminate it
-    SplitCommandString(nullTerminatedString, &command, &args);
-
-    if (!tryExecuteCommand(command, args, &out))
+    if (args.size() != 1)
     {
-        ERROR("failed executing command {}", command);
-        return "error\n\0";
+        return "Must give one argument";
     }
-    return out;
+
+    int timeStamp = stoi(args[0]);
+
+    INFO("Setting server to {} timeStamp", timeStamp);
+    serverInstance->SetCurrentTime(timeStamp);
+
+    std::stringstream s;
+    s << "Set engine timestamp to  to " << timeStamp;
+
+    return s.str();
+}
+
+std::string DVRReplayPackets_t(std::vector<std::string> args)
+{
+    if (args.size() != 1)
+    {
+        return "Must give one argument";
+    }
+
+    int timeStamp = stoi(args[0]);
+
+    INFO("Setting server to {} timeStamp", timeStamp);
+    serverInstance->SetCurrentTime(timeStamp);
+
+    auto& nms = NetworkManagerServer::sInstance;
+    nms->playingBack = true;
+
+    const uint32_t max = 2400;
+    PacketInfo outPackets[max];
+    uint32_t count = DVR::sInstance->GetRecvPackets(max, outPackets);
+
+    for (int i = 0; i < count; ++i)
+    {
+        NetworkManagerServer::sInstance->AddPacketToQueue(outPackets[i]);
+    }
+
+    return "Did something";
+}
+
+std::string DVRGetMessages(std::vector<std::string> args)
+{
+    auto receivedMessages = DVR::sInstance->GetRecvMessages(0, 4000);
+
+    for (auto& message : receivedMessages)
+    {
+        INFO("message id {}, got at {}", message.message->GetId(), message.time);
+    }
+
+    return "\n\0";
+}
+
+std::string DVRGetPackets(std::vector<std::string> args)
+{
+    const uint32_t max = 2400;
+    PacketInfo outPackets[max];
+    uint32_t count = DVR::sInstance->GetRecvPackets(max, outPackets);
+
+    for (int i = 0; i < count; ++i)
+    {
+        outPackets[i].packet->GetClassIdentifier();
+    }
+
+    return "\n\0";
 }
 
 bool tick(uint32_t currentTime)
@@ -148,6 +190,11 @@ void SetupDebugTools()
 
     add_command("tick", DebugSetEngineTick);
     add_command("set-var", SetConfigVar);
+    add_command("dvr-get-packets", DVRGetPackets);
+    add_command("dvr-get-messages", DVRGetMessages);
+    add_command("dvr-write-messages", DVRWriteMessages);
+    add_command("dvr-replay-packets", DVRReplayPackets);
+    add_command("set-engine-time", SetTime);
 }
 
 void SetupNetworking()
@@ -156,20 +203,7 @@ void SetupNetworking()
 
     auto messageSerializer = std::make_shared<MessageSerializer>();
 
-    // Message constructors
-    AddMessageCtor(messageSerializer, PlayerMessage);
-    AddMessageCtor(messageSerializer, ClientWelcomeMessage);
-    AddMessageCtor(messageSerializer, ClientConnectionChallengeResponseMessage);
-    AddMessageCtor(messageSerializer, ClientConnectionRequestMessage);
-    AddMessageCtor(messageSerializer, ClientLoginMessage);
-    AddMessageCtor(messageSerializer, ClientLoginResponse);
-    AddMessageCtor(messageSerializer, LogoutMessage);
-
-    // Event constructors. Also messages
-    AddMessageCtor(messageSerializer, CreatePlayerOwnedObject);
-    AddMessageCtor(messageSerializer, RemoveGameObjectEvent);
-    AddMessageCtor(messageSerializer, RemoveClientOwnedGameObjectsEvent);
-    AddMessageCtor(messageSerializer, PlayerInputEvent);
+    holistic::SetupMessageSerializer(messageSerializer);
 
     auto bitReader = std::make_unique<InputMemoryBitStream>();
     auto bitWriter = std::make_unique<OutputMemoryBitStream>();
@@ -178,14 +212,11 @@ void SetupNetworking()
 
     auto packetSerializer =
         std::make_shared<PacketSerializer>(messageSerializer, std::move(packetReader), std::move(packetWriter));
-
-    // TODO: Do we ever want a raw ROP?
-    AddPacketCtor(packetSerializer, ReliableOrderedPacket);
-    AddPacketCtor(packetSerializer, UnauthenticatedPacket);
-    AddPacketCtor(packetSerializer, AuthenticatedPacket);
+    holistic::SetupPacketSerializer(packetSerializer);
 
     // Init our singleton
     NetworkManagerServer::StaticInit(4500, packetSerializer);
+
 }
 
 // Function that is called to create the registry with all the
@@ -222,6 +253,25 @@ void SetupWorld()
     EventRouter<PlayerInputEvent>::StaticInit();
     auto playerInputRouter = CREATE_DELEGATE_LAMBDA((EventRouter<PlayerInputEvent>::sInstance->RouteEvent));
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
+}
+
+static void SetupDVR() 
+{
+    DVR::StaticInit();
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
 }
 
 void initStuffs()
@@ -229,6 +279,7 @@ void initStuffs()
     SetupDebugTools();
     SetupNetworking();
     SetupWorld();
+    SetupDVR();
 }
 
 int main(int argc, const char* argv[])
@@ -251,7 +302,7 @@ int main(int argc, const char* argv[])
     messagesToProcess.reserve(30);
     DEBUG("Starting")
 
-    // Use a promise to not spool.
+    // PIMP: Use a promise to not spool.
     serverInstance.reset(new Engine(initStuffs, tick));
     serverInstance->Run();
 }

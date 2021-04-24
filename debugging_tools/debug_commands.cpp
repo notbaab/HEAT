@@ -1,3 +1,4 @@
+#include <sstream>
 #include <unordered_map>
 
 #include "debug_commands.h"
@@ -100,3 +101,35 @@ std::string GetAllHints(std::vector<std::string>)
 
 void addGetAllCommands() { add_command("get-commands", GetAllCommands); }
 void addGetAllHints() { add_command("get-command-hints", GetAllHints); }
+
+void SplitCommandString(std::string data, std::string* outCommand, std::vector<std::string>* outArgs)
+{
+    std::string tmp;
+    std::stringstream stringStream(data);
+
+    getline(stringStream, tmp, ' ');
+    *outCommand = tmp;
+    while (getline(stringStream, tmp, ' '))
+    {
+        outArgs->push_back(tmp);
+    }
+}
+
+std::string DebugCommandHandler(uint8_t* data, size_t size)
+{
+    // Accepting commands of the form <action> <args>
+    std::string nullTerminatedString(reinterpret_cast<char*>(data), size);
+    std::string command;
+    std::string out;
+    std::vector<std::string> args;
+    // Terminate it
+    SplitCommandString(nullTerminatedString, &command, &args);
+
+    if (!tryExecuteCommand(command, args, &out))
+    {
+        ERROR("failed executing command {}", command);
+        return "error\n\0";
+    }
+
+    return out;
+}

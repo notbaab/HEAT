@@ -6,8 +6,13 @@
 #include "IO/JsonOutputMemoryStream.h"
 #include "IO/OutputMemoryBitStream.h"
 #include "controls/InputManager.h"
+#include "debugging_tools/debug_commands.h"
+#include "debugging_tools/debug_socket.h"
+#include "debugging_tools/debug_tools.h"
+#include "dvr/DVR.h"
+#include "dvr/DVRConsoleCommands.cpp"
 #include "engine/Engine.h"
-#include "engine/ServiceLocatorClient.h"
+#include "engine/ServiceLocator.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
 #include "events/EventRouter.h"
@@ -32,8 +37,11 @@
 #include "packets/UnauthenticatedPacket.h"
 
 static bool noServer = false;
+static bool playingBackMessages = false;
 
 #define ASSET_MAP "images/asset-map.json"
+
+static std::shared_ptr<Engine> clientInstance;
 
 class InputButtonState
 {
@@ -77,7 +85,7 @@ class InputButtonState
   private:
     void sendMove()
     {
-        auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+        auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
 
         moveSeq++;
 
@@ -139,7 +147,8 @@ bool SetupRenderer()
 
 bool DoFrame(uint32_t currentTime)
 {
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
+
     networkManager->ProcessMessages();
 
     SDL_Event event;
@@ -182,7 +191,7 @@ void SetupNetworking(std::string serverDestination)
         NullNetworkManagerClient::StaticInit();
 
         // Well. Alright then, so much for unique ptr providing some safety
-        ServiceLocatorClient::Provide(NullNetworkManagerClient::sInstance.get());
+        ServiceLocator::Provide(NullNetworkManagerClient::sInstance.get());
         return;
     }
 
@@ -214,12 +223,12 @@ void SetupNetworking(std::string serverDestination)
     NetworkManagerClient::StaticInit(serverDestination, packetSerializer, "Joe Mamma");
 
     // Well. Alright then, so much for unique ptr providing some safety
-    ServiceLocatorClient::Provide(NetworkManagerClient::sInstance.get());
+    ServiceLocator::Provide(NetworkManagerClient::sInstance.get());
 }
 
 void SetupWorld()
 {
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
     // Need to be called after the service locater has provided a network manager client
     assert(networkManager);
 
@@ -257,6 +266,28 @@ void SetupWorld()
     EventManager::sInstance->AddListener(playerInputRouter, PlayerInputEvent::EVENT_TYPE);
 }
 
+static void SetupDebugTools()
+{
+    InitDebugingTools();
+
+    add_command("dvr-get-recv-packets", DVRGetRecvPackets);
+    add_command("dvr-get-recv-messages", DVRGetRecvMessages);
+    add_command("dvr-write-messages", DVRWriteMessages);
+    add_command("dvr-replay-packets", DVRReplayPackets);
+}
+
+static void SetupDVR() 
+{
+    DVR::StaticInit();
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
+}
+
 void initStuffs()
 {
     logger::InitLog(logger::DEBUG, "Main Logger");
@@ -269,10 +300,14 @@ void initStuffs()
     INFO("Starting Client");
 
     std::string destination = "127.0.0.1:4500";
+    SetupDebugTools();
 
     SetupNetworking(destination);
     SetupWorld();
-    auto networkManager = ServiceLocatorClient::GetNetworkManagerClient();
+    SetupDVR();
+
+
+    auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
 
     // Start the handshake asap and force the packets to be sent
     networkManager->StartServerHandshake();
@@ -285,7 +320,20 @@ void initStuffs()
 
 int main(int argc, const char* argv[])
 {
+    while (argc > 1)
+    {
+        argc--;
+        argv++;
+        if (!strcmp(*argv, "--debug-socket"))
+        {
+            argv++;
+            argc--;
+            const char* socketPath = *argv;
+            INFO("Starting a debug socket at {}", socketPath);
+            SpawnSocket(socketPath, DebugCommandHandler);
+        }
+    }
 
-    Engine engine = Engine(initStuffs, DoFrame);
-    engine.Run();
+    clientInstance.reset(new Engine(initStuffs, DoFrame));
+    clientInstance->Run();
 }

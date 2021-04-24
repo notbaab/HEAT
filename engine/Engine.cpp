@@ -26,7 +26,10 @@ void Engine::Run()
     }
 }
 
+void Engine::SetCurrentTime(uint32_t timeStamp) { this->currentTime = timeStamp; }
+
 void Engine::Stop() { running = false; }
+
 // sets the amount of time to run the server at
 void Engine::SetTicksPerSecond(uint32_t tps)
 {
