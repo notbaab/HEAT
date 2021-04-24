@@ -6,6 +6,8 @@ clang
 %h -x
 %h c++-header
 -I/usr/include
+-I/usr/local/include
+-I/usr/local/include/SDL2
 -I.
 -I./lib
 -I./logger/lib/spdlog/include/
