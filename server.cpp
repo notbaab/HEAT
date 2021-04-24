@@ -11,6 +11,7 @@
 #include "debugging_tools/debug_socket.h"
 #include "debugging_tools/debug_tools.h"
 #include "dvr/DVR.h"
+#include "dvr/DVRConsoleCommands.cpp"
 #include "engine/Engine.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
@@ -104,7 +105,7 @@ std::string SetTime(std::vector<std::string> args)
     return s.str();
 }
 
-std::string DVRReplayPackets(std::vector<std::string> args)
+std::string DVRReplayPackets_t(std::vector<std::string> args)
 {
     if (args.size() != 1)
     {
@@ -127,21 +128,8 @@ std::string DVRReplayPackets(std::vector<std::string> args)
     {
         NetworkManagerServer::sInstance->AddPacketToQueue(outPackets[i]);
     }
+
     return "Did something";
-}
-
-std::string DVRWriteMessages(std::vector<std::string> args)
-{
-    if (args.size() != 1)
-    {
-        throw std::runtime_error("Must supply 1 arguments, a file location ");
-    }
-
-    std::string fileLoc = args[0];
-
-    DVR::sInstance->WriteReceivedPacketsToFile(fileLoc);
-    DVR::sInstance->ReadReceivedPacketsFromFile(fileLoc);
-    return "\n\0";
 }
 
 std::string DVRGetMessages(std::vector<std::string> args)
@@ -228,7 +216,7 @@ void SetupNetworking()
 
     // Init our singleton
     NetworkManagerServer::StaticInit(4500, packetSerializer);
-    DVR::StaticInit();
+
 }
 
 // Function that is called to create the registry with all the
@@ -269,6 +257,21 @@ void SetupWorld()
     // DVR Recording
     auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
     EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
+}
+
+static void SetupDVR() 
+{
+    DVR::StaticInit();
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
 }
 
 void initStuffs()
@@ -276,11 +279,12 @@ void initStuffs()
     SetupDebugTools();
     SetupNetworking();
     SetupWorld();
+    SetupDVR();
 }
 
 int main(int argc, const char* argv[])
 {
-    logger::InitLog(logger::TRACE, "Main");
+    logger::InitLog(logger::DEBUG, "Main");
     while (argc > 1)
     {
         argc--;

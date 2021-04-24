@@ -1,5 +1,6 @@
 #include "NetworkManagerServer.h"
 #include "dvr/PacketReceivedEvent.h"
+#include "dvr/PacketSentEvent.h"
 #include "events/CreatePlayerOwnedObject.h"
 #include "events/EventManager.h"
 #include "events/RemoveClientOwnedGameObjectsEvent.h"
@@ -31,8 +32,6 @@ void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::
     // Deserialize raw byte data
     auto packets = packetSerializer->ReadPackets(std::move(data));
 
-    // Loop over packets and depending on the state of the client, determine
-    // if they are allowed to be sending those types of packets
     for (auto const& packet : packets)
     {
         auto receivedPacket = PacketInfo();
@@ -45,7 +44,6 @@ void NetworkManagerServer::DataReceivedCallback(SocketAddress fromAddress, std::
         AddPacketToQueue(receivedPacket);
 
         // Also queue up an event for anything that cares
-
         auto packetReceived = std::make_shared<PacketReceivedEvent>();
         packetReceived->packet = receivedPacket;
         EventManager::sInstance->QueueEvent(packetReceived);
@@ -279,6 +277,19 @@ void NetworkManagerServer::SendOutgoingPackets()
         }
         // ship it into the ether
         socketManager.SendTo(outData, outSize, client.socketAddress);
+
+        auto sentPacket = PacketInfo();
+        // sentPacket.timed = currentTime + 100;
+        sentPacket.time = currentTime;
+        // TODO: Need a frame
+        sentPacket.frame = 0;
+        sentPacket.address = client.socketAddress;
+        sentPacket.packet = packet;
+
+        // Also queue up an event for anything that cares
+        auto packetSent = std::make_shared<PacketSentEvent>();
+        packetSent->packet = sentPacket;
+        EventManager::sInstance->QueueEvent(packetSent);
     }
 }
 

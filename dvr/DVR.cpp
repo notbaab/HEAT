@@ -29,6 +29,8 @@ DVR::DVR() : recvEvtsIndex(0), sentEvtsIndex(0)
     holistic::SetupPacketSerializer(packetSerializer);
 }
 
+// Parse out any messages that are less that the passed in sequence id and update the
+// sequenceId to the last message received
 static void parseOutNewMessages(PacketInfo* packetInfo, std::vector<MessageInfo>* messages,
                                 uint32_t* lastMessageSequenceId)
 {
@@ -68,48 +70,6 @@ static void parseOutNewMessages(PacketInfo* packetInfo, std::vector<MessageInfo>
     }
 }
 
-// Parse out any messages that are less that the passed in sequence id and update the
-// sequenceId to the last message received
-static void parseOutNewMessages(std::shared_ptr<PacketReceivedEvent> pre, std::vector<MessageInfo>* messages,
-                                uint32_t* lastMessageSequenceId)
-{
-    std::shared_ptr<ReliableOrderedPacket> rop;
-
-    // packets on packets...Dumb names
-    PacketInfo* recPacket = &pre->packet;
-    auto p = recPacket->packet;
-    switch (p->GetClassIdentifier())
-    {
-    case UnauthenticatedPacket::CLASS_ID:
-    case AuthenticatedPacket::CLASS_ID:
-        rop = std::static_pointer_cast<ReliableOrderedPacket>(p);
-        break;
-    default:
-        // Only know how to handle messages that are in order for the moment
-        // Also don't have any other packets at this time so doesn't matter
-        return;
-    }
-
-    for (int i = 0; i < rop->numMessages; ++i)
-    {
-        auto message = (*rop->messages)[i];
-        if (message->GetId() < *lastMessageSequenceId)
-        {
-            continue;
-        }
-
-        // First time we've received this message
-        MessageInfo msg;
-        msg.time = recPacket->time;
-        msg.frame = recPacket->frame;
-        msg.address = recPacket->address;
-        msg.message = message;
-
-        messages->push_back(msg);
-        (*lastMessageSequenceId)++;
-    }
-}
-
 static std::vector<MessageInfo> popMessages(uint32_t currentTime, ThreadSafeQueue<MessageInfo>* queue)
 {
     std::vector<MessageInfo> msgs;
@@ -133,18 +93,31 @@ static std::vector<MessageInfo> popMessages(uint32_t currentTime, ThreadSafeQueu
     return msgs;
 }
 
-// Read all the queued packets and do stuff with them
+
 std::vector<MessageInfo> DVR::PopRecvMessages(uint32_t currentTime)
 {
     return popMessages(currentTime, &this->messageFirstReceivedQueue);
 }
 
+
+std::vector<MessageInfo> DVR::PopSentMessages(uint32_t currentTime)
+{
+    return popMessages(currentTime, &this->messageFirstSentQueue);
+}
+
+
 void DVR::PopulateMessageQueue()
 {
-    auto messages = GetRecvMessages(0, recvEvtsIndex);
-    for (auto& msg : messages)
+    auto recvMsgs = GetRecvMessages(0, recvEvtsIndex);
+    for (auto& msg : recvMsgs)
     {
         this->messageFirstReceivedQueue.push(msg);
+    }
+
+    auto sentMsgs = GetSentMessages(0, sentEvtsIndex);
+    for (auto& msg : sentMsgs)
+    {
+        this->messageFirstSentQueue.push(msg);
     }
 }
 
@@ -208,7 +181,6 @@ static std::vector<MessageInfo> getMessages(uint32_t from, uint32_t count, uint3
     }
 
     uint32_t lastMessageSequenceId = 0;
-    // Assume 3 messages per packet.
     for (unsigned i = 0; i < upTo; ++i)
     {
         parseOutNewMessages(&packetEvt[i]->packet, &messages, &lastMessageSequenceId);
@@ -311,14 +283,31 @@ bool DVR::ReadReceivedPacketsFromFile(std::string fileLoc)
     return true;
 }
 
-bool DVR::WriteReceivedPacketsToFile(std::string fileLoc)
+bool DVR::ReadSentPacketsFromFile(std::string fileLoc)
+{
+    auto sentPackets = readPacketFromFile(fileLoc, packetSerializer.get());
+    for (auto& packet : sentPackets)
+    {
+        auto sentEvent = std::make_shared<PacketReceivedEvent>();
+        sentEvent->packet = packet;
+        PacketReceived(sentEvent);
+    }
+
+    PopulateMessageQueue();
+    return true;
+}
+
+
+template <typename T>
+static bool WritePacketInfosToFile( std::shared_ptr<PacketSerializer> packetSerializer, std::string fileLoc, T events, uint32_t count ) 
 {
     std::ofstream outfile;
     outfile.open(fileLoc, std::ios::out | std::ios::binary);
+    INFO("Writing packet info to {} count {}", fileLoc, count);
 
-    for (uint i = 0; i < recvEvtsIndex; ++i)
+    for (uint i = 0; i < count; ++i)
     {
-        auto receivedPacket = &recvEvts[i]->packet;
+        auto receivedPacket = &events[i]->packet;
 
         uint32_t ip4 = receivedPacket->address.GetIP4();
         uint16_t port = receivedPacket->address.GetPort();
@@ -339,3 +328,15 @@ bool DVR::WriteReceivedPacketsToFile(std::string fileLoc)
 
     return true;
 }
+
+bool DVR::WriteSentPacketsToFile(std::string fileLoc)
+{
+    return WritePacketInfosToFile<std::shared_ptr<PacketSentEvent>[]>(packetSerializer, fileLoc, sentEvts, sentEvtsIndex);
+}
+
+bool DVR::WriteReceivedPacketsToFile(std::string fileLoc)
+{
+    return WritePacketInfosToFile<std::shared_ptr<PacketReceivedEvent>[]>(packetSerializer, fileLoc, recvEvts, recvEvtsIndex);
+}
+
+

@@ -18,6 +18,9 @@ class DVR
 
     bool WriteReceivedPacketsToFile(std::string fileLoc);
     bool ReadReceivedPacketsFromFile(std::string fileLoc);
+    
+    bool WriteSentPacketsToFile(std::string fileLoc);
+    bool ReadSentPacketsFromFile(std::string fileLoc);
 
     void PacketReceived(std::shared_ptr<Event> packetReceivedEvent);
     void PacketSent(std::shared_ptr<Event> packetSentEvent);
@@ -32,6 +35,8 @@ class DVR
 
     std::vector<MessageInfo> PopRecvMessages(uint32_t time);
     std::vector<MessageInfo> PopSentMessages(uint32_t time);
+
+    void PrintInfo();
 
   protected:
     void PopulateMessageQueue();

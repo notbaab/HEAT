@@ -148,7 +148,6 @@ bool SetupRenderer()
 bool DoFrame(uint32_t currentTime)
 {
     auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
-    auto dvr = DVR::sInstance.get();
 
     networkManager->ProcessMessages();
 
@@ -282,6 +281,18 @@ static void SetupDebugTools()
     add_command("dvr-replay-packets", DVRReplayPackets);
 }
 
+static void SetupDVR() 
+{
+    DVR::StaticInit();
+
+    // DVR Recording
+    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
+    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
+    
+    auto sentPacket = CREATE_DELEGATE(&DVR::PacketSent, DVR::sInstance);
+    EventManager::sInstance->AddListener(sentPacket, PacketSentEvent::EVENT_TYPE);
+}
+
 void initStuffs()
 {
     logger::InitLog(logger::DEBUG, "Main Logger");
@@ -298,11 +309,8 @@ void initStuffs()
 
     SetupNetworking(destination);
     SetupWorld();
+    SetupDVR();
 
-    // DVR Recording
-    DVR::StaticInit();
-    auto recievedPacket = CREATE_DELEGATE(&DVR::PacketReceived, DVR::sInstance);
-    EventManager::sInstance->AddListener(recievedPacket, PacketReceivedEvent::EVENT_TYPE);
 
     auto networkManager = ServiceLocator::GetNetworkManager<NetworkManagerClient*>();
 

@@ -177,6 +177,7 @@ void interactive_console(const char* socketPath)
         if (line[0] != '\0' && line[0] != '/')
         {
             sent = send(fd, line, strlen(line) + 1, 0);
+            sent = send(fd, line, strlen(line), 0);
             if (sent == -1)
             {
                 std::cout << "Failed sending command" << std::endl;
