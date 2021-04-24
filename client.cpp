@@ -151,11 +151,6 @@ bool DoFrame(uint32_t currentTime)
 
     networkManager->ProcessMessages();
 
-    // If we are playing messages, grab them here and feed them in the networkManager
-    // if (dvr->playingBack)
-    // {
-    // }
-
     SDL_Event event;
 
     // clear out the event queue

@@ -107,10 +107,6 @@ bool DoFrame(uint32_t currentTime)
     gameobjects::WorldClient::sInstance->Update(currentTime);
 
     RenderManager::sInstance->Render();
-    INFO("out");
-
-    // networkManager->SendOutgoingPackets();
-    // networkManager->Tick(currentTime);
 
     return true;
 }
