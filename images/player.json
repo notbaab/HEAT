@@ -14,7 +14,7 @@
  "name":"player",
  "spacing":0,
  "tilecount":44,
- "tiledversion":"1.3.5",
+ "tiledversion":"1.5.0",
  "tileheight":48,
  "tiles":[
         {
@@ -72,7 +72,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
              "name":"",
              "objects":[
                     {
@@ -96,7 +95,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
              "name":"",
              "objects":[
                     {
@@ -133,7 +131,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
              "name":"",
              "objects":[
                     {
@@ -175,7 +172,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":5,
              "name":"",
              "objects":[
                     {
@@ -261,6 +257,29 @@
                  "tileid":19
                 }],
          "id":16,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "height":15,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"",
+                     "visible":true,
+                     "width":16,
+                     "x":15,
+                     "y":17
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"name",
@@ -273,6 +292,32 @@
                  "value":"up"
                 }],
          "type":"walk"
+        }, 
+        {
+         "id":17,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "height":16,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"",
+                     "visible":true,
+                     "width":15,
+                     "x":15,
+                     "y":16
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            }
         }, 
         {
          "animation":[
@@ -376,6 +421,32 @@
          "type":"attack"
         }, 
         {
+         "id":29,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "height":16,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"thing",
+                     "visible":true,
+                     "width":13,
+                     "x":17.25,
+                     "y":16
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            }
+        }, 
+        {
          "animation":[
                 {
                  "duration":120,
@@ -455,5 +526,5 @@
         }],
  "tilewidth":48,
  "type":"tileset",
- "version":1.2
+ "version":1.5
 }

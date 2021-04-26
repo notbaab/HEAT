@@ -1,0 +1,51 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "/Users/notbaab/Dropbox/Programming/HEAT/images/player.json",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "/Users/notbaab/Dropbox/Programming/HEAT/images/player.json": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/Users/notbaab/Thing.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/Users/notbaab/chara_hero.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "frame.defaultDuration": 120,
+    "last.imagePath": "/Users/notbaab/Dropbox/Programming/HEAT/images",
+    "map.lastUsedExportFilter": "JSON map files (*.json)",
+    "openFiles": [
+        "/Users/notbaab/Dropbox/Programming/HEAT/images/player.json"
+    ],
+    "project": "heat-tiles.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "/Users/notbaab/Dropbox/Programming/HEAT/images/player.json",
+        "/Users/notbaab/chara_hero.tsx",
+        "/Users/notbaab/Thing.tsx"
+    ],
+    "tileset.embedInMap": false,
+    "tileset.lastUsedExportFilter": "JSON tileset files (*.json)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 48,
+        "width": 48
+    },
+    "tileset.transparentColor": "#ff00ff",
+    "tileset.type": 0,
+    "tileset.useTransparentColor": false
+}
